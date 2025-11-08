@@ -1,0 +1,162 @@
+/* 🌿 GLOBAL COLORS */
+:root {
+  --forest-green: #5B7A5C;
+  --gold-accent: #C6A15B;
+  --off-white: #f9f9f7;
+  --text-dark: #2e2e2e;
+  --muted-red: #8B4B4B; /* Softer delete color */
+}
+
+/* 🌿 BODY */
+body {
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--off-white);
+  color: var(--text-dark);
+  margin: 0;
+  padding: 0;
+}
+
+/* 🌿 NAVBAR */
+.navbar {
+  background-color: var(--forest-green);
+  color: white;
+  padding: 10px 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.navbar-links {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 20px;
+}
+
+/* ✅ Fix purple visited links */
+.navbar a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.navbar a:visited {
+  color: white; /* No more purple links */
+}
+
+.navbar a:hover {
+  color: var(--gold-accent);
+}
+
+.navbar-user {
+  color: #eee;
+  font-style: italic;
+}
+
+.navbar-logout {
+  background: transparent;
+  border: 1px solid white;
+  border-radius: 4px;
+  padding: 4px 10px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.navbar-logout:hover {
+  background-color: var(--gold-accent);
+  color: var(--text-dark);
+}
+
+/* 🌿 SECTION HEADINGS */
+h2, h3 {
+  color: var(--forest-green);
+  text-align: left;
+  margin-bottom: 12px;
+  border-left: 5px solid var(--gold-accent);
+  padding-left: 10px;
+}
+
+/* 🌿 FORMS */
+form {
+  background-color: white;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+}
+
+input, select, button {
+  margin: 6px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--forest-green);
+  box-shadow: 0 0 4px rgba(91, 122, 92, 0.4);
+}
+
+/* 🌿 BUTTONS */
+button {
+  background-color: var(--forest-green);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: var(--gold-accent);
+  color: var(--text-dark);
+}
+
+/* Delete button variant */
+button.delete {
+  background-color: var(--muted-red);
+}
+
+button.delete:hover {
+  background-color: var(--gold-accent);
+  color: var(--text-dark);
+}
+
+/* 🌿 TABLES */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+th {
+  background-color: var(--forest-green);
+  color: white;
+  padding: 10px;
+  text-align: left;
+}
+
+td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+  background-color: #f0f5f0;
+}
+
+/* 🌿 RESPONSIVE */
+@media (max-width: 768px) {
+  .navbar-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  form, table {
+    font-size: 14px;
+  }
+}
