@@ -1,4 +1,12 @@
 import React, { useEffect, useState } from "react";
+import API_BASE from "../apiConfig";
+
+useEffect(() => {
+  fetch(`${API_BASE}/api/Sessions/`)
+    .then(res => res.json())
+    .then(data => setSessions(data))
+    .catch(err => console.error("Error fetching Sessions:", err));
+}, []);
 
 function Sessions() {
   const [sessions, setSessions] = useState([]);
