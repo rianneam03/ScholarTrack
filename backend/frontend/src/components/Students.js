@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 
+import API_BASE from "../apiConfig";
+
 function Students() {
   const [students, setStudents] = useState([]);
   const [schools, setSchools] = useState([]);
@@ -207,5 +209,12 @@ function Students() {
     </div>
   );
 }
+
+useEffect(() => {
+  fetch(`${API_BASE}/api/students/`)
+    .then(res => res.json())
+    .then(data => setStudents(data))
+    .catch(err => console.error("Error fetching students:", err));
+}, []);
 
 export default Students;
