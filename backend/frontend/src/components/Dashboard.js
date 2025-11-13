@@ -1,16 +1,7 @@
 import React, { useEffect, useState } from "react";
-import API_BASE from "../apiConfig";
 
 function Dashboard() {
   const [data, setData] = useState(null);
-
-  useEffect(() => {
-    fetch(`${API_BASE}/api/dashboard_data/`)
-      .then(res => res.json())
-      .then(data => setData(data))
-      .catch(err => console.error("Error fetching data:", err));
-  }, []);
-
   if (!data) return <div>Loading dashboard...</div>;
 
   return (

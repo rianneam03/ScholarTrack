@@ -210,11 +210,4 @@ function Students() {
   );
 }
 
-useEffect(() => {
-  fetch(`${API_BASE}/api/students/`)
-    .then(res => res.json())
-    .then(data => setStudents(data))
-    .catch(err => console.error("Error fetching students:", err));
-}, []);
-
 export default Students;

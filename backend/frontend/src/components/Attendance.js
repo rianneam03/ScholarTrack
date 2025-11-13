@@ -1,12 +1,4 @@
 import React, { useEffect, useState, useMemo } from "react";
-import API_BASE from "../apiConfig";
-
-useEffect(() => {
-  fetch(`${API_BASE}/api/Attendance/`)
-    .then(res => res.json())
-    .then(data => setAttendance(data))
-    .catch(err => console.error("Error fetching Attendance:", err));
-}, []);
 
 function Attendance() {
   const [sessions, setSessions] = useState([]);

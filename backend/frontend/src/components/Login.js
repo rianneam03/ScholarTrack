@@ -1,12 +1,4 @@
 import React, { useState } from "react";
-import API_BASE from "../apiConfig";
-
-useEffect(() => {
-  fetch(`${API_BASE}/api/Login/`)
-    .then(res => res.json())
-    .then(data => setLogin(data))
-    .catch(err => console.error("Error fetching Login:", err));
-}, []);
 
 function Login({ onLogin }) {
   const [username, setUsername] = useState("");
