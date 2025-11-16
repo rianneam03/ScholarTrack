@@ -1,0 +1,15 @@
+asgiref==3.10.0
+Django==5.2.7
+djangorestframework==3.16.1
+django-cors-headers==4.9.0
+
+# SQL Server (Azure) driver for Render (NO ODBC)
+sql-server.pytds==1.12.0
+
+# Gunicorn for Render deployment
+gunicorn==22.0.0
+
+# Django utilities
+pytz==2025.2
+sqlparse==0.5.3
+tzdata==2025.2
