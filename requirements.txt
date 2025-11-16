@@ -4,7 +4,8 @@ djangorestframework==3.16.1
 django-cors-headers==4.9.0
 
 # SQL Server (Azure) driver for Render (NO ODBC)
-sql-server.pytds==1.12.0
+mssql-django==1.6
+django-pytds==1.7.0
 
 # Gunicorn for Render deployment
 gunicorn==22.0.0
