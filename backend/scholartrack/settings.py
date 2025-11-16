@@ -55,21 +55,36 @@ TEMPLATES = [
 WSGI_APPLICATION = 'scholartrack.wsgi.application'
 
 # Database
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'mssql',
+#        'NAME': 'ScholarTrackDB',  # your SQL database name
+#        'USER': 'EDUDB_admin',                   # your SQL Server username
+#        'PASSWORD': 'EduScholarsDB25',  # your SQL password
+#        'HOST': 'scholartrack-server.database.windows.net',             # or your server name
+#        'PORT': '',                  # default MSSQL port
+#        'OPTIONS': {
+#            'driver': 'ODBC Driver 17 for SQL Server',  # or Driver 18 if installed
+#            'trustServerCertificate': True,  
+#        },
+#    }
+#}
+
 DATABASES = {
     'default': {
-        'ENGINE': 'mssql',
-        'NAME': 'EduScholarsDB',  # your SQL database name
-        'USER': 'EDUDB_USER',                   # your SQL Server username
-        'PASSWORD': 'EduScholarsDB25',  # your SQL password
-        'HOST': 'localhost\\SQL2022',             # or your server name
-        'PORT': '',                  # default MSSQL port
+        'ENGINE': 'sql_server.pytds',
+        'NAME': 'EduScholarsDB',
+        'USER': 'EDUDB_admin',
+        'PASSWORD': 'EduScholarsDB25',
+        'HOST': 'scholartrack-server.database.windows.net',
+        'PORT': '1433',
         'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',  # or Driver 18 if installed
-            'trustServerCertificate': True,  
+            'use_mars': True,
+            'autocommit': True,
+            'encrypt': True,
         },
     }
 }
-
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
