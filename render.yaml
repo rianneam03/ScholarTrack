@@ -3,7 +3,7 @@ services:
     name: scholartrack-backend
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn backend.scholartrack.wsgi:application
+    startCommand: gunicorn scholartrack.wsgi:application
     envVars:
-      DJANGO_SETTINGS_MODULE: backend.scholartrack.settings
+      DJANGO_SETTINGS_MODULE: scholartrack.settings
       DATABASE_URL: ""
