@@ -3,12 +3,9 @@ from pathlib import Path
 import sys
 import os
 
-sys.path.append(os.path.join(BASE_DIR, "backend"))
-
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Security
 SECRET_KEY = 'django-insecure-your-secret-key'  # Replace later with env variable
 DEBUG = True
 
