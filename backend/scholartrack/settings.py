@@ -18,7 +18,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     "corsheaders",        # ✅ must be at the top
     "rest_framework",
-    "core",               # your app
+    "backend.core",               # your app
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
