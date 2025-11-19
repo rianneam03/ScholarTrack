@@ -73,7 +73,7 @@ WSGI_APPLICATION = 'scholartrack.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'sql_server.pytds',
+        'ENGINE': 'mssql',
         'NAME': 'EduScholarsDB',
         'USER': 'EDUDB_admin',
         'PASSWORD': 'EduScholarsDB25',
