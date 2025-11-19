@@ -5,11 +5,16 @@ import os
 
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(str(BASE_DIR.parent))
 
 SECRET_KEY = 'django-insecure-your-secret-key'  # Replace later with env variable
 DEBUG = True
-
-ALLOWED_HOSTS = ['*']
+                 
+ALLOWED_HOSTS = [
+    "scholartrack-nou4.onrender.com",
+    "localhost",
+    "127.0.0.1"
+]
 
 # Applications
 INSTALLED_APPS = [
