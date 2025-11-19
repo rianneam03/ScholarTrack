@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
-# Render build script
+set -o errexit
 
-# Install backend dependencies
+echo "Installing backend dependencies..."
 pip install -r requirements.txt
 
-# Build frontend (if needed)
+echo "Building frontend..."
 cd backend/frontend
 npm install
 npm run build
+
+echo "Frontend build completed!"
