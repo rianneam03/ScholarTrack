@@ -5,7 +5,6 @@ import os
 
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
-sys.path.append(str(BASE_DIR.parent))
 
 SECRET_KEY = 'django-insecure-your-secret-key'  # Replace later with env variable
 DEBUG = True
@@ -40,7 +39,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'scholartrack.urls'
+ROOT_URLCONF = 'backend.scholartrack.urls'
 
 TEMPLATES = [
     {
@@ -58,7 +57,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'scholartrack.wsgi.application'
+WSGI_APPLICATION = 'backend.scholartrack.wsgi.application'
 
 # Database
 #DATABASES = {
