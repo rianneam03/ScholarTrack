@@ -3,5 +3,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('core.urls')),  # 👈 Connects your app
+    path('', include('backend.core.urls')),  # 👈 Connects your app
 ]
