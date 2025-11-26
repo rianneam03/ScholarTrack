@@ -3,7 +3,8 @@ services:
     name: scholartrack-backend
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn scholartrack.wsgi:application
+    startCommand: gunicorn backend.scholartrack.wsgi:application
     envVars:
-      DJANGO_SETTINGS_MODULE: scholartrack.settings
-      DATABASE_URL: ""
+      DJANGO_SETTINGS_MODULE: backend.scholartrack.settings
+      DATABASE_URL: ""  # optional unless you want to use it (you aren’t, that's fine)
+      PYTHONPATH: "/opt/render/project/src"  # ✅ helps Render find your backend folder

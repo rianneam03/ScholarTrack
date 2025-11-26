@@ -77,17 +77,12 @@ WSGI_APPLICATION = 'backend.scholartrack.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'mssql',
-        'NAME': 'EduScholarsDB',
-        'USER': 'EDUDB_admin',
-        'PASSWORD': 'EduScholarsDB25',
-        'HOST': 'scholartrack-server.database.windows.net',
-        'PORT': '1433',
-        'OPTIONS': {
-            'use_mars': True,
-            'autocommit': True,
-            'encrypt': True,
-        },
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME':'eduscholartrackdb',
+        'USER': 'scholar_admin',
+        'PASSWORD':'7DP5AZHqQtBlgd0LlSgOm7VKvt5w8jaa',
+        'HOST': 'dpg-d4ga1kfgi27c73eb8ukg-a',
+        'PORT':'5432',
     }
 }
 
