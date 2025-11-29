@@ -8,7 +8,7 @@ def main():
     # Make sure Python can find your apps inside this backend folder
     sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'scholartrack.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.scholartrack.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
@@ -20,4 +20,6 @@ def main():
     execute_from_command_line(sys.argv)
 
 if __name__ == "__main__":
+    # Add backend folder to Python path
+    sys.path.append(os.path.join(os.path.dirname(__file__), "backend"))
     main()
