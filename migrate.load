@@ -1,0 +1,11 @@
+LOAD DATABASE
+    FROM mssql://EDUDB_admin:EduScholarsDB25@scholartrack-server.database.windows.net:1433/EduScholarsDB?encrypt=true
+    INTO postgresql://scholar_admin:7DP5AZHqQtBlgd0LlSgOm7VKvt5w8jaa@dpg-d4ga1kfgi27c73eb8ukg-a.oregon-postgres.render.com/eduscholartrackdb
+
+WITH include drop,
+     create tables,
+     create indexes,
+     reset sequences
+
+CAST type datetime to timestamptz drop default using zero-dates-to-null,
+     type date to date drop default using zero-dates-to-null;

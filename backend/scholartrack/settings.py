@@ -10,9 +10,10 @@ SECRET_KEY = 'django-insecure-your-secret-key'  # Replace later with env variabl
 DEBUG = True
                  
 ALLOWED_HOSTS = [
-    "scholartrack-nou4.onrender.com",
-    "localhost",
-    "127.0.0.1"
+    #"scholartrack-nou4.onrender.com",
+    #"localhost",
+    #"127.0.0.1"
+    "*"
 ]
 
 # Applications
@@ -78,11 +79,14 @@ WSGI_APPLICATION = 'backend.scholartrack.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME':'eduscholartrackdb',
+        'NAME': 'eduscholartrackdb',
         'USER': 'scholar_admin',
-        'PASSWORD':'7DP5AZHqQtBlgd0LlSgOm7VKvt5w8jaa',
-        'HOST': 'dpg-d4ga1kfgi27c73eb8ukg-a',
-        'PORT':'5432',
+        'PASSWORD': '7DP5AZHqQtBlgd0LlSgOm7VKvt5w8jaa',
+        'HOST': 'dpg-d4ga1kfgi27c73eb8ukg-a.oregon-postgres.render.com',
+        'PORT': '5432',
+        'OPTIONS': {
+            'sslmode': 'require',
+        }
     }
 }
 
