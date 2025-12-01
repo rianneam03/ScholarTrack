@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import sys
 import os
+import dj_database_url
 
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -76,18 +77,20 @@ WSGI_APPLICATION = 'backend.scholartrack.wsgi.application'
 #    }
 #}
 
+#DATABASES = {
+#    'default': dj_database_url.parse(
+#        "postgresql://scholar_admin:7DP5AZHqQtBlgd0LlSgOm7VKvt5w8jaa@" 
+#        "dpg-d4ga1kfgi27c73eb8ukg-a.oregon-postgres.render.com/eduscholartrackdb"        
+#    )
+#}
+
+# Database - Render provides DATABASE_URL automatically
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'eduscholartrackdb',
-        'USER': 'scholar_admin',
-        'PASSWORD': '7DP5AZHqQtBlgd0LlSgOm7VKvt5w8jaa',
-        'HOST': 'dpg-d4ga1kfgi27c73eb8ukg-a.oregon-postgres.render.com',
-        'PORT': '5432',
-        'OPTIONS': {
-            'sslmode': 'require',
-        }
-    }
+    'default': dj_database_url.config(
+        default='postgresql://scholar_admin:7DP5AZHqQtBlgd0LlSgOm7VKvt5w8jaa@dpg-d4ga1kfgi27c73eb8ukg-a.oregon-postgres.render.com/eduscholartrackdb',
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
 
 # Password validation
@@ -106,6 +109,7 @@ USE_TZ = True
 
 # Static files
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Default primary key field type

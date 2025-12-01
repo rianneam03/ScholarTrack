@@ -1,7 +1,14 @@
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.urls import path
 from . import views
 
+@csrf_exempt
+def health_check(request):
+    return JsonResponse({"status": "ok", "message": "EduScholars backend is running!"})
+
 urlpatterns = [
+    path("", health_check),  # ← This fixes the empty path 404
     path('api/dashboard_data/', views.dashboard_data, name='dashboard_data'),
     path('api/students/', views.students_list, name='students_list'),
     path('api/sessions/', views.sessions_list, name='sessions_list'),

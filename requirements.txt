@@ -1,16 +1,8 @@
-asgiref==3.10.0
-Django==5.2.7
-djangorestframework==3.16.1
-django-cors-headers==4.9.0
-
-# SQL Server (Azure) driver for Render (NO ODBC)
-mssql-django==1.6
-django-pytds==1.5
-
-# Gunicorn for Render deployment
-gunicorn==22.0.0
-
-# Django utilities
-pytz==2025.2
-sqlparse==0.5.3
-tzdata==2025.2
+Django>=5.0,<5.2
+dj-database-url>=2.1
+psycopg2-binary>=2.9
+djangorestframework>=3.14
+django-cors-headers>=4.3
+gunicorn>=22.0
+whitenoise>=6.6
+python-dotenv>=1.0

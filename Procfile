@@ -1,0 +1,1 @@
+web: gunicorn backend.scholartrack.wsgi:application --log-file -
