@@ -33,7 +33,7 @@ class Student(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'Students'
+        db_table = 'students'
         verbose_name = "Student"
         verbose_name_plural = "Students"
 
