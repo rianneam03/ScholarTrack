@@ -19,17 +19,17 @@ class School(models.Model):
 #  Student Model
 # ----------------------------
 class Student(models.Model):
-    studentid = models.CharField(db_column='StudentID', primary_key=True, max_length=6)
-    firstname = models.CharField(db_column='FirstName', max_length=50)
-    lastname = models.CharField(db_column='LastName', max_length=50)
-    grade = models.CharField(db_column='Grade', max_length=20, blank=True, null=True)
-    school = models.ForeignKey(School, models.DO_NOTHING, db_column='SchoolID', blank=True, null=True)
-    studentphone = models.CharField(db_column='StudentPhone', max_length=20, blank=True, null=True)
-    guardianname = models.CharField(db_column='GuardianName', max_length=100, blank=True, null=True)
-    guardianphone = models.CharField(db_column='GuardianPhone', max_length=20, blank=True, null=True)
-    email = models.CharField(db_column='Email', max_length=100, blank=True, null=True)
-    steminterest = models.CharField(db_column='STEMInterest', max_length=20, blank=True, null=True)
-    enrollmentdate = models.DateField(db_column='EnrollmentDate', blank=True, null=True)
+    studentid = models.CharField(db_column='studentid', primary_key=True, max_length=6)
+    firstname = models.CharField(db_column='firstname', max_length=50)
+    lastname = models.CharField(db_column='lastname', max_length=50)
+    grade = models.CharField(db_column='grade', max_length=20, blank=True, null=True)
+    school = models.ForeignKey(School, models.DO_NOTHING, db_column='schoolid', blank=True, null=True)
+    studentphone = models.CharField(db_column='studentphone', max_length=20, blank=True, null=True)
+    guardianname = models.CharField(db_column='guardianname', max_length=100, blank=True, null=True)
+    guardianphone = models.CharField(db_column='guardianphone', max_length=20, blank=True, null=True)
+    email = models.CharField(db_column='email', max_length=100, blank=True, null=True)
+    steminterest = models.CharField(db_column='steminterest', max_length=20, blank=True, null=True)
+    enrollmentdate = models.DateField(db_column='enrollmentdate', blank=True, null=True)
 
     class Meta:
         managed = False
