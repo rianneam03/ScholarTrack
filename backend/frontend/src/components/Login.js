@@ -10,7 +10,7 @@ function Login({ onLogin }) {
     setMessage("");
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/login/", {
+      const res = await fetch("https://scholartrack-backend-7vzy.onrender.com/api/login/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
@@ -19,14 +19,9 @@ function Login({ onLogin }) {
       const data = await res.json();
 
       if (res.ok) {
-        // ✅ Save entire user info (username, role, etc.)
         localStorage.setItem("user", JSON.stringify(data));
-        alert("✅ Login successful!");
-
-        // 🔥 Force re-render so Navbar updates immediately
+        alert("Login successful!");
         window.location.reload();
-
-        // optional callback
         if (onLogin) onLogin(data);
       } else {
         setMessage(data.error || "Login failed");
@@ -46,17 +41,19 @@ function Login({ onLogin }) {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
-        /><br />
+        />
+        <br /><br />
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-        /><br />
+        />
+        <br /><br />
         <button type="submit">Login</button>
       </form>
-      {message && <p>{message}</p>}
+      {message && <p style={{color: "red"}}>{message}</p>}
     </div>
   );
 }
