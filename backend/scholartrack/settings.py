@@ -7,6 +7,8 @@ import dj_database_url
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+CSRF_TRUSTED_ORIGINS = ["https://scholartrack-frontend.onrender.com"]
+
 SECRET_KEY = 'django-insecure-your-secret-key'  # Replace later with env variable
 DEBUG = True
                  
