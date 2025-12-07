@@ -4,6 +4,8 @@ from .models import Student, School, Session, Attendance, User
 from django.utils import timezone
 from datetime import timedelta
 from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.middleware.csrf import get_token
 
 # --- Dashboard data ---
 @api_view(['GET'])
@@ -246,28 +248,34 @@ def students_by_school(request, school_id):
     ]
     return Response(data)
 
-@api_view(['POST'])
-@csrf_exempt  # ← THIS IS THE MAGIC LINE
+@csrf_exempt
+@api_view(['GET', 'POST', 'OPTIONS'])
 def login_user(request):
-    username = request.data.get("username")
-    password = request.data.get("password")
+    # Handle preflight CORS request
+    if request.method == "OPTIONS":
+        response = JsonResponse({})
+        response["Access-Control-Allow-Origin"] = "https://scholartrack-frontend.onrender.com"
+        response["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+        response["Access-Control-Allow-Headers"] = "Content-Type"
+        response["Access-Control-Allow-Credentials"] = "true"
+        return response
 
-    user = User.objects.filter(username=username).first()
-    if not user:
-        return Response({"error": "User not found"}, status=404)
+    if request.method == "POST":
+        username = request.data.get("username")
+        password = request.data.get("password")
 
-    if password != user.password:
-        return Response({"error": "Invalid password"}, status=400)
+        user = User.objects.filter(username=username).first()
+        if not user:
+            return Response({"error": "User not found"}, status=404)
 
-    return Response({
-        "message": "Login successful!",
-        "username": user.username,
-        "fullname": user.fullname,
-        "email": user.email,
-        "userid": user.userid,
-        "role": user.role if hasattr(user, "role") else "teacher"
-    })
+        if password != user.password:
+            return Response({"error": "Invalid password"}, status=400)
 
-
-
-
+        return Response({
+            "message": "Login successful!",
+            "username": user.username,
+            "fullname": user.fullname or "",
+            "email": user.email or "",
+            "userid": user.userid,
+            "role": getattr(user, "role", "teacher")
+        })
