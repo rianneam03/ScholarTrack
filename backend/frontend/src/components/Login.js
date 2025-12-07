@@ -1,18 +1,20 @@
 import React, { useState } from "react";
 
 function Login({ onLogin }) {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("EDUDB_admin");  // pre-filled so you don't mistype
+  const [password, setPassword] = useState("admin123");     // pre-filled
   const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("");
+    setMessage("Logging in...");
 
     try {
       const res = await fetch("https://scholartrack-backend-7vzy.onrender.com/api/login/", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ username, password }),
       });
 
@@ -20,40 +22,47 @@ function Login({ onLogin }) {
 
       if (res.ok) {
         localStorage.setItem("user", JSON.stringify(data));
-        alert("Login successful!");
-        window.location.reload();
-        if (onLogin) onLogin(data);
+        setMessage("SUCCESS! Redirecting...");
+        setTimeout(() => {
+          window.location.href = "/dashboard";  // change "/dashboard" to your actual route
+        }, 1000);
       } else {
-        setMessage(data.error || "Login failed");
+        setMessage(data.error || "Wrong username/password");
       }
     } catch (err) {
-      setMessage("Server error");
+      setMessage("Server error — trying again in 3s...");
+      setTimeout(() => setMessage(""), 3000);
     }
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
+    <div style={{ padding: 40, textAlign: "center", fontFamily: "Arial" }}>
+      <h1>ScholarTrack Login</h1>
+      <form onSubmit={handleSubmit} style={{ marginTop: 30 }}>
         <input
           type="text"
-          placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          style={{ width: 300, padding: 12, fontSize: 16 }}
           required
         />
         <br /><br />
         <input
           type="password"
-          placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          style={{ width: 300, padding: 12, fontSize: 16 }}
           required
         />
         <br /><br />
-        <button type="submit">Login</button>
+        <button type="submit" style={{ padding: "12px 40px", background: "#2e8b57", color: "white", border: "none", fontSize: 16 }}>
+          LOGIN NOW
+        </button>
       </form>
-      {message && <p style={{color: "red"}}>{message}</p>}
+
+      <p style={{ marginTop: 20, fontWeight: "bold", color: message.includes("SUCCESS") ? "green" : "red" }}>
+        {message || "Use EDUDB_admin / admin123"}
+      </p>
     </div>
   );
 }
