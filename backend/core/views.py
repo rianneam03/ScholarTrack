@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from .models import Student, School, Session, Attendance, User
 from django.utils import timezone
 from datetime import timedelta
-
+from django.views.decorators.csrf import csrf_exempt
 
 # --- Dashboard data ---
 @api_view(['GET'])
@@ -247,6 +247,7 @@ def students_by_school(request, school_id):
     return Response(data)
 
 @api_view(['POST'])
+@csrf_exempt  # ← THIS IS THE MAGIC LINE
 def login_user(request):
     username = request.data.get("username")
     password = request.data.get("password")
@@ -255,18 +256,18 @@ def login_user(request):
     if not user:
         return Response({"error": "User not found"}, status=404)
 
-    # Plain text demo check
     if password != user.password:
         return Response({"error": "Invalid password"}, status=400)
 
     return Response({
-        "message": "✅ Login successful!",
+        "message": "Login successful!",
         "username": user.username,
         "fullname": user.fullname,
         "email": user.email,
         "userid": user.userid,
         "role": user.role if hasattr(user, "role") else "teacher"
     })
+
 
 
 
