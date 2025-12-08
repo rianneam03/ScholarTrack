@@ -4,6 +4,7 @@ from django.urls import path
 from django.urls import include
 from . import views
 from backend.core.views import csrf
+from .views import login_user   # 👈 THIS MUST EXIST
 
 @csrf_exempt
 def health_check(request):
@@ -20,6 +21,5 @@ urlpatterns = [
     path('api/schools/<int:school_id>/students/', views.students_by_school, name='students_by_school'),
     path('api/login/', views.login_user, name='login_user'),
     path("api/csrf/", csrf),
-    path("api/login/", login_view),
 ]
 
