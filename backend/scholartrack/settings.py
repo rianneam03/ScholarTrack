@@ -7,7 +7,10 @@ import dj_database_url
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-CSRF_TRUSTED_ORIGINS = ["https://scholartrack-frontend.onrender.com"]
+CSRF_TRUSTED_ORIGINS = [
+    "https://scholartrack-frontend.onrender.com",
+    "https://scholartrack-backend.onrender.com"    
+]
 
 SECRET_KEY = 'django-insecure-your-secret-key'  # Replace later with env variable
 DEBUG = True
@@ -118,22 +121,14 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
+    "https://scholartrack-frontend.onrender.com",
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_METHODS = [
-    "DELETE",
-    "GET",
-    "OPTIONS",
-    "PATCH",
-    "POST",
-    "PUT",
-]
+CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOW_HEADERS = [
-    "content-type",
-    "authorization",
-    "username",
-]
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+CORS_ALLOW_ALL_ORIGINS = False
+
 

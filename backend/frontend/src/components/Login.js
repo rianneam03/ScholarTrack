@@ -5,6 +5,22 @@ function Login({ onLogin }) {
   const [password, setPassword] = useState("admin123");     // pre-filled
   const [message, setMessage] = useState("");
 
+  async function handleLogin(e) {
+    e.preventDefault();
+
+    const response = await fetch("https://scholartrack-backend.onrender.com/api/login/", {
+        method: "POST",
+        credentials: "include",  // 🔥 REQUIRED for cookies
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, password })
+    });
+
+    const data = await response.json();
+    console.log(data);
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("Logging in...");
@@ -68,3 +84,4 @@ function Login({ onLogin }) {
 }
 
 export default Login;
+

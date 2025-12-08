@@ -7,6 +7,12 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 
+from django.http import JsonResponse
+from django.middleware.csrf import get_token
+
+def csrf(request):
+    return JsonResponse({"csrfToken": get_token(request)})
+
 # --- Dashboard data ---
 @api_view(['GET'])
 def dashboard_data(request):
