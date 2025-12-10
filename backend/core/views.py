@@ -254,6 +254,7 @@ def students_by_school(request, school_id):
     ]
     return Response(data)
 
+# ---- Login 
 @csrf_exempt
 @api_view(['GET', 'POST', 'OPTIONS'])
 def login_user(request):
@@ -266,6 +267,11 @@ def login_user(request):
         response["Access-Control-Allow-Credentials"] = "true"
         return response
 
+    # Handle GET — REQUIRED or Django crashes
+    if request.method == "GET":
+        return Response({"message": "Login endpoint is live"}, status=200)
+
+    # Handle POST for actual login
     if request.method == "POST":
         username = request.data.get("username")
         password = request.data.get("password")

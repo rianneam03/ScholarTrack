@@ -8,7 +8,7 @@ function Login({ onLogin }) {
   async function handleLogin(e) {
     e.preventDefault();
 
-    const response = await fetch("https://scholartrack-backend.onrender.com/api/login/", {
+    const response = await fetch("https://scholartrack-backend-7vzy.onrender.com", {
         method: "POST",
         credentials: "include",  // 🔥 REQUIRED for cookies
         headers: {
