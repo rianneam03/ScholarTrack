@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 function Login({ onLogin }) {
   const [username, setUsername] = useState("EDUDB_admin");  // pre-filled so you don't mistype
-  const [password, setPassword] = useState("admin123");     // pre-filled
+  const [password, setPassword] = useState("EduScholarsDB25");     // pre-filled
   const [message, setMessage] = useState("");
 
   async function handleLogin(e) {
