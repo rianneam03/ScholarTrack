@@ -14,16 +14,18 @@ function Login() {
     try {
       const res = await fetch(LOGIN_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        credentials: "include",   // VERY IMPORTANT FOR COOKIES
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ username, password }),
       });
 
       const data = await res.json();
+      console.log("LOGIN RESPONSE:", data);
 
       if (res.ok) {
-        // store user info
         localStorage.setItem("user", JSON.stringify(data));
-
         setMessage("SUCCESS! Redirecting...");
         setTimeout(() => {
           window.location.href = "/dashboard";
@@ -32,14 +34,14 @@ function Login() {
         setMessage(data.error || "Wrong username/password");
       }
     } catch (err) {
-      setMessage("Server error — try again.");
+      console.error(err);
+      setMessage("Server error, try again.");
     }
   };
 
   return (
     <div style={{ padding: 40, textAlign: "center", fontFamily: "Arial" }}>
       <h1>ScholarTrack Login</h1>
-
       <form onSubmit={handleSubmit} style={{ marginTop: 30 }}>
         <input
           type="text"
@@ -50,7 +52,6 @@ function Login() {
           required
         />
         <br /><br />
-
         <input
           type="password"
           placeholder="Password"
@@ -60,7 +61,6 @@ function Login() {
           required
         />
         <br /><br />
-
         <button
           type="submit"
           style={{
