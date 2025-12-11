@@ -96,7 +96,7 @@ class Outcome(models.Model):
 class User(models.Model):
     userid = models.AutoField(db_column='userid', primary_key=True)
     username = models.CharField(db_column='username', unique=True, max_length=50)
-    password = models.CharField(db_column='Password', max_length=255)
+    password = models.CharField(db_column='password', max_length=255)
     fullname = models.CharField(db_column='fullname', max_length=100, blank=True, null=True)
     email = models.CharField(db_column='email', max_length=100, blank=True, null=True)
     createdat = models.DateTimeField(db_column='createdat', blank=True, null=True)
