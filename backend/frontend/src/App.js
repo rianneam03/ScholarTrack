@@ -34,7 +34,16 @@ function App() {
 
         {/* Public login route */}
         <Route path="/login" element={<Login />} />
-
+        
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute allowedRoles={["admin", "teacher", "donor"]}>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        
         {/* Restricted routes */}
         <Route
           path="/students"

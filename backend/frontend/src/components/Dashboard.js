@@ -2,6 +2,20 @@ import React, { useEffect, useState } from "react";
 
 function Dashboard() {
   const [data, setData] = useState(null);
+
+  useEffect(() => {
+    async function fetchDashboard() {
+      try {
+        const res = await fetch("https://scholartrack-backend-7vzy.onrender.com/api/dashboard_data/");
+        const json = await res.json();
+        setData(json);
+      } catch (err) {
+        console.error("Dashboard error:", err);
+      }
+    }
+    fetchDashboard();
+  }, []);
+
   if (!data) return <div>Loading dashboard...</div>;
 
   return (
