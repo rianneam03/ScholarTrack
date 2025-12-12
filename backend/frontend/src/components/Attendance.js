@@ -11,7 +11,7 @@ function Attendance() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/sessions/")
+    fetch("https://scholartrack-backend-7vzy.onrender.com/api/sessions/")
       .then((r) => r.json())
       .then((data) => setSessions(data))
       .catch((e) => console.error("Sessions load error:", e));
@@ -32,10 +32,10 @@ function Attendance() {
 
     setLoading(true);
 
-    const pStudents = fetch(`http://127.0.0.1:8000/api/students/?school_id=${encodeURIComponent(schoolId)}`)
+    const pStudents = fetch(`https://scholartrack-backend-7vzy.onrender.com/api/students/?school_id=${encodeURIComponent(schoolId)}`)
       .then((r) => r.json());
 
-    const pAttendance = fetch(`http://127.0.0.1:8000/api/attendance/?session_id=${encodeURIComponent(selectedSessionID)}`)
+    const pAttendance = fetch(`https://scholartrack-backend-7vzy.onrender.com/api/attendance/?session_id=${encodeURIComponent(selectedSessionID)}`)
       .then((r) => r.json());
 
     Promise.all([pStudents, pAttendance])
@@ -81,7 +81,7 @@ function Attendance() {
     setSaving(true);
     try {
       for (const row of diffs) {
-        const res = await fetch("http://127.0.0.1:8000/api/attendance/", {
+        const res = await fetch("https://scholartrack-backend-7vzy.onrender.com/api/attendance/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -95,7 +95,7 @@ function Attendance() {
           throw new Error(data.error || "Failed to save attendance");
         }
       }
-      const fresh = await fetch(`http://127.0.0.1:8000/api/attendance/?session_id=${encodeURIComponent(selectedSessionID)}`).then((r) => r.json());
+      const fresh = await fetch(`https://scholartrack-backend-7vzy.onrender.com/api/attendance/?session_id=${encodeURIComponent(selectedSessionID)}`).then((r) => r.json());
       const newMap = {};
       (fresh || []).forEach((row) => {
         if (row.StudentID) newMap[String(row.StudentID)] = row.Status || "Absent";

@@ -16,14 +16,14 @@ function Sessions() {
   }, []);
 
   const fetchSessions = () => {
-    fetch("http://127.0.0.1:8000/api/sessions/")
+    fetch("https://scholartrack-backend-7vzy.onrender.com/api/sessions/")
       .then((res) => res.json())
       .then((data) => setSessions(data))
       .catch((err) => console.error("Error fetching sessions:", err));
   };
 
   const fetchSchools = () => {
-    fetch("http://127.0.0.1:8000/api/schools/")
+    fetch("https://scholartrack-backend-7vzy.onrender.com/api/schools/")
       .then((res) => res.json())
       .then((data) => setSchools(data))
       .catch((err) => console.error("Error fetching schools:", err));
@@ -35,7 +35,7 @@ function Sessions() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch("http://127.0.0.1:8000/api/sessions/", {
+    fetch("https://scholartrack-backend-7vzy.onrender.com/api/sessions/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),

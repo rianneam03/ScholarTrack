@@ -25,14 +25,14 @@ function Students() {
   }, []);
 
   const fetchStudents = () => {
-    fetch("http://127.0.0.1:8000/api/students/")
+    fetch("https://scholartrack-backend-7vzy.onrender.com/api/students/")
       .then((res) => res.json())
       .then((data) => setStudents(data))
       .catch((err) => console.error("Error fetching students:", err));
   };
 
   const fetchSchools = () => {
-    fetch("http://127.0.0.1:8000/api/schools/")
+    fetch("https://scholartrack-backend-7vzy.onrender.com/api/schools/")
       .then((res) => res.json())
       .then((data) => setSchools(data))
       .catch((err) => console.error("Error fetching schools:", err));
@@ -45,7 +45,7 @@ function Students() {
   // ✅ Add Student
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch("http://127.0.0.1:8000/api/students/", {
+    fetch("https://scholartrack-backend-7vzy.onrender.com/api/students/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
@@ -91,7 +91,7 @@ function Students() {
 
     try {
       const res = await fetch(
-        `http://127.0.0.1:8000/api/students/?StudentID=${formData.StudentID}`,
+        `https://scholartrack-backend-7vzy.onrender.com/api/students/?StudentID=${formData.StudentID}`,
         {
           method: "DELETE",
           headers: {
