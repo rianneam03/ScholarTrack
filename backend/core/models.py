@@ -49,7 +49,7 @@ class Session(models.Model):
     schoolid = models.ForeignKey(School, models.DO_NOTHING, db_column='schoolid', blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'sessions'
         verbose_name = "Session"
         verbose_name_plural = "Sessions"
