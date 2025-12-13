@@ -43,7 +43,8 @@ function App() {
             </PrivateRoute>
           }
         />
-        
+
+
         {/* Restricted routes */}
         <Route
           path="/students"
