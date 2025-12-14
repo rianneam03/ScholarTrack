@@ -111,10 +111,6 @@ function Students() {
         `${API_BASE}/api/students/?StudentID=${formData.StudentID}`,
         {
           method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            "Username": user.username,
-          },
         }
       );
 
