@@ -38,7 +38,12 @@ function Sessions() {
     fetch("https://scholartrack-backend-7vzy.onrender.com/api/sessions/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({
+        Title: formData.Title,
+        SessionDate: formData.SessionDate,
+        Description: formData.Description,
+        SchoolID: Number(formData.SchoolID), // 🔥 ensure number
+      }),
     })
       .then((res) => res.json())
       .then((data) => {

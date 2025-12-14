@@ -53,27 +53,34 @@ def sessions_list(request):
         return Response(data)
 
     elif request.method == 'POST':
-        data = request.data
+        try:
+            data = request.data
 
-        if not data.get('Title'):
-            return Response({"error": "Title is required."}, status=400)
-        if not data.get('SessionDate'):
-            return Response({"error": "SessionDate is required."}, status=400)
+            school_obj = None
+            if data.get('SchoolID'):
+                school_obj = School.objects.filter(
+                    schoolid=int(data.get('SchoolID'))
+                ).first()
 
-        school_obj = None
-        if data.get('SchoolID'):
-            school_obj = School.objects.filter(schoolid=data.get('SchoolID')).first()
-            if not school_obj:
-                return Response({"error": "Invalid SchoolID"}, status=400)
+                if not school_obj:
+                    return Response({"error": "Invalid SchoolID"}, status=400)
 
-        session = Session.objects.create(
-            title=data.get('Title'),
-            sessiondate=data.get('SessionDate'),
-            description=data.get('Description'),
-            schoolid=school_obj
-        )
+            session = Session.objects.create(
+                title=data.get('Title'),
+                sessiondate=data.get('SessionDate'),
+                description=data.get('Description'),
+                schoolid=school_obj
+            )
 
-        return Response({"message": "Session added successfully!", "SessionID": session.sessionid})
+            return Response({
+                "message": "Session added successfully!",
+                "SessionID": session.sessionid
+            })
+
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return Response({"error": str(e)}, status=500)
 
 # --- Attendance list API ---
 @api_view(['GET', 'POST'])
