@@ -100,38 +100,34 @@ function Students() {
     }
 
     if (!formData.StudentID.trim()) {
-      alert("⚠️ Enter a Student ID to delete.");
+      alert("⚠️ Please enter a Student ID first.");
       return;
     }
 
-    if (!window.confirm(`Delete student ${formData.StudentID}?`)) return;
+    if (!window.confirm(`Are you sure you want to delete ${formData.StudentID}?`)) return;
 
     try {
       const res = await fetch(
-        `${API_BASE}/api/students/?StudentID=${formData.StudentID}`,
-        {
+        API_BASE`/api/students/?StudentID=${formData.StudentID}`,
+        { 
           method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "Username": user.username, // ✅ REQUIRED
+          },
         }
       );
 
       const data = await res.json();
-
-      if (!res.ok) {
-        alert(data.error || "Delete failed");
-        return;
-      }
-
-      alert(data.message);
+      alert(data.message || data.error);
       fetchStudents();
-      setFormData({ ...formData, StudentID: "" });
+
     } catch (err) {
-      console.error("Delete error:", err);
-      alert("❌ Server error while deleting student");
+      console.error("Error deleting student:", err);
+      alert("Server error while deleting student");
     }
   };
 
-  const user = JSON.parse(localStorage.getItem("user"));
-  const isAdmin = user && user.role === "admin";
 
   // ---------------- UI ----------------
   return (
