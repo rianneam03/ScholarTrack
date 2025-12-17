@@ -58,39 +58,53 @@ function Students() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const payload = {
+      ...formData,
+      EnrollmentDate: formData.EnrollmentDate || null,
+      StudentPhone: formData.StudentPhone || null,
+      GuardianName: formData.GuardianName || null,
+      GuardianPhone: formData.GuardianPhone || null,
+      Email: formData.Email || null,
+      STEMInterest: formData.STEMInterest || null,
+      SchoolID: formData.SchoolID || null,
+    };
+
     try {
       const res = await fetch(
         "https://scholartrack-backend-7vzy.onrender.com/api/students/",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(payload),
         }
       );
 
       const data = await res.json();
 
-      if (data.error) {
-        alert(data.error);
-      } else {
-        alert("✅ Student added successfully!");
-        fetchStudents();
-        setFormData({
-          StudentID: "",
-          FirstName: "",
-          LastName: "",
-          Grade: "",
-          SchoolID: "",
-          StudentPhone: "",
-          GuardianName: "",
-          GuardianPhone: "",
-          Email: "",
-          STEMInterest: "",
-          EnrollmentDate: "",
-        });
+      if (!res.ok) {
+        alert(data.error || "Failed to add student");
+        return;
       }
+
+      alert("✅ Student added successfully!");
+      fetchStudents();
+
+      setFormData({
+        StudentID: "",
+        FirstName: "",
+        LastName: "",
+        Grade: "",
+        SchoolID: "",
+        StudentPhone: "",
+        GuardianName: "",
+        GuardianPhone: "",
+        Email: "",
+        STEMInterest: "",
+        EnrollmentDate: "",
+      });
     } catch (err) {
       console.error("Error adding student:", err);
+      alert("Server error while adding student");
     }
   };
 
