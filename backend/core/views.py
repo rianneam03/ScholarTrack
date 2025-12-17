@@ -142,7 +142,7 @@ def students_list(request):
         school_id = request.GET.get('school_id')  # optional filter
         students = Student.objects.all()
         if school_id:
-            students = students.filter(school_schoolid=school_id)
+            students = students.filter(school_id=school_id)
 
         data = []
         for s in students:
