@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-const API_BASE = "https://scholartrack-backend-7vzy.onrender.com";
-
 function Students() {
   const [students, setStudents] = useState([]);
   const [schools, setSchools] = useState([]);
@@ -19,15 +17,20 @@ function Students() {
     EnrollmentDate: "",
   });
 
+  // ✅ AUTH STATE (THIS WAS MISSING)
+  const user = JSON.parse(localStorage.getItem("user"));
+  const isAdmin = user && user.role === "admin";
+
   useEffect(() => {
     fetchStudents();
     fetchSchools();
   }, []);
 
-  // ---------------- FETCH ----------------
   const fetchStudents = async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/students/`);
+      const res = await fetch(
+        "https://scholartrack-backend-7vzy.onrender.com/api/students/"
+      );
       const data = await res.json();
       setStudents(data);
     } catch (err) {
@@ -37,7 +40,9 @@ function Students() {
 
   const fetchSchools = async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/schools/`);
+      const res = await fetch(
+        "https://scholartrack-backend-7vzy.onrender.com/api/schools/"
+      );
       const data = await res.json();
       setSchools(data);
     } catch (err) {
@@ -45,75 +50,72 @@ function Students() {
     }
   };
 
-  // ---------------- FORM ----------------
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ---------------- ADD STUDENT ----------------
+  // ➕ ADD STUDENT
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await fetch(`${API_BASE}/api/students/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        "https://scholartrack-backend-7vzy.onrender.com/api/students/",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
 
       const data = await res.json();
 
-      if (!res.ok) {
-        alert(data.error || "Failed to add student");
-        return;
+      if (data.error) {
+        alert(data.error);
+      } else {
+        alert("✅ Student added successfully!");
+        fetchStudents();
+        setFormData({
+          StudentID: "",
+          FirstName: "",
+          LastName: "",
+          Grade: "",
+          SchoolID: "",
+          StudentPhone: "",
+          GuardianName: "",
+          GuardianPhone: "",
+          Email: "",
+          STEMInterest: "",
+          EnrollmentDate: "",
+        });
       }
-
-      alert("✅ Student added successfully!");
-      fetchStudents();
-
-      setFormData({
-        StudentID: "",
-        FirstName: "",
-        LastName: "",
-        Grade: "",
-        SchoolID: "",
-        StudentPhone: "",
-        GuardianName: "",
-        GuardianPhone: "",
-        Email: "",
-        STEMInterest: "",
-        EnrollmentDate: "",
-      });
     } catch (err) {
-      console.error("Add student error:", err);
-      alert("❌ Server error while adding student");
+      console.error("Error adding student:", err);
     }
   };
 
-  // ---------------- DELETE STUDENT ----------------
+  // 🗑 DELETE STUDENT (ADMIN ONLY)
   const handleDelete = async () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    if (!user || user.role !== "admin") {
+    if (!isAdmin) {
       alert("❌ Only admins can delete students.");
       return;
     }
 
     if (!formData.StudentID.trim()) {
-      alert("⚠️ Please enter a Student ID first.");
+      alert("⚠️ Enter Student ID first.");
       return;
     }
 
-    if (!window.confirm(`Are you sure you want to delete ${formData.StudentID}?`)) return;
+    if (!window.confirm(`Delete ${formData.StudentID}?`)) return;
 
     try {
       const res = await fetch(
-        API_BASE`/api/students/?StudentID=${formData.StudentID}`,
-        { 
+        `https://scholartrack-backend-7vzy.onrender.com/api/students/?StudentID=${formData.StudentID}`,
+        {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-            "Username": user.username, // ✅ REQUIRED
+            "Username": user.username, // 🔑 REQUIRED
           },
         }
       );
@@ -121,15 +123,12 @@ function Students() {
       const data = await res.json();
       alert(data.message || data.error);
       fetchStudents();
-
     } catch (err) {
-      console.error("Error deleting student:", err);
+      console.error("Delete failed:", err);
       alert("Server error while deleting student");
     }
   };
 
-
-  // ---------------- UI ----------------
   return (
     <div className="page-container">
       <h2>Students</h2>
@@ -149,20 +148,6 @@ function Students() {
           ))}
         </select>
 
-        <input name="StudentPhone" placeholder="Student Phone" value={formData.StudentPhone} onChange={handleChange} />
-        <input name="GuardianName" placeholder="Guardian Name" value={formData.GuardianName} onChange={handleChange} />
-        <input name="GuardianPhone" placeholder="Guardian Phone" value={formData.GuardianPhone} onChange={handleChange} />
-        <input name="Email" placeholder="Email" value={formData.Email} onChange={handleChange} />
-
-        <select name="STEMInterest" value={formData.STEMInterest} onChange={handleChange}>
-          <option value="">STEM Interest</option>
-          <option value="Yes">Yes</option>
-          <option value="No">No</option>
-          <option value="Undecided">Undecided</option>
-        </select>
-
-        <input type="date" name="EnrollmentDate" value={formData.EnrollmentDate} onChange={handleChange} />
-
         <button type="submit">Add Student</button>
 
         {isAdmin && (
@@ -179,8 +164,6 @@ function Students() {
             <th>Name</th>
             <th>Grade</th>
             <th>School</th>
-            <th>Email</th>
-            <th>STEM</th>
           </tr>
         </thead>
         <tbody>
@@ -189,9 +172,7 @@ function Students() {
               <td>{s.StudentID}</td>
               <td>{s.FirstName} {s.LastName}</td>
               <td>{s.Grade}</td>
-              <td>{s.SchoolName || "-"}</td>
-              <td>{s.Email || "-"}</td>
-              <td>{s.STEMInterest}</td>
+              <td>{s.SchoolName}</td>
             </tr>
           ))}
         </tbody>
