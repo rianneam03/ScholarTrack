@@ -126,6 +126,13 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
+
+CORS_ALLOW_HEADERS = [
+    "content-type",
+    "authorization",
+    "username",  # ✅ THIS IS THE FIX
+]
+
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
