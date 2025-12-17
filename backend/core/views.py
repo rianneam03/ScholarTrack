@@ -127,7 +127,7 @@ def attendance_list(request):
         attendance = Attendance.objects.create(
             studentid=student_obj,
             sessionid=session_obj,
-            status=data.get('Status')
+            defaults={"status": data.get("Status")}
         )
 
         return Response({
@@ -142,7 +142,7 @@ def students_list(request):
         school_id = request.GET.get('school_id')  # optional filter
         students = Student.objects.all()
         if school_id:
-            students = students.filter(school_id=school_id)
+            students = students.filter(school_schoolid=school_id)
 
         data = []
         for s in students:
