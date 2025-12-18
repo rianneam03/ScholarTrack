@@ -106,30 +106,38 @@ def attendance_list(request):
     elif request.method == 'POST':
         data = request.data
 
-        student_id = data.get('StudentID')
-        session_id = data.get('SessionID')
-        status = data.get('Status')
+        if not data.get('StudentID'):
+            return Response({"error": "StudentID is required."}, status=400)
+        if not data.get('SessionID'):
+            return Response({"error": "SessionID is required."}, status=400)
+        if not data.get('Status'):
+            return Response({"error": "Status is required."}, status=400)
 
-        if not student_id or not session_id or not status:
-            return Response({"error": "Missing fields"}, status=400)
+        student_obj = Student.objects.filter(studentid=data.get('StudentID')).first()
+        if not student_obj:
+            return Response({"error": "Invalid StudentID"}, status=400)
 
-        student = Student.objects.filter(studentid=student_id).first()
-        session = Session.objects.filter(sessionid=session_id).first()
+        session_obj = Session.objects.filter(sessionid=data.get('SessionID')).first()
+        if not session_obj:
+            return Response({"error": "Invalid SessionID"}, status=400)
 
-        if not student or not session:
-            return Response({"error": "Invalid StudentID or SessionID"}, status=400)
+        # ✅ CREATE OR UPDATE MANUALLY (SAFE)
+        attendance = Attendance.objects.filter(
+            studentid=student_obj,
+            sessionid=session_obj
+        ).first()
 
-        attendance, created = Attendance.objects.update_or_create(
-            studentid=student,
-            sessionid=session,
-            defaults={"status": status}
-        )
-
-        return Response({
-            "message": "Attendance saved",
-            "AttendanceID": attendance.attendanceid,
-            "created": created
-        })
+        if attendance:
+            attendance.status = data.get('Status')
+            attendance.save()
+            return Response({"message": "Attendance updated"})
+        else:
+            Attendance.objects.create(
+                studentid=student_obj,
+                sessionid=session_obj,
+                status=data.get('Status')
+            )
+            return Response({"message": "Attendance created"})
 
 # --- Students list API ---
 @api_view(['GET', 'POST', 'DELETE'])
