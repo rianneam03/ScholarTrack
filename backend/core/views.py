@@ -113,26 +113,27 @@ def attendance_list(request):
         if not data.get('Status'):
             return Response({"error": "Status is required."}, status=400)
 
+        # Validate Student
         student_obj = Student.objects.filter(studentid=data.get('StudentID')).first()
         if not student_obj:
             return Response({"error": "Invalid StudentID"}, status=400)
 
+        # Validate Session
         session_obj = Session.objects.filter(sessionid=data.get('SessionID')).first()
         if not session_obj:
             return Response({"error": "Invalid SessionID"}, status=400)
 
-        # 🔑 UPSERT (update or create)
-        attendance, created = Attendance.objects.update_or_create(
+        # Create attendance record
+        attendance = Attendance.objects.create(
             studentid=student_obj,
             sessionid=session_obj,
-            defaults={"status": data.get('Status')}
+            status=data.get('Status')
         )
 
         return Response({
-            "message": "Attendance saved successfully!",
+            "message": "Attendance added successfully!",
             "AttendanceID": attendance.attendanceid
         })
-
 
 # --- Students list API ---
 @api_view(['GET', 'POST', 'DELETE'])
