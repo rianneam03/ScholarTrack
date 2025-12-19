@@ -190,12 +190,11 @@ function Students() {
             <input name="GuardianName" placeholder="Guardian Name" value={formData.GuardianName} onChange={handleChange} />
             <input name="GuardianPhone" placeholder="Guardian Phone" value={formData.GuardianPhone} onChange={handleChange} />
             <input name="Email" placeholder="Email" value={formData.Email} onChange={handleChange} />
+          <button type="submit">
+            Add Student
+          </button>
           </>
         )}
-
-        <button type="submit">
-          Add Student
-        </button>
 
         {isAdmin && (
           <button type="button" onClick={handleDelete} className="delete-btn">
