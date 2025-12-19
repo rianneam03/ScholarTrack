@@ -149,12 +149,49 @@ function Students() {
       <h2>Students</h2>
 
       <form onSubmit={handleSubmit} className="form-container">
-        <input name="StudentID" placeholder="Student ID" value={formData.StudentID} onChange={handleChange} required />
-        <input name="FirstName" placeholder="First Name" value={formData.FirstName} onChange={handleChange} required />
-        <input name="LastName" placeholder="Last Name" value={formData.LastName} onChange={handleChange} required />
-        <input name="Grade" placeholder="Grade" value={formData.Grade} onChange={handleChange} />
 
-        <select name="SchoolID" value={formData.SchoolID} onChange={handleChange}>
+        {/* Everyone sees basic identity fields */}
+        <input
+          name="StudentID"
+          placeholder="Student ID"
+          value={formData.StudentID}
+          onChange={handleChange}
+          required
+          disabled={isStaff}   // 👈 staff cannot change ID
+        />
+
+        <input
+          name="FirstName"
+          placeholder="First Name"
+          value={formData.FirstName}
+          onChange={handleChange}
+          required
+          disabled={isStaff}
+        />
+
+        <input
+          name="LastName"
+          placeholder="Last Name"
+          value={formData.LastName}
+          onChange={handleChange}
+          required
+          disabled={isStaff}
+        />
+
+        <input
+          name="Grade"
+          placeholder="Grade"
+          value={formData.Grade}
+          onChange={handleChange}
+          disabled={isStaff}
+        />
+
+        <select
+          name="SchoolID"
+          value={formData.SchoolID}
+          onChange={handleChange}
+          disabled={isStaff}
+        >
           <option value="">Select School</option>
           {schools.map((s) => (
             <option key={s.SchoolID} value={s.SchoolID}>
@@ -163,14 +200,71 @@ function Students() {
           ))}
         </select>
 
-        <button type="submit">Add Student</button>
+        {/* ✅ Admin + Staff can edit STEM Interest */}
+        {(isAdmin || isStaff) && (
+          <input
+            name="STEMInterest"
+            placeholder="STEM Interest"
+            value={formData.STEMInterest}
+            onChange={handleChange}
+          />
+        )}
 
+        {/* ✅ Admin + Staff can edit Enrollment Date */}
+        {(isAdmin || isStaff) && (
+          <input
+            type="date"
+            name="EnrollmentDate"
+            value={formData.EnrollmentDate}
+            onChange={handleChange}
+          />
+        )}
+
+        {/* 🔒 Admin-only fields */}
+        {isAdmin && (
+          <>
+            <input
+              name="StudentPhone"
+              placeholder="Student Phone"
+              value={formData.StudentPhone}
+              onChange={handleChange}
+            />
+
+            <input
+              name="GuardianName"
+              placeholder="Guardian Name"
+              value={formData.GuardianName}
+              onChange={handleChange}
+            />
+
+            <input
+              name="GuardianPhone"
+              placeholder="Guardian Phone"
+              value={formData.GuardianPhone}
+              onChange={handleChange}
+            />
+
+            <input
+              name="Email"
+              placeholder="Email"
+              value={formData.Email}
+              onChange={handleChange}
+            />
+          </>
+        )}
+
+        <button type="submit">
+          {isAdmin ? "Add / Update Student" : "Update STEM Info"}
+        </button>
+
+        {/* 🗑 Admin-only delete */}
         {isAdmin && (
           <button type="button" onClick={handleDelete} className="delete-btn">
             Delete Student
           </button>
         )}
       </form>
+
 
       <table className="data-table">
         <thead>
