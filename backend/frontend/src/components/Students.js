@@ -17,11 +17,11 @@ function Students() {
     EnrollmentDate: "",
   });
 
-  // ✅ AUTH STATE (THIS WAS MISSING)
+  // 🔐 AUTH
   const user = JSON.parse(localStorage.getItem("user"));
-  const isAdmin = user && user.role === "admin";
+  const isAdmin = user?.role === "admin";
   const isStaff = user?.role === "teacher";
-  
+
   useEffect(() => {
     fetchStudents();
     fetchSchools();
@@ -55,26 +55,33 @@ function Students() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ➕ ADD STUDENT
+  // ➕ ADD (ADMIN) / ✏️ UPDATE STEM (STAFF)
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const payload = {
-      ...formData,
-      EnrollmentDate: formData.EnrollmentDate || null,
-      StudentPhone: formData.StudentPhone || null,
-      GuardianName: formData.GuardianName || null,
-      GuardianPhone: formData.GuardianPhone || null,
-      Email: formData.Email || null,
+      StudentID: formData.StudentID,
       STEMInterest: formData.STEMInterest || null,
-      SchoolID: formData.SchoolID || null,
+      EnrollmentDate: formData.EnrollmentDate || null,
+
+      // Admin-only fields included only if admin
+      ...(isAdmin && {
+        FirstName: formData.FirstName,
+        LastName: formData.LastName,
+        Grade: formData.Grade,
+        SchoolID: formData.SchoolID || null,
+        StudentPhone: formData.StudentPhone || null,
+        GuardianName: formData.GuardianName || null,
+        GuardianPhone: formData.GuardianPhone || null,
+        Email: formData.Email || null,
+      }),
     };
 
     try {
       const res = await fetch(
         "https://scholartrack-backend-7vzy.onrender.com/api/students/",
         {
-          method: "POST",
+          method: "POST", // backend already handles create / update logic
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         }
@@ -83,41 +90,40 @@ function Students() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.error || "Failed to add student");
+        alert(data.error || "Operation failed");
         return;
       }
 
-      alert("✅ Student added successfully!");
+      alert(isAdmin ? "✅ Student added!" : "✅ STEM info updated!");
       fetchStudents();
 
-      setFormData({
-        StudentID: "",
-        FirstName: "",
-        LastName: "",
-        Grade: "",
-        SchoolID: "",
-        StudentPhone: "",
-        GuardianName: "",
-        GuardianPhone: "",
-        Email: "",
-        STEMInterest: "",
-        EnrollmentDate: "",
-      });
+      if (isAdmin) {
+        setFormData({
+          StudentID: "",
+          FirstName: "",
+          LastName: "",
+          Grade: "",
+          SchoolID: "",
+          StudentPhone: "",
+          GuardianName: "",
+          GuardianPhone: "",
+          Email: "",
+          STEMInterest: "",
+          EnrollmentDate: "",
+        });
+      }
     } catch (err) {
-      console.error("Error adding student:", err);
-      alert("Server error while adding student");
+      console.error(err);
+      alert("Server error");
     }
   };
 
-  // 🗑 DELETE STUDENT (ADMIN ONLY)
+  // 🗑 DELETE (ADMIN ONLY)
   const handleDelete = async () => {
-    if (!isAdmin) {
-      alert("❌ Only admins can delete students.");
-      return;
-    }
+    if (!isAdmin) return;
 
     if (!formData.StudentID.trim()) {
-      alert("⚠️ Enter Student ID first.");
+      alert("Enter Student ID first.");
       return;
     }
 
@@ -130,7 +136,7 @@ function Students() {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-            "Username": user.username, // 🔑 REQUIRED
+            Username: user.username,
           },
         }
       );
@@ -139,8 +145,8 @@ function Students() {
       alert(data.message || data.error);
       fetchStudents();
     } catch (err) {
-      console.error("Delete failed:", err);
-      alert("Server error while deleting student");
+      console.error(err);
+      alert("Delete failed");
     }
   };
 
@@ -149,49 +155,13 @@ function Students() {
       <h2>Students</h2>
 
       <form onSubmit={handleSubmit} className="form-container">
+        {/* Identity (read-only for staff) */}
+        <input name="StudentID" placeholder="Student ID" value={formData.StudentID} onChange={handleChange} required />
+        <input name="FirstName" placeholder="First Name" value={formData.FirstName} onChange={handleChange} disabled={isStaff} />
+        <input name="LastName" placeholder="Last Name" value={formData.LastName} onChange={handleChange} disabled={isStaff} />
+        <input name="Grade" placeholder="Grade" value={formData.Grade} onChange={handleChange} disabled={isStaff} />
 
-        {/* Everyone sees basic identity fields */}
-        <input
-          name="StudentID"
-          placeholder="Student ID"
-          value={formData.StudentID}
-          onChange={handleChange}
-          required
-          disabled={isStaff}   // 👈 staff cannot change ID
-        />
-
-        <input
-          name="FirstName"
-          placeholder="First Name"
-          value={formData.FirstName}
-          onChange={handleChange}
-          required
-          disabled={isStaff}
-        />
-
-        <input
-          name="LastName"
-          placeholder="Last Name"
-          value={formData.LastName}
-          onChange={handleChange}
-          required
-          disabled={isStaff}
-        />
-
-        <input
-          name="Grade"
-          placeholder="Grade"
-          value={formData.Grade}
-          onChange={handleChange}
-          disabled={isStaff}
-        />
-
-        <select
-          name="SchoolID"
-          value={formData.SchoolID}
-          onChange={handleChange}
-          disabled={isStaff}
-        >
+        <select name="SchoolID" value={formData.SchoolID} onChange={handleChange} disabled={isStaff}>
           <option value="">Select School</option>
           {schools.map((s) => (
             <option key={s.SchoolID} value={s.SchoolID}>
@@ -200,64 +170,33 @@ function Students() {
           ))}
         </select>
 
-        {/* ✅ Admin + Staff can edit STEM Interest */}
+        {/* ✅ STEM Interest dropdown */}
         {(isAdmin || isStaff) && (
-          <input
-            name="STEMInterest"
-            placeholder="STEM Interest"
-            value={formData.STEMInterest}
-            onChange={handleChange}
-          />
+          <select name="STEMInterest" value={formData.STEMInterest} onChange={handleChange}>
+            <option value="">STEM Interest?</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
         )}
 
-        {/* ✅ Admin + Staff can edit Enrollment Date */}
         {(isAdmin || isStaff) && (
-          <input
-            type="date"
-            name="EnrollmentDate"
-            value={formData.EnrollmentDate}
-            onChange={handleChange}
-          />
+          <input type="date" name="EnrollmentDate" value={formData.EnrollmentDate} onChange={handleChange} />
         )}
 
-        {/* 🔒 Admin-only fields */}
+        {/* Admin-only contact fields */}
         {isAdmin && (
           <>
-            <input
-              name="StudentPhone"
-              placeholder="Student Phone"
-              value={formData.StudentPhone}
-              onChange={handleChange}
-            />
-
-            <input
-              name="GuardianName"
-              placeholder="Guardian Name"
-              value={formData.GuardianName}
-              onChange={handleChange}
-            />
-
-            <input
-              name="GuardianPhone"
-              placeholder="Guardian Phone"
-              value={formData.GuardianPhone}
-              onChange={handleChange}
-            />
-
-            <input
-              name="Email"
-              placeholder="Email"
-              value={formData.Email}
-              onChange={handleChange}
-            />
+            <input name="StudentPhone" placeholder="Student Phone" value={formData.StudentPhone} onChange={handleChange} />
+            <input name="GuardianName" placeholder="Guardian Name" value={formData.GuardianName} onChange={handleChange} />
+            <input name="GuardianPhone" placeholder="Guardian Phone" value={formData.GuardianPhone} onChange={handleChange} />
+            <input name="Email" placeholder="Email" value={formData.Email} onChange={handleChange} />
           </>
         )}
 
         <button type="submit">
-          {isAdmin ? "Add / Update Student" : "Update STEM Info"}
+          {isAdmin ? "Add Student" : "Update STEM Info"}
         </button>
 
-        {/* 🗑 Admin-only delete */}
         {isAdmin && (
           <button type="button" onClick={handleDelete} className="delete-btn">
             Delete Student
@@ -265,25 +204,23 @@ function Students() {
         )}
       </form>
 
-
       <table className="data-table">
         <thead>
           <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Grade</th>
-          <th>School</th>
-          <th>STEM Interest</th>
-          <th>Enrollment Date</th>
-
-          {isAdmin && (
-            <>
-              <th>Student Phone</th>
-              <th>Guardian Name</th>
-              <th>Guardian Phone</th>
-              <th>Email</th>
-          </>
-          )}
+            <th>ID</th>
+            <th>Name</th>
+            <th>Grade</th>
+            <th>School</th>
+            <th>STEM</th>
+            <th>Enrollment</th>
+            {isAdmin && (
+              <>
+                <th>Student Phone</th>
+                <th>Guardian</th>
+                <th>Guardian Phone</th>
+                <th>Email</th>
+              </>
+            )}
           </tr>
         </thead>
 
@@ -296,19 +233,17 @@ function Students() {
               <td>{s.SchoolName}</td>
               <td>{s.STEMInterest}</td>
               <td>{s.EnrollmentDate}</td>
-
               {isAdmin && (
-              <>
-                <td>{s.StudentPhone}</td>
-                <td>{s.GuardianName}</td>
-                <td>{s.GuardianPhone}</td>
-                <td>{s.Email}</td>
-              </>
+                <>
+                  <td>{s.StudentPhone}</td>
+                  <td>{s.GuardianName}</td>
+                  <td>{s.GuardianPhone}</td>
+                  <td>{s.Email}</td>
+                </>
               )}
             </tr>
           ))}
         </tbody>
-
       </table>
     </div>
   );
