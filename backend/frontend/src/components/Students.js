@@ -210,7 +210,7 @@ function Students() {
             <th>Name</th>
             <th>Grade</th>
             <th>School</th>
-            <th>STEM</th>
+            <th>STEM Interest</th>
             <th>Enrollment</th>
             {isAdmin && (
               <>
