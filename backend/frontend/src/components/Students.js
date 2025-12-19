@@ -20,7 +20,8 @@ function Students() {
   // ✅ AUTH STATE (THIS WAS MISSING)
   const user = JSON.parse(localStorage.getItem("user"));
   const isAdmin = user && user.role === "admin";
-
+  const isStaff = user?.role === "teacher";
+  
   useEffect(() => {
     fetchStudents();
     fetchSchools();
@@ -174,12 +175,24 @@ function Students() {
       <table className="data-table">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Grade</th>
-            <th>School</th>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Grade</th>
+          <th>School</th>
+
+          {isAdmin && (
+            <>
+              <th>Student Phone</th>
+              <th>Guardian Name</th>
+              <th>Guardian Phone</th>
+              <th>Email</th>
+              <th>STEM Interest</th>
+              <th>Enrollment Date</th>
+          </>
+          )}
           </tr>
         </thead>
+
         <tbody>
           {students.map((s) => (
             <tr key={s.StudentID}>
@@ -187,9 +200,21 @@ function Students() {
               <td>{s.FirstName} {s.LastName}</td>
               <td>{s.Grade}</td>
               <td>{s.SchoolName}</td>
+
+              {isAdmin && (
+              <>
+                <td>{s.StudentPhone}</td>
+                <td>{s.GuardianName}</td>
+                <td>{s.GuardianPhone}</td>
+                <td>{s.Email}</td>
+                <td>{s.STEMInterest}</td>
+                <td>{s.EnrollmentDate}</td>
+              </>
+              )}
             </tr>
           ))}
         </tbody>
+
       </table>
     </div>
   );
