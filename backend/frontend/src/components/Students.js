@@ -194,7 +194,7 @@ function Students() {
         )}
 
         <button type="submit">
-          {isAdmin ? "Add Student" : "Update STEM Info"}
+          Add Student
         </button>
 
         {isAdmin && (
