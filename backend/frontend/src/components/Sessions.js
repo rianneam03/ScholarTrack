@@ -100,7 +100,7 @@ function Sessions() {
           onChange={handleChange}
           required
         >
-          <option value="">-- Select School --</option>
+          <option value="">-- Select Site --</option>
           {schools.length > 0 ? (
             schools.map((s) => (
               <option key={s.SchoolID} value={s.SchoolID}>
