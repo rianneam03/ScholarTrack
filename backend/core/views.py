@@ -222,7 +222,30 @@ def students_list(request):
             traceback.print_exc()
             return Response({"error": str(e)}, status=500)
 
+@api_view(["PATCH"])
+def update_stem_interest(request):
+    data = request.data
+    student_id = data.get("StudentID")
+    stem_interest = data.get("STEMInterest")
+    enrollment_date = data.get("EnrollmentDate")
 
+    if not student_id:
+        return Response({"error": "StudentID required"}, status=400)
+
+    try:
+        student = Student.objects.get(studentid=student_id)
+    except Student.DoesNotExist:
+        return Response({"error": "Student not found"}, status=404)
+
+    if stem_interest is not None:
+        student.steminterest = stem_interest
+
+    if enrollment_date is not None:
+        student.enrollmentdate = enrollment_date
+
+    student.save()
+
+    return Response({"message": "STEM info updated successfully"})
 
 # --- Schools list API ---
 @api_view(['GET', 'POST'])
