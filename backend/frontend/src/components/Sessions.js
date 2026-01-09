@@ -10,6 +10,11 @@ function Sessions() {
     SchoolID: "",
   });
 
+  // ✅ Auth state
+  const user = JSON.parse(localStorage.getItem("user"));
+  const isAdmin = user && user.role === "admin";
+  const isStaff = user && user.role === "teacher";
+
   useEffect(() => {
     fetchSessions();
     fetchSchools();
@@ -34,66 +39,34 @@ function Sessions() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (isStaff) {
-    // 🔁 STAFF: update STEM only
+    // 👑 ADMIN: add session
     try {
       const res = await fetch(
-        "https://scholartrack-backend-7vzy.onrender.com/api/students/stem/",
+        "https://scholartrack-backend-7vzy.onrender.com/api/sessions/",
         {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            StudentID: formData.StudentID,
-            STEMInterest: formData.STEMInterest,
-            EnrollmentDate: formData.EnrollmentDate || null,
-          }),
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
         }
       );
 
       const data = await res.json();
+
       if (!res.ok) {
-        alert(data.error || "Failed to update STEM info");
+        alert(data.error || "Failed to add session");
         return;
       }
 
-      alert("✅ STEM info updated!");
-      fetchStudents();
+      alert("✅ Session added!");
+      fetchSessions(); // refresh session list
+      setFormData({ Title: "", SessionDate: "", Description: "", SchoolID: "" });
     } catch (err) {
       console.error(err);
-      alert("Server error while updating STEM info");
+      alert("Server error while adding session");
     }
-
-    return;
-  }
-
-  // 👑 ADMIN: add student
-  try {
-    const res = await fetch(
-      "https://scholartrack-backend-7vzy.onrender.com/api/students/",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      }
-    );
-
-    const data = await res.json();
-    if (!res.ok) {
-      alert(data.error || "Failed to add student");
-      return;
-    }
-
-    alert("✅ Student added!");
-    fetchStudents();
-  } catch (err) {
-    console.error(err);
-    alert("Server error while adding student");
-  }
-};
+  };
 
   return (
     <div style={{ padding: "20px" }}>
@@ -125,7 +98,7 @@ function Sessions() {
           onChange={handleChange}
         />
 
-        {/* ✅ Dropdown for School */}
+        {/* Dropdown for School */}
         <select
           name="SchoolID"
           value={formData.SchoolID}
