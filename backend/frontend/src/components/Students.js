@@ -17,7 +17,7 @@ function Students() {
     EnrollmentDate: "",
   });
 
-  // ✅ Auth state
+  // ✅ AUTH STATE
   const user = JSON.parse(localStorage.getItem("user"));
   const isAdmin = user && user.role === "admin";
   const isStaff = user && user.role === "teacher";
@@ -55,9 +55,14 @@ function Students() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ➕ Add Student / Update STEM info
+  // ➕ ADD OR UPDATE STUDENT
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.StudentID.trim()) {
+      alert("⚠️ Student ID is required.");
+      return;
+    }
 
     const payload = {
       ...formData,
@@ -71,26 +76,31 @@ function Students() {
     };
 
     try {
-      const res = await fetch(
-        "https://scholartrack-backend-7vzy.onrender.com/api/students/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Username": user.username, // Needed for staff/admin role check
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      let url = "https://scholartrack-backend-7vzy.onrender.com/api/students/";
+      let method = "POST";
+
+      // ✅ Staff can only update STEM info & EnrollmentDate for existing students
+      if (isStaff && !isAdmin) {
+        url = "https://scholartrack-backend-7vzy.onrender.com/api/students/stem/";
+        method = "PATCH";
+      }
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.error || "Failed to add student");
+        alert(data.error || "Failed to save student");
         return;
       }
 
-      alert("✅ Student added successfully!");
+      alert(
+        isAdmin ? "✅ Student added/updated successfully!" : "✅ STEM info updated!"
+      );
       fetchStudents();
 
       setFormData({
@@ -107,12 +117,12 @@ function Students() {
         EnrollmentDate: "",
       });
     } catch (err) {
-      console.error("Error adding student:", err);
-      alert("Server error while adding student");
+      console.error("Error saving student:", err);
+      alert("Server error while saving student");
     }
   };
 
-  // 🗑 Delete Student (Admin only)
+  // 🗑 DELETE STUDENT (ADMIN ONLY)
   const handleDelete = async () => {
     if (!isAdmin) {
       alert("❌ Only admins can delete students.");
@@ -152,23 +162,21 @@ function Students() {
       <h2>Students</h2>
 
       <form onSubmit={handleSubmit} className="form-container">
-        {/* --- Student ID (Admin only, auto-generated for staff) --- */}
-        {isAdmin && (
-          <input
-            name="StudentID"
-            placeholder="Student ID"
-            value={formData.StudentID}
-            onChange={handleChange}
-            required
-          />
-        )}
+        <input
+          name="StudentID"
+          placeholder="Student ID"
+          value={formData.StudentID}
+          onChange={handleChange}
+          required
+        />
 
-        {/* --- Basic info (Everyone can add/update) --- */}
+        {/* Admin can edit name & grade, staff cannot */}
         <input
           name="FirstName"
           placeholder="First Name"
           value={formData.FirstName}
           onChange={handleChange}
+          disabled={isStaff && !isAdmin}
           required
         />
         <input
@@ -176,6 +184,7 @@ function Students() {
           placeholder="Last Name"
           value={formData.LastName}
           onChange={handleChange}
+          disabled={isStaff && !isAdmin}
           required
         />
         <input
@@ -183,11 +192,14 @@ function Students() {
           placeholder="Grade"
           value={formData.Grade}
           onChange={handleChange}
+          disabled={isStaff && !isAdmin}
         />
+
         <select
           name="SchoolID"
           value={formData.SchoolID}
           onChange={handleChange}
+          disabled={isStaff && !isAdmin}
         >
           <option value="">Select School</option>
           {schools.map((s) => (
@@ -197,25 +209,27 @@ function Students() {
           ))}
         </select>
 
-        {/* --- STEM Interest & Enrollment Date (Admin + Staff) --- */}
+        {/* Admin + Staff can edit STEM Interest */}
         {(isAdmin || isStaff) && (
-          <>
-            <input
-              name="STEMInterest"
-              placeholder="STEM Interest"
-              value={formData.STEMInterest}
-              onChange={handleChange}
-            />
-            <input
-              type="date"
-              name="EnrollmentDate"
-              value={formData.EnrollmentDate}
-              onChange={handleChange}
-            />
-          </>
+          <input
+            name="STEMInterest"
+            placeholder="STEM Interest"
+            value={formData.STEMInterest}
+            onChange={handleChange}
+          />
         )}
 
-        {/* --- Admin-only fields --- */}
+        {/* Admin + Staff can edit Enrollment Date */}
+        {(isAdmin || isStaff) && (
+          <input
+            type="date"
+            name="EnrollmentDate"
+            value={formData.EnrollmentDate}
+            onChange={handleChange}
+          />
+        )}
+
+        {/* Admin-only fields */}
         {isAdmin && (
           <>
             <input
@@ -246,7 +260,7 @@ function Students() {
         )}
 
         <button type="submit">
-          {isAdmin ? "Add / Update Student" : "Add Student"}
+          {isAdmin ? "Add / Update Student" : "Add / Update STEM Info"}
         </button>
 
         {isAdmin && (
@@ -256,7 +270,6 @@ function Students() {
         )}
       </form>
 
-      {/* --- Students table --- */}
       <table className="data-table">
         <thead>
           <tr>
@@ -280,7 +293,9 @@ function Students() {
           {students.map((s) => (
             <tr key={s.StudentID}>
               <td>{s.StudentID}</td>
-              <td>{s.FirstName} {s.LastName}</td>
+              <td>
+                {s.FirstName} {s.LastName}
+              </td>
               <td>{s.Grade}</td>
               <td>{s.SchoolName}</td>
               <td>{s.STEMInterest}</td>
