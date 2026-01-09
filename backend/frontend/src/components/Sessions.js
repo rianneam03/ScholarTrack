@@ -33,35 +33,67 @@ function Sessions() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    fetch("https://scholartrack-backend-7vzy.onrender.com/api/sessions/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        Title: formData.Title,
-        SessionDate: formData.SessionDate,
-        Description: formData.Description,
-        SchoolID: Number(formData.SchoolID), // 🔥 ensure number
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert("❌ " + data.error);
-        } else {
-          alert("✅ " + data.message);
-          setFormData({
-            Title: "",
-            SessionDate: "",
-            Description: "",
-            SchoolID: "",
-          });
-          fetchSessions();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (isStaff) {
+    // 🔁 STAFF: update STEM only
+    try {
+      const res = await fetch(
+        "https://scholartrack-backend-7vzy.onrender.com/api/students/stem/",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            StudentID: formData.StudentID,
+            STEMInterest: formData.STEMInterest,
+            EnrollmentDate: formData.EnrollmentDate || null,
+          }),
         }
-      })
-      .catch((err) => console.error("Error adding session:", err));
-  };
+      );
+
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || "Failed to update STEM info");
+        return;
+      }
+
+      alert("✅ STEM info updated!");
+      fetchStudents();
+    } catch (err) {
+      console.error(err);
+      alert("Server error while updating STEM info");
+    }
+
+    return;
+  }
+
+  // 👑 ADMIN: add student
+  try {
+    const res = await fetch(
+      "https://scholartrack-backend-7vzy.onrender.com/api/students/",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      }
+    );
+
+    const data = await res.json();
+    if (!res.ok) {
+      alert(data.error || "Failed to add student");
+      return;
+    }
+
+    alert("✅ Student added!");
+    fetchStudents();
+  } catch (err) {
+    console.error(err);
+    alert("Server error while adding student");
+  }
+};
 
   return (
     <div style={{ padding: "20px" }}>

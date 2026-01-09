@@ -190,8 +190,9 @@ function Students() {
             <input name="GuardianName" placeholder="Guardian Name" value={formData.GuardianName} onChange={handleChange} />
             <input name="GuardianPhone" placeholder="Guardian Phone" value={formData.GuardianPhone} onChange={handleChange} />
             <input name="Email" placeholder="Email" value={formData.Email} onChange={handleChange} />
+          {/* Submit button */}
           <button type="submit">
-            Add Student
+            {isAdmin ? "Add Student" : "Update STEM Interest"}
           </button>
           </>
         )}
