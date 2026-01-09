@@ -149,6 +149,30 @@ function Students() {
       <h2>Students</h2>
 
       <form onSubmit={handleSubmit} className="form-container">
+        <input name="StudentID" placeholder="Student ID" value={formData.StudentID} onChange={handleChange} required />
+        <input name="FirstName" placeholder="First Name" value={formData.FirstName} onChange={handleChange} required />
+        <input name="LastName" placeholder="Last Name" value={formData.LastName} onChange={handleChange} required />
+        <input name="Grade" placeholder="Grade" value={formData.Grade} onChange={handleChange} />
+
+        <select name="SchoolID" value={formData.SchoolID} onChange={handleChange}>
+          <option value="">Select School</option>
+          {schools.map((s) => (
+            <option key={s.SchoolID} value={s.SchoolID}>
+              {s.SchoolName}
+            </option>
+          ))}
+        </select>
+
+        <button type="submit">Add Student</button>
+
+        {isAdmin && (
+          <button type="button" onClick={handleDelete} className="delete-btn">
+            Delete Student
+          </button>
+        )}
+      </form>
+
+      <form onSubmit={handleSubmit} className="form-container">
 
         {/* Everyone sees basic identity fields */}
         <input
@@ -254,7 +278,7 @@ function Students() {
         )}
 
         <button type="submit">
-          {isAdmin ? "Add Student" : "Update STEM Info"}
+          {isAdmin ? "Add / Update Student" : "Update STEM Info"}
         </button>
 
         {/* 🗑 Admin-only delete */}
