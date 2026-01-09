@@ -6,10 +6,9 @@ from datetime import timedelta
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
+from django.db import models
 
-from django.http import JsonResponse
-from django.middleware.csrf import get_token
-
+# --- CSRF token endpoint ---
 def csrf(request):
     return JsonResponse({"csrfToken": get_token(request)})
 
@@ -55,13 +54,11 @@ def sessions_list(request):
     elif request.method == 'POST':
         try:
             data = request.data
-
             school_obj = None
             if data.get('SchoolID'):
                 school_obj = School.objects.filter(
                     schoolid=int(data.get('SchoolID'))
                 ).first()
-
                 if not school_obj:
                     return Response({"error": "Invalid SchoolID"}, status=400)
 
@@ -105,7 +102,6 @@ def attendance_list(request):
 
     elif request.method == 'POST':
         data = request.data
-
         if not data.get('StudentID'):
             return Response({"error": "StudentID is required."}, status=400)
         if not data.get('SessionID'):
@@ -121,7 +117,6 @@ def attendance_list(request):
         if not session_obj:
             return Response({"error": "Invalid SessionID"}, status=400)
 
-        # ✅ CREATE OR UPDATE MANUALLY (SAFE)
         attendance = Attendance.objects.filter(
             studentid=student_obj,
             sessionid=session_obj
@@ -143,7 +138,7 @@ def attendance_list(request):
 @api_view(['GET', 'POST', 'DELETE'])
 def students_list(request):
     if request.method == 'GET':
-        school_id = request.GET.get('school_id')  # optional filter
+        school_id = request.GET.get('school_id')
         students = Student.objects.all()
         if school_id:
             students = students.filter(school_id=school_id)
@@ -168,23 +163,30 @@ def students_list(request):
 
     elif request.method == 'POST':
         data = request.data
+        username = request.headers.get("Username")
+        current_user = User.objects.filter(username=username).first()
+        is_staff = current_user and current_user.role == "teacher"
+        is_admin = current_user and current_user.role == "admin"
 
-        # Basic validation
-        if not data.get('StudentID'):
+        student_id = data.get('StudentID')
+        if not student_id and not is_staff:
             return Response({"error": "StudentID is required."}, status=400)
-        if Student.objects.filter(studentid=data.get('StudentID')).exists():
+
+        if is_staff:
+            max_id = Student.objects.aggregate(max_id=models.Max('studentid'))['max_id'] or 0
+            student_id = max_id + 1
+
+        if Student.objects.filter(studentid=student_id).exists():
             return Response({"error": "StudentID already exists."}, status=400)
 
-        # School validation
         school_obj = None
         if data.get('SchoolID'):
             school_obj = School.objects.filter(schoolid=data.get('SchoolID')).first()
             if not school_obj:
                 return Response({"error": "Invalid SchoolID"}, status=400)
 
-        # Create student
         student = Student.objects.create(
-            studentid=data.get('StudentID'),
+            studentid=student_id,
             firstname=data.get('FirstName'),
             lastname=data.get('LastName'),
             grade=data.get('Grade'),
@@ -222,6 +224,7 @@ def students_list(request):
             traceback.print_exc()
             return Response({"error": str(e)}, status=500)
 
+# --- Update STEM interest ---
 @api_view(["PATCH"])
 def update_stem_interest(request):
     data = request.data
@@ -244,7 +247,6 @@ def update_stem_interest(request):
         student.enrollmentdate = enrollment_date
 
     student.save()
-
     return Response({"message": "STEM info updated successfully"})
 
 # --- Schools list API ---
@@ -252,12 +254,7 @@ def update_stem_interest(request):
 def schools_list(request):
     if request.method == 'GET':
         schools = School.objects.all()
-        data = []
-        for s in schools:
-            data.append({
-                "SchoolID": s.schoolid,
-                "SchoolName": s.school,
-            })
+        data = [{"SchoolID": s.schoolid, "SchoolName": s.school} for s in schools]
         return Response(data)
 
     elif request.method == 'POST':
@@ -265,34 +262,23 @@ def schools_list(request):
         if not data.get('SchoolName'):
             return Response({"error": "SchoolName is required."}, status=400)
 
-        school = School.objects.create(
-            school=data.get('SchoolName')
-        )
-        return Response({
-            "message": "School added successfully!",
-            "SchoolID": school.schoolid
-        })
-    
-# --- Students by School API ---
+        school = School.objects.create(school=data.get('SchoolName'))
+        return Response({"message": "School added successfully!", "SchoolID": school.schoolid})
+
+# --- Students by school ---
 @api_view(['GET'])
 def students_by_school(request, school_id):
     students = Student.objects.filter(schoolid=school_id)
     data = [
-        {
-            "StudentID": s.studentid,
-            "FirstName": s.firstname,
-            "LastName": s.lastname,
-            "Grade": s.grade,
-        }
+        {"StudentID": s.studentid, "FirstName": s.firstname, "LastName": s.lastname, "Grade": s.grade}
         for s in students
     ]
     return Response(data)
 
-# ---- Login 
+# --- Login ---
 @csrf_exempt
 @api_view(['GET', 'POST', 'OPTIONS'])
 def login_user(request):
-    # Handle preflight CORS request
     if request.method == "OPTIONS":
         response = JsonResponse({})
         response["Access-Control-Allow-Origin"] = "https://scholartrack-frontend.onrender.com"
@@ -301,11 +287,9 @@ def login_user(request):
         response["Access-Control-Allow-Credentials"] = "true"
         return response
 
-    # Handle GET — REQUIRED or Django crashes
     if request.method == "GET":
         return Response({"message": "Login endpoint is live"}, status=200)
 
-    # Handle POST for actual login
     if request.method == "POST":
         username = request.data.get("username")
         password = request.data.get("password")
