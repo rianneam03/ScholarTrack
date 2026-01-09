@@ -17,6 +17,7 @@ function Students() {
     EnrollmentDate: "",
   });
 
+  // ✅ Auth state
   const user = JSON.parse(localStorage.getItem("user"));
   const isAdmin = user && user.role === "admin";
   const isStaff = user && user.role === "teacher";
@@ -54,6 +55,7 @@ function Students() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // ➕ Add Student / Update STEM info
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -68,8 +70,6 @@ function Students() {
       SchoolID: formData.SchoolID || null,
     };
 
-    if (isStaff) delete payload.StudentID; // staff auto-generates ID
-
     try {
       const res = await fetch(
         "https://scholartrack-backend-7vzy.onrender.com/api/students/",
@@ -77,7 +77,7 @@ function Students() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Username": user.username,
+            "Username": user.username, // Needed for staff/admin role check
           },
           body: JSON.stringify(payload),
         }
@@ -90,7 +90,7 @@ function Students() {
         return;
       }
 
-      alert(`✅ Student added successfully! ID: ${data.StudentID}`);
+      alert("✅ Student added successfully!");
       fetchStudents();
 
       setFormData({
@@ -112,6 +112,7 @@ function Students() {
     }
   };
 
+  // 🗑 Delete Student (Admin only)
   const handleDelete = async () => {
     if (!isAdmin) {
       alert("❌ Only admins can delete students.");
@@ -151,21 +152,24 @@ function Students() {
       <h2>Students</h2>
 
       <form onSubmit={handleSubmit} className="form-container">
-        <input
-          name="StudentID"
-          placeholder="Student ID"
-          value={formData.StudentID}
-          onChange={handleChange}
-          required={isAdmin}
-          disabled={isStaff} // staff auto-generates ID
-        />
+        {/* --- Student ID (Admin only, auto-generated for staff) --- */}
+        {isAdmin && (
+          <input
+            name="StudentID"
+            placeholder="Student ID"
+            value={formData.StudentID}
+            onChange={handleChange}
+            required
+          />
+        )}
+
+        {/* --- Basic info (Everyone can add/update) --- */}
         <input
           name="FirstName"
           placeholder="First Name"
           value={formData.FirstName}
           onChange={handleChange}
           required
-          disabled={false} // staff can edit name
         />
         <input
           name="LastName"
@@ -193,6 +197,7 @@ function Students() {
           ))}
         </select>
 
+        {/* --- STEM Interest & Enrollment Date (Admin + Staff) --- */}
         {(isAdmin || isStaff) && (
           <>
             <input
@@ -210,6 +215,7 @@ function Students() {
           </>
         )}
 
+        {/* --- Admin-only fields --- */}
         {isAdmin && (
           <>
             <input
@@ -250,6 +256,7 @@ function Students() {
         )}
       </form>
 
+      {/* --- Students table --- */}
       <table className="data-table">
         <thead>
           <tr>
@@ -269,14 +276,11 @@ function Students() {
             )}
           </tr>
         </thead>
-
         <tbody>
           {students.map((s) => (
             <tr key={s.StudentID}>
               <td>{s.StudentID}</td>
-              <td>
-                {s.FirstName} {s.LastName}
-              </td>
+              <td>{s.FirstName} {s.LastName}</td>
               <td>{s.Grade}</td>
               <td>{s.SchoolName}</td>
               <td>{s.STEMInterest}</td>
