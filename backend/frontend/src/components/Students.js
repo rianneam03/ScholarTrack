@@ -17,7 +17,6 @@ function Students() {
     EnrollmentDate: "",
   });
 
-  // AUTH
   const user = JSON.parse(localStorage.getItem("user"));
   const isAdmin = user?.role === "admin";
   const isStaff = user?.role === "teacher";
@@ -28,119 +27,142 @@ function Students() {
   }, []);
 
   const fetchStudents = async () => {
-    const res = await fetch(
-      "https://scholartrack-backend-7vzy.onrender.com/api/students/"
-    );
-    setStudents(await res.json());
+    try {
+      const res = await fetch(
+        "https://scholartrack-backend-7vzy.onrender.com/api/students/"
+      );
+      const data = await res.json();
+      setStudents(data);
+    } catch (err) {
+      console.error("Error fetching students:", err);
+    }
   };
 
   const fetchSchools = async () => {
-    const res = await fetch(
-      "https://scholartrack-backend-7vzy.onrender.com/api/schools/"
-    );
-    setSchools(await res.json());
+    try {
+      const res = await fetch(
+        "https://scholartrack-backend-7vzy.onrender.com/api/schools/"
+      );
+      const data = await res.json();
+      setSchools(data);
+    } catch (err) {
+      console.error("Error fetching schools:", err);
+    }
   };
 
-  const handleChange = (e) =>
+  const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  // =======================
-  // ➕ ADD STUDENT (POST)
-  // =======================
-  const handleAdd = async () => {
-    if (!formData.StudentID) {
-      alert("Student ID is required");
-      return;
-    }
-
-    const res = await fetch(
-      "https://scholartrack-backend-7vzy.onrender.com/api/students/",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Username: user.username, // 🔑 REQUIRED for role check
-        },
-        body: JSON.stringify(formData),
-      }
-    );
-
-    const data = await res.json();
-    if (!res.ok) {
-      alert(data.error || "Failed to add student");
-      return;
-    }
-
-    alert("✅ Student added successfully!");
-    fetchStudents();
   };
 
-  // =======================
-  // ✏️ UPDATE STUDENT (PATCH)
-  // =======================
-  const handleUpdate = async () => {
-    if (!formData.StudentID) {
+  // ✅ ADD or UPDATE (Admin + Staff)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!formData.StudentID.trim()) {
       alert("Student ID is required");
       return;
     }
 
-    const res = await fetch(
-      "https://scholartrack-backend-7vzy.onrender.com/api/students/stem/",
-      {
-        method: "PATCH",
+    const existingStudent = students.find(
+      (s) => s.StudentID === formData.StudentID
+    );
+
+    let url = "https://scholartrack-backend-7vzy.onrender.com/api/students/";
+    let method = "POST";
+
+    // 🔁 UPDATE logic
+    if (existingStudent) {
+      if (isAdmin) {
+        url = `https://scholartrack-backend-7vzy.onrender.com/api/students/${formData.StudentID}/`;
+        method = "PUT";
+      } else if (isStaff) {
+        url =
+          "https://scholartrack-backend-7vzy.onrender.com/api/students/stem/";
+        method = "PATCH";
+      }
+    }
+
+    const payload = {
+      StudentID: formData.StudentID,
+      FirstName: isStaff && existingStudent ? undefined : formData.FirstName,
+      LastName: isStaff && existingStudent ? undefined : formData.LastName,
+      Grade: isStaff && existingStudent ? undefined : formData.Grade,
+      SchoolID: isStaff && existingStudent ? undefined : formData.SchoolID,
+      StudentPhone: formData.StudentPhone || null,
+      GuardianName: formData.GuardianName || null,
+      GuardianPhone: formData.GuardianPhone || null,
+      Email: formData.Email || null,
+      STEMInterest: formData.STEMInterest || null,
+      EnrollmentDate: formData.EnrollmentDate || null,
+    };
+
+    try {
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          StudentID: formData.StudentID,
-          STEMInterest: formData.STEMInterest,
-          EnrollmentDate: formData.EnrollmentDate || null,
-        }),
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Operation failed");
+        return;
       }
-    );
 
-    const data = await res.json();
-    if (!res.ok) {
-      alert(data.error || "Failed to update student");
-      return;
+      alert(existingStudent ? "✅ Student updated" : "✅ Student added");
+      fetchStudents();
+
+      setFormData({
+        StudentID: "",
+        FirstName: "",
+        LastName: "",
+        Grade: "",
+        SchoolID: "",
+        StudentPhone: "",
+        GuardianName: "",
+        GuardianPhone: "",
+        Email: "",
+        STEMInterest: "",
+        EnrollmentDate: "",
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Server error");
     }
-
-    alert("✅ Student updated successfully!");
-    fetchStudents();
   };
 
-  // =======================
-  // 🗑 DELETE (ADMIN ONLY)
-  // =======================
+  // 🗑 DELETE (Admin only)
   const handleDelete = async () => {
     if (!isAdmin) return;
 
-    if (!formData.StudentID) {
+    if (!formData.StudentID.trim()) {
       alert("Enter Student ID");
       return;
     }
 
     if (!window.confirm("Delete this student?")) return;
 
-    const res = await fetch(
-      `https://scholartrack-backend-7vzy.onrender.com/api/students/?StudentID=${formData.StudentID}`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Username: user.username,
-        },
-      }
-    );
+    try {
+      const res = await fetch(
+        `https://scholartrack-backend-7vzy.onrender.com/api/students/?StudentID=${formData.StudentID}`,
+        { method: "DELETE" }
+      );
 
-    const data = await res.json();
-    alert(data.message || data.error);
-    fetchStudents();
+      const data = await res.json();
+      alert(data.message || data.error);
+      fetchStudents();
+    } catch (err) {
+      console.error(err);
+      alert("Delete failed");
+    }
   };
 
   return (
     <div className="page-container">
       <h2>Students</h2>
 
-      <div className="form-container">
+      <form onSubmit={handleSubmit} className="form-container">
         <input
           name="StudentID"
           placeholder="Student ID"
@@ -155,6 +177,7 @@ function Students() {
           value={formData.FirstName}
           onChange={handleChange}
           disabled={isStaff}
+          required={!isStaff}
         />
 
         <input
@@ -163,6 +186,7 @@ function Students() {
           value={formData.LastName}
           onChange={handleChange}
           disabled={isStaff}
+          required={!isStaff}
         />
 
         <input
@@ -197,24 +221,50 @@ function Students() {
         <input
           type="date"
           name="EnrollmentDate"
-          value={formData.EnrollmentDate}
+          value={formData.EnrollmentDate || ""}
           onChange={handleChange}
         />
 
-        {/* 🔘 BUTTONS */}
-        <div style={{ display: "flex", gap: "10px" }}>
-          <button onClick={handleAdd}>➕ Add Student</button>
-          <button onClick={handleUpdate}>✏️ Update Student</button>
+        {isAdmin && (
+          <>
+            <input
+              name="StudentPhone"
+              placeholder="Student Phone"
+              value={formData.StudentPhone}
+              onChange={handleChange}
+            />
+            <input
+              name="GuardianName"
+              placeholder="Guardian Name"
+              value={formData.GuardianName}
+              onChange={handleChange}
+            />
+            <input
+              name="GuardianPhone"
+              placeholder="Guardian Phone"
+              value={formData.GuardianPhone}
+              onChange={handleChange}
+            />
+            <input
+              name="Email"
+              placeholder="Email"
+              value={formData.Email}
+              onChange={handleChange}
+            />
+          </>
+        )}
 
-          {isAdmin && (
-            <button className="delete-btn" onClick={handleDelete}>
-              🗑 Delete Student
-            </button>
-          )}
-        </div>
-      </div>
+        <button type="submit">
+          {isAdmin ? "Add / Update Student" : "Add / Update Student"}
+        </button>
 
-      {/* TABLE */}
+        {isAdmin && (
+          <button type="button" onClick={handleDelete}>
+            Delete Student
+          </button>
+        )}
+      </form>
+
       <table className="data-table">
         <thead>
           <tr>
@@ -223,7 +273,7 @@ function Students() {
             <th>Grade</th>
             <th>School</th>
             <th>STEM</th>
-            <th>Enroll Date</th>
+            <th>Enrollment</th>
           </tr>
         </thead>
         <tbody>
