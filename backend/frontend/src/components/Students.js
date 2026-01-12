@@ -17,6 +17,7 @@ function Students() {
     EnrollmentDate: "",
   });
 
+  // AUTH
   const user = JSON.parse(localStorage.getItem("user"));
   const isAdmin = user?.role === "admin";
   const isStaff = user?.role === "teacher";
@@ -30,85 +31,85 @@ function Students() {
     const res = await fetch(
       "https://scholartrack-backend-7vzy.onrender.com/api/students/"
     );
-    const data = await res.json();
-    setStudents(data);
+    setStudents(await res.json());
   };
 
   const fetchSchools = async () => {
     const res = await fetch(
       "https://scholartrack-backend-7vzy.onrender.com/api/schools/"
     );
-    const data = await res.json();
-    setSchools(data);
+    setSchools(await res.json());
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
-  // 🔎 detect if student already exists
-  const existingStudent = students.find(
-    (s) => s.StudentID === formData.StudentID
-  );
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  // =======================
+  // ➕ ADD STUDENT (POST)
+  // =======================
+  const handleAdd = async () => {
     if (!formData.StudentID) {
-      alert("Student ID required");
+      alert("Student ID is required");
       return;
     }
 
-    let url = "https://scholartrack-backend-7vzy.onrender.com/api/students/";
-    let method = "POST";
-
-    if (existingStudent) {
-      if (isAdmin) {
-        url = `${url}${formData.StudentID}/`;
-        method = "PUT";
-      } else if (isStaff) {
-        url =
-          "https://scholartrack-backend-7vzy.onrender.com/api/students/stem/";
-        method = "PATCH";
+    const res = await fetch(
+      "https://scholartrack-backend-7vzy.onrender.com/api/students/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Username: user.username, // 🔑 REQUIRED for role check
+        },
+        body: JSON.stringify(formData),
       }
-    }
-
-    const payload = {
-      ...formData,
-      EnrollmentDate: formData.EnrollmentDate || null,
-      STEMInterest: formData.STEMInterest || null,
-    };
-
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    );
 
     const data = await res.json();
     if (!res.ok) {
-      alert(data.error || "Save failed");
+      alert(data.error || "Failed to add student");
       return;
     }
 
-    alert(existingStudent ? "Updated" : "Added");
+    alert("✅ Student added successfully!");
     fetchStudents();
-
-    setFormData({
-      StudentID: "",
-      FirstName: "",
-      LastName: "",
-      Grade: "",
-      SchoolID: "",
-      StudentPhone: "",
-      GuardianName: "",
-      GuardianPhone: "",
-      Email: "",
-      STEMInterest: "",
-      EnrollmentDate: "",
-    });
   };
 
+  // =======================
+  // ✏️ UPDATE STUDENT (PATCH)
+  // =======================
+  const handleUpdate = async () => {
+    if (!formData.StudentID) {
+      alert("Student ID is required");
+      return;
+    }
+
+    const res = await fetch(
+      "https://scholartrack-backend-7vzy.onrender.com/api/students/stem/",
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          StudentID: formData.StudentID,
+          STEMInterest: formData.STEMInterest,
+          EnrollmentDate: formData.EnrollmentDate || null,
+        }),
+      }
+    );
+
+    const data = await res.json();
+    if (!res.ok) {
+      alert(data.error || "Failed to update student");
+      return;
+    }
+
+    alert("✅ Student updated successfully!");
+    fetchStudents();
+  };
+
+  // =======================
+  // 🗑 DELETE (ADMIN ONLY)
+  // =======================
   const handleDelete = async () => {
     if (!isAdmin) return;
 
@@ -117,24 +118,29 @@ function Students() {
       return;
     }
 
-    if (!window.confirm("Delete student?")) return;
+    if (!window.confirm("Delete this student?")) return;
 
-    await fetch(
+    const res = await fetch(
       `https://scholartrack-backend-7vzy.onrender.com/api/students/?StudentID=${formData.StudentID}`,
-      { method: "DELETE" }
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Username: user.username,
+        },
+      }
     );
 
+    const data = await res.json();
+    alert(data.message || data.error);
     fetchStudents();
   };
-
-  // 🔐 disable rules
-  const staffUpdating = isStaff && existingStudent;
 
   return (
     <div className="page-container">
       <h2>Students</h2>
 
-      <form onSubmit={handleSubmit} className="form-container">
+      <div className="form-container">
         <input
           name="StudentID"
           placeholder="Student ID"
@@ -148,8 +154,7 @@ function Students() {
           placeholder="First Name"
           value={formData.FirstName}
           onChange={handleChange}
-          disabled={staffUpdating}
-          required
+          disabled={isStaff}
         />
 
         <input
@@ -157,8 +162,7 @@ function Students() {
           placeholder="Last Name"
           value={formData.LastName}
           onChange={handleChange}
-          disabled={staffUpdating}
-          required
+          disabled={isStaff}
         />
 
         <input
@@ -166,14 +170,14 @@ function Students() {
           placeholder="Grade"
           value={formData.Grade}
           onChange={handleChange}
-          disabled={staffUpdating}
+          disabled={isStaff}
         />
 
         <select
           name="SchoolID"
           value={formData.SchoolID}
           onChange={handleChange}
-          disabled={staffUpdating}
+          disabled={isStaff}
         >
           <option value="">Select School</option>
           {schools.map((s) => (
@@ -193,18 +197,48 @@ function Students() {
         <input
           type="date"
           name="EnrollmentDate"
-          value={formData.EnrollmentDate || ""}
+          value={formData.EnrollmentDate}
           onChange={handleChange}
         />
 
-        <button type="submit">Add / Update</button>
+        {/* 🔘 BUTTONS */}
+        <div style={{ display: "flex", gap: "10px" }}>
+          <button onClick={handleAdd}>➕ Add Student</button>
+          <button onClick={handleUpdate}>✏️ Update Student</button>
 
-        {isAdmin && (
-          <button type="button" onClick={handleDelete}>
-            Delete
-          </button>
-        )}
-      </form>
+          {isAdmin && (
+            <button className="delete-btn" onClick={handleDelete}>
+              🗑 Delete Student
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* TABLE */}
+      <table className="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Grade</th>
+            <th>School</th>
+            <th>STEM</th>
+            <th>Enroll Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {students.map((s) => (
+            <tr key={s.StudentID}>
+              <td>{s.StudentID}</td>
+              <td>{s.FirstName} {s.LastName}</td>
+              <td>{s.Grade}</td>
+              <td>{s.SchoolName}</td>
+              <td>{s.STEMInterest}</td>
+              <td>{s.EnrollmentDate}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
