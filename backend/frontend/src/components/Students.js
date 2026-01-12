@@ -27,53 +27,44 @@ function Students() {
   }, []);
 
   const fetchStudents = async () => {
-    try {
-      const res = await fetch(
-        "https://scholartrack-backend-7vzy.onrender.com/api/students/"
-      );
-      const data = await res.json();
-      setStudents(data);
-    } catch (err) {
-      console.error("Error fetching students:", err);
-    }
+    const res = await fetch(
+      "https://scholartrack-backend-7vzy.onrender.com/api/students/"
+    );
+    const data = await res.json();
+    setStudents(data);
   };
 
   const fetchSchools = async () => {
-    try {
-      const res = await fetch(
-        "https://scholartrack-backend-7vzy.onrender.com/api/schools/"
-      );
-      const data = await res.json();
-      setSchools(data);
-    } catch (err) {
-      console.error("Error fetching schools:", err);
-    }
+    const res = await fetch(
+      "https://scholartrack-backend-7vzy.onrender.com/api/schools/"
+    );
+    const data = await res.json();
+    setSchools(data);
   };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ✅ ADD or UPDATE (Admin + Staff)
+  // 🔎 detect if student already exists
+  const existingStudent = students.find(
+    (s) => s.StudentID === formData.StudentID
+  );
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.StudentID.trim()) {
-      alert("Student ID is required");
+    if (!formData.StudentID) {
+      alert("Student ID required");
       return;
     }
-
-    const existingStudent = students.find(
-      (s) => s.StudentID === formData.StudentID
-    );
 
     let url = "https://scholartrack-backend-7vzy.onrender.com/api/students/";
     let method = "POST";
 
-    // 🔁 UPDATE logic
     if (existingStudent) {
       if (isAdmin) {
-        url = `https://scholartrack-backend-7vzy.onrender.com/api/students/${formData.StudentID}/`;
+        url = `${url}${formData.StudentID}/`;
         method = "PUT";
       } else if (isStaff) {
         url =
@@ -83,80 +74,61 @@ function Students() {
     }
 
     const payload = {
-      StudentID: formData.StudentID,
-      FirstName: isStaff && existingStudent ? undefined : formData.FirstName,
-      LastName: isStaff && existingStudent ? undefined : formData.LastName,
-      Grade: isStaff && existingStudent ? undefined : formData.Grade,
-      SchoolID: isStaff && existingStudent ? undefined : formData.SchoolID,
-      StudentPhone: formData.StudentPhone || null,
-      GuardianName: formData.GuardianName || null,
-      GuardianPhone: formData.GuardianPhone || null,
-      Email: formData.Email || null,
-      STEMInterest: formData.STEMInterest || null,
+      ...formData,
       EnrollmentDate: formData.EnrollmentDate || null,
+      STEMInterest: formData.STEMInterest || null,
     };
 
-    try {
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        alert(data.error || "Operation failed");
-        return;
-      }
-
-      alert(existingStudent ? "✅ Student updated" : "✅ Student added");
-      fetchStudents();
-
-      setFormData({
-        StudentID: "",
-        FirstName: "",
-        LastName: "",
-        Grade: "",
-        SchoolID: "",
-        StudentPhone: "",
-        GuardianName: "",
-        GuardianPhone: "",
-        Email: "",
-        STEMInterest: "",
-        EnrollmentDate: "",
-      });
-    } catch (err) {
-      console.error(err);
-      alert("Server error");
+    const data = await res.json();
+    if (!res.ok) {
+      alert(data.error || "Save failed");
+      return;
     }
+
+    alert(existingStudent ? "Updated" : "Added");
+    fetchStudents();
+
+    setFormData({
+      StudentID: "",
+      FirstName: "",
+      LastName: "",
+      Grade: "",
+      SchoolID: "",
+      StudentPhone: "",
+      GuardianName: "",
+      GuardianPhone: "",
+      Email: "",
+      STEMInterest: "",
+      EnrollmentDate: "",
+    });
   };
 
-  // 🗑 DELETE (Admin only)
   const handleDelete = async () => {
     if (!isAdmin) return;
 
-    if (!formData.StudentID.trim()) {
+    if (!formData.StudentID) {
       alert("Enter Student ID");
       return;
     }
 
-    if (!window.confirm("Delete this student?")) return;
+    if (!window.confirm("Delete student?")) return;
 
-    try {
-      const res = await fetch(
-        `https://scholartrack-backend-7vzy.onrender.com/api/students/?StudentID=${formData.StudentID}`,
-        { method: "DELETE" }
-      );
+    await fetch(
+      `https://scholartrack-backend-7vzy.onrender.com/api/students/?StudentID=${formData.StudentID}`,
+      { method: "DELETE" }
+    );
 
-      const data = await res.json();
-      alert(data.message || data.error);
-      fetchStudents();
-    } catch (err) {
-      console.error(err);
-      alert("Delete failed");
-    }
+    fetchStudents();
   };
+
+  // 🔐 disable rules
+  const staffUpdating = isStaff && existingStudent;
 
   return (
     <div className="page-container">
@@ -176,8 +148,8 @@ function Students() {
           placeholder="First Name"
           value={formData.FirstName}
           onChange={handleChange}
-          disabled={isStaff}
-          required={!isStaff}
+          disabled={staffUpdating}
+          required
         />
 
         <input
@@ -185,8 +157,8 @@ function Students() {
           placeholder="Last Name"
           value={formData.LastName}
           onChange={handleChange}
-          disabled={isStaff}
-          required={!isStaff}
+          disabled={staffUpdating}
+          required
         />
 
         <input
@@ -194,14 +166,14 @@ function Students() {
           placeholder="Grade"
           value={formData.Grade}
           onChange={handleChange}
-          disabled={isStaff}
+          disabled={staffUpdating}
         />
 
         <select
           name="SchoolID"
           value={formData.SchoolID}
           onChange={handleChange}
-          disabled={isStaff}
+          disabled={staffUpdating}
         >
           <option value="">Select School</option>
           {schools.map((s) => (
@@ -225,70 +197,14 @@ function Students() {
           onChange={handleChange}
         />
 
-        {isAdmin && (
-          <>
-            <input
-              name="StudentPhone"
-              placeholder="Student Phone"
-              value={formData.StudentPhone}
-              onChange={handleChange}
-            />
-            <input
-              name="GuardianName"
-              placeholder="Guardian Name"
-              value={formData.GuardianName}
-              onChange={handleChange}
-            />
-            <input
-              name="GuardianPhone"
-              placeholder="Guardian Phone"
-              value={formData.GuardianPhone}
-              onChange={handleChange}
-            />
-            <input
-              name="Email"
-              placeholder="Email"
-              value={formData.Email}
-              onChange={handleChange}
-            />
-          </>
-        )}
-
-        <button type="submit">
-          {isAdmin ? "Add / Update Student" : "Add / Update Student"}
-        </button>
+        <button type="submit">Add / Update</button>
 
         {isAdmin && (
           <button type="button" onClick={handleDelete}>
-            Delete Student
+            Delete
           </button>
         )}
       </form>
-
-      <table className="data-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Grade</th>
-            <th>School</th>
-            <th>STEM</th>
-            <th>Enrollment</th>
-          </tr>
-        </thead>
-        <tbody>
-          {students.map((s) => (
-            <tr key={s.StudentID}>
-              <td>{s.StudentID}</td>
-              <td>{s.FirstName} {s.LastName}</td>
-              <td>{s.Grade}</td>
-              <td>{s.SchoolName}</td>
-              <td>{s.STEMInterest}</td>
-              <td>{s.EnrollmentDate}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </div>
   );
 }
