@@ -154,7 +154,7 @@ function Students() {
           placeholder="First Name"
           value={formData.FirstName}
           onChange={handleChange}
-          disabled={isStaff}
+          disabled={false}
         />
 
         <input
@@ -162,7 +162,7 @@ function Students() {
           placeholder="Last Name"
           value={formData.LastName}
           onChange={handleChange}
-          disabled={isStaff}
+          disabled={false}
         />
 
         <input
@@ -170,14 +170,14 @@ function Students() {
           placeholder="Grade"
           value={formData.Grade}
           onChange={handleChange}
-          disabled={isStaff}
+          disabled={false}
         />
 
         <select
           name="SchoolID"
           value={formData.SchoolID}
           onChange={handleChange}
-          disabled={isStaff}
+          disabled={false}
         >
           <option value="">Select School</option>
           {schools.map((s) => (
