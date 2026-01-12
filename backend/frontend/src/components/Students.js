@@ -53,19 +53,35 @@ function Students() {
       return;
     }
 
+    // 🔐 Staff must fill basic identity info to ADD
+    if (isStaff) {
+      if (
+        !formData.FirstName ||
+        !formData.LastName ||
+        !formData.Grade ||
+        !formData.SchoolID
+      ) {
+        alert(
+          "To add a student, please enter First Name, Last Name, Grade, and School."
+        );
+        return;
+      }
+    }
+
     const res = await fetch(
       "https://scholartrack-backend-7vzy.onrender.com/api/students/",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Username: user.username, // 🔑 REQUIRED for role check
+          Username: user.username,
         },
         body: JSON.stringify(formData),
       }
     );
 
     const data = await res.json();
+
     if (!res.ok) {
       alert(data.error || "Failed to add student");
       return;
@@ -74,6 +90,7 @@ function Students() {
     alert("✅ Student added successfully!");
     fetchStudents();
   };
+
 
   // =======================
   // ✏️ UPDATE STUDENT (PATCH)
