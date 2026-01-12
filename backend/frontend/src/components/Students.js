@@ -20,7 +20,6 @@ function Students() {
   // AUTH
   const user = JSON.parse(localStorage.getItem("user"));
   const isAdmin = user?.role === "admin";
-  const isStaff = user?.role === "teacher";
 
   useEffect(() => {
     fetchStudents();
@@ -53,21 +52,6 @@ function Students() {
       return;
     }
 
-    // 🔐 Staff must fill basic identity info to ADD
-    if (isStaff) {
-      if (
-        !formData.FirstName ||
-        !formData.LastName ||
-        !formData.Grade ||
-        !formData.SchoolID
-      ) {
-        alert(
-          "To add a student, please enter First Name, Last Name, Grade, and School."
-        );
-        return;
-      }
-    }
-
     const res = await fetch(
       "https://scholartrack-backend-7vzy.onrender.com/api/students/",
       {
@@ -81,7 +65,6 @@ function Students() {
     );
 
     const data = await res.json();
-
     if (!res.ok) {
       alert(data.error || "Failed to add student");
       return;
@@ -90,7 +73,6 @@ function Students() {
     alert("✅ Student added successfully!");
     fetchStudents();
   };
-
 
   // =======================
   // ✏️ UPDATE STUDENT (PATCH)
@@ -158,40 +140,12 @@ function Students() {
       <h2>Students</h2>
 
       <div className="form-container">
-        <input
-          name="StudentID"
-          placeholder="Student ID"
-          value={formData.StudentID}
-          onChange={handleChange}
-          required
-        />
+        <input name="StudentID" placeholder="Student ID" value={formData.StudentID} onChange={handleChange} />
+        <input name="FirstName" placeholder="First Name" value={formData.FirstName} onChange={handleChange} />
+        <input name="LastName" placeholder="Last Name" value={formData.LastName} onChange={handleChange} />
+        <input name="Grade" placeholder="Grade" value={formData.Grade} onChange={handleChange} />
 
-        <input
-          name="FirstName"
-          placeholder="First Name"
-          value={formData.FirstName}
-          onChange={handleChange}
-        />
-
-        <input
-          name="LastName"
-          placeholder="Last Name"
-          value={formData.LastName}
-          onChange={handleChange}
-        />
-
-        <input
-          name="Grade"
-          placeholder="Grade"
-          value={formData.Grade}
-          onChange={handleChange}
-        />
-
-        <select
-          name="SchoolID"
-          value={formData.SchoolID}
-          onChange={handleChange}
-        >
+        <select name="SchoolID" value={formData.SchoolID} onChange={handleChange}>
           <option value="">Select School</option>
           {schools.map((s) => (
             <option key={s.SchoolID} value={s.SchoolID}>
@@ -200,21 +154,9 @@ function Students() {
           ))}
         </select>
 
-        <input
-          name="STEMInterest"
-          placeholder="STEM Interest"
-          value={formData.STEMInterest}
-          onChange={handleChange}
-        />
+        <input name="STEMInterest" placeholder="STEM Interest" value={formData.STEMInterest} onChange={handleChange} />
+        <input type="date" name="EnrollmentDate" value={formData.EnrollmentDate} onChange={handleChange} />
 
-        <input
-          type="date"
-          name="EnrollmentDate"
-          value={formData.EnrollmentDate}
-          onChange={handleChange}
-        />
-
-        {/* 🔘 BUTTONS */}
         <div style={{ display: "flex", gap: "10px" }}>
           <button onClick={handleAdd}>➕ Add Student</button>
           <button onClick={handleUpdate}>✏️ Update Student</button>
@@ -227,7 +169,6 @@ function Students() {
         </div>
       </div>
 
-      {/* TABLE */}
       <table className="data-table">
         <thead>
           <tr>
