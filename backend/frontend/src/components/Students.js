@@ -48,10 +48,7 @@ function Students() {
   // ➕ ADD STUDENT (POST)
   // =======================
   const handleAdd = async () => {
-    if (!formData.StudentID) {
-      alert("Student ID is required");
-      return;
-    }
+    if (!formData.StudentID) return alert("Student ID is required");
 
     const res = await fetch(
       "https://scholartrack-backend-7vzy.onrender.com/api/students/",
@@ -66,28 +63,22 @@ function Students() {
     );
 
     const data = await res.json();
-    if (!res.ok) {
-      alert(data.error || "Failed to add student");
-      return;
-    }
+    if (!res.ok) return alert(data.error || "Failed to add student");
 
     alert("✅ Student added successfully!");
     fetchStudents();
   };
 
   // =======================
-  // ✏️ UPDATE STUDENT (PATCH)
+  // ✏️ UPDATE STUDENT (PUT)
   // =======================
   const handleUpdate = async () => {
-    if (!formData.StudentID) {
-      alert("Student ID is required");
-      return;
-    }
+    if (!formData.StudentID) return alert("Student ID is required");
 
     const res = await fetch(
-      "https://scholartrack-backend-7vzy.onrender.com/api/students/",
+      `https://scholartrack-backend-7vzy.onrender.com/api/students/${formData.StudentID}/`,
       {
-        method: "PATCH",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Username: user.username,
@@ -97,10 +88,7 @@ function Students() {
     );
 
     const data = await res.json();
-    if (!res.ok) {
-      alert(data.error || "Update failed");
-      return;
-    }
+    if (!res.ok) return alert(data.error || "Update failed");
 
     alert("✅ Student updated successfully!");
     fetchStudents();
@@ -111,22 +99,14 @@ function Students() {
   // =======================
   const handleDelete = async () => {
     if (!isAdmin) return;
-
-    if (!formData.StudentID) {
-      alert("Enter Student ID");
-      return;
-    }
-
+    if (!formData.StudentID) return alert("Enter Student ID");
     if (!window.confirm("Delete this student?")) return;
 
     const res = await fetch(
-      `https://scholartrack-backend-7vzy.onrender.com/api/students/?StudentID=${formData.StudentID}`,
+      `https://scholartrack-backend-7vzy.onrender.com/api/students/${formData.StudentID}/`,
       {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Username: user.username,
-        },
+        headers: { Username: user.username },
       }
     );
 
