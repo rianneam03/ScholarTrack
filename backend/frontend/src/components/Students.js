@@ -69,31 +69,33 @@ function Students() {
   // ✏️ UPDATE (PATCH)
   // =======================
   const handleUpdate = async () => {
-    if (!formData.StudentID)
-      return alert("Student ID required");
+    if (!formData.StudentID) {
+      alert("Student ID required");
+      return;
+    }
 
     const res = await fetch(
-      "https://scholartrack-backend-7vzy.onrender.com/api/update-stem/",
+      "https://scholartrack-backend-7vzy.onrender.com/api/students/update/",
       {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Username: user.username,
         },
-        body: JSON.stringify({
-          StudentID: formData.StudentID,
-          STEMInterest: formData.STEMInterest,
-          EnrollmentDate: formData.EnrollmentDate,
-        }),
+        body: JSON.stringify(formData),
       }
     );
 
     const data = await res.json();
-    if (!res.ok) return alert(data.error || "Update failed");
+    if (!res.ok) {
+      alert(data.error || "Update failed");
+      return;
+    }
 
-    alert("✅ Student updated");
+    alert("✅ Student updated successfully");
     fetchStudents();
   };
+
 
   // =======================
   // 🗑 DELETE (ADMIN ONLY)
