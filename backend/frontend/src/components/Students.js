@@ -75,7 +75,7 @@ function Students() {
     }
 
     const res = await fetch(
-      "https://scholartrack-backend-7vzy.onrender.com/api/students/update/",
+      "https://scholartrack-backend-7vzy.onrender.com/api/students/",
       {
         method: "PATCH",
         headers: {
@@ -92,10 +92,9 @@ function Students() {
       return;
     }
 
-    alert("✅ Student updated successfully");
+    alert("✅ Student updated successfully!");
     fetchStudents();
   };
-
 
   // =======================
   // 🗑 DELETE (ADMIN ONLY)

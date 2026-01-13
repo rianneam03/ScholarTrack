@@ -135,7 +135,7 @@ def attendance_list(request):
             return Response({"message": "Attendance created"})
 
 # --- Students list API ---
-@api_view(['GET', 'POST', 'DELETE'])
+@api_view(['GET', 'POST', 'DELETE', 'PATCH'])
 def students_list(request):
     if request.method == 'GET':
         school_id = request.GET.get('school_id')
@@ -226,90 +226,45 @@ def students_list(request):
             import traceback
             traceback.print_exc()
             return Response({"error": str(e)}, status=500)
-        
-@api_view(["PATCH"])
-def update_student(request):
-    data = request.data
-    student_id = data.get("StudentID")
-    username = request.headers.get("Username")
+    elif request.method == "PATCH":
+        data = request.data
+        student_id = data.get("StudentID")
+        username = request.headers.get("Username")
 
-    if not student_id:
-        return Response({"error": "StudentID required"}, status=400)
+        if not student_id:
+            return Response({"error": "StudentID required"}, status=400)
 
-    user = User.objects.filter(username=username).first()
-    if not user:
-        return Response({"error": "Unauthorized"}, status=403)
+        user = User.objects.filter(username=username).first()
+        if not user:
+            return Response({"error": "Unauthorized"}, status=403)
 
-    try:
-        student = Student.objects.get(studentid=student_id)
-    except Student.DoesNotExist:
-        return Response({"error": "Student not found"}, status=404)
+        try:
+            student = Student.objects.get(studentid=student_id)
+        except Student.DoesNotExist:
+            return Response({"error": "Student not found"}, status=404)
 
-    # ✅ Fields BOTH staff + admin can update
-    allowed_fields = [
-        "firstname",
-        "lastname",
-        "grade",
-        "steminterest",
-        "enrollmentdate",
-    ]
+        # Fields both admin & staff can update
+        student.firstname = data.get("FirstName", student.firstname)
+        student.lastname = data.get("LastName", student.lastname)
+        student.grade = data.get("Grade", student.grade)
+        student.steminterest = data.get("STEMInterest", student.steminterest)
+        student.enrollmentdate = data.get("EnrollmentDate", student.enrollmentdate)
 
-    # ✅ Admin-only fields
-    admin_fields = [
-        "studentphone",
-        "guardianname",
-        "guardianphone",
-        "email",
-    ]
+        # School update
+        if data.get("SchoolID"):
+            school = School.objects.filter(schoolid=data.get("SchoolID")).first()
+            if school:
+                student.school = school
 
-    for field in allowed_fields:
-        frontend_key = field.capitalize() if field != "steminterest" else "STEMInterest"
-        value = data.get(frontend_key)
-        if value is not None:
-            setattr(student, field, value)
+        # Admin-only fields
+        if user.role == "admin":
+            student.studentphone = data.get("StudentPhone", student.studentphone)
+            student.guardianname = data.get("GuardianName", student.guardianname)
+            student.guardianphone = data.get("GuardianPhone", student.guardianphone)
+            student.email = data.get("Email", student.email)
 
-    # School update
-    if data.get("SchoolID"):
-        school = School.objects.filter(schoolid=data.get("SchoolID")).first()
-        if school:
-            student.school = school
-
-    # Admin-only updates
-    if user.role == "admin":
-        for field in admin_fields:
-            frontend_key = field.capitalize()
-            value = data.get(frontend_key)
-            if value is not None:
-                setattr(student, field, value)
-
-    student.save()
-    return Response({"message": "Student updated successfully"})
-
-
-# --- Update STEM interest ---
-@api_view(["PATCH"])
-def update_stem_interest(request):
-    data = request.data
-    student_id = data.get("StudentID")
-    stem_interest = data.get("STEMInterest")
-    enrollment_date = data.get("EnrollmentDate")
-
-    if not student_id:
-        return Response({"error": "StudentID required"}, status=400)
-
-    try:
-        student = Student.objects.get(studentid=student_id)
-    except Student.DoesNotExist:
-        return Response({"error": "Student not found"}, status=404)
-
-    if stem_interest is not None:
-        student.steminterest = stem_interest
-
-    if enrollment_date is not None:
-        student.enrollmentdate = enrollment_date
-
-    student.save()
-    return Response({"message": "STEM info updated successfully"})
+        student.save()
+        return Response({"message": "Student updated successfully"})
 
 # --- Schools list API ---
 @api_view(['GET', 'POST'])
