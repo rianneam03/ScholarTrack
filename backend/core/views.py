@@ -226,6 +226,65 @@ def students_list(request):
             import traceback
             traceback.print_exc()
             return Response({"error": str(e)}, status=500)
+        
+@api_view(["PATCH"])
+def update_student(request):
+    data = request.data
+    student_id = data.get("StudentID")
+    username = request.headers.get("Username")
+
+    if not student_id:
+        return Response({"error": "StudentID required"}, status=400)
+
+    user = User.objects.filter(username=username).first()
+    if not user:
+        return Response({"error": "Unauthorized"}, status=403)
+
+    try:
+        student = Student.objects.get(studentid=student_id)
+    except Student.DoesNotExist:
+        return Response({"error": "Student not found"}, status=404)
+
+    # ✅ Fields BOTH staff + admin can update
+    allowed_fields = [
+        "firstname",
+        "lastname",
+        "grade",
+        "steminterest",
+        "enrollmentdate",
+    ]
+
+    # ✅ Admin-only fields
+    admin_fields = [
+        "studentphone",
+        "guardianname",
+        "guardianphone",
+        "email",
+    ]
+
+    for field in allowed_fields:
+        frontend_key = field.capitalize() if field != "steminterest" else "STEMInterest"
+        value = data.get(frontend_key)
+        if value is not None:
+            setattr(student, field, value)
+
+    # School update
+    if data.get("SchoolID"):
+        school = School.objects.filter(schoolid=data.get("SchoolID")).first()
+        if school:
+            student.school = school
+
+    # Admin-only updates
+    if user.role == "admin":
+        for field in admin_fields:
+            frontend_key = field.capitalize()
+            value = data.get(frontend_key)
+            if value is not None:
+                setattr(student, field, value)
+
+    student.save()
+    return Response({"message": "Student updated successfully"})
+
 
 # --- Update STEM interest ---
 @api_view(["PATCH"])
