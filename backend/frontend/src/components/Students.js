@@ -17,8 +17,10 @@ function Students() {
     EnrollmentDate: "",
   });
 
+  // AUTH
   const user = JSON.parse(localStorage.getItem("user"));
   const isAdmin = user?.role === "admin";
+  const isStaff = user?.role === "teacher";
 
   useEffect(() => {
     fetchStudents();
@@ -42,24 +44,14 @@ function Students() {
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  // ================= ADD =================
+  // =======================
+  // ➕ ADD STUDENT (POST)
+  // =======================
   const handleAdd = async () => {
-    if (!formData.StudentID || !formData.FirstName || !formData.LastName) {
-      alert("StudentID, First Name, and Last Name are required");
+    if (!formData.StudentID) {
+      alert("Student ID is required");
       return;
     }
-
-    const payload = isAdmin
-      ? formData
-      : {
-          StudentID: formData.StudentID,
-          FirstName: formData.FirstName,
-          LastName: formData.LastName,
-          Grade: formData.Grade,
-          SchoolID: formData.SchoolID,
-          STEMInterest: formData.STEMInterest,
-          EnrollmentDate: formData.EnrollmentDate,
-        };
 
     const res = await fetch(
       "https://scholartrack-backend-7vzy.onrender.com/api/students/",
@@ -69,31 +61,33 @@ function Students() {
           "Content-Type": "application/json",
           Username: user.username,
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(formData),
       }
     );
 
     const data = await res.json();
     if (!res.ok) {
-      alert(data.error || "Add failed");
+      alert(data.error || "Failed to add student");
       return;
     }
 
-    alert("✅ Student added");
+    alert("✅ Student added successfully!");
     fetchStudents();
   };
 
-  // ================= UPDATE =================
+  // =======================
+  // ✏️ UPDATE STUDENT (PATCH)
+  // =======================
   const handleUpdate = async () => {
     if (!formData.StudentID) {
-      alert("StudentID required");
+      alert("Student ID is required");
       return;
     }
 
     const res = await fetch(
-      "https://scholartrack-backend-7vzy.onrender.com/api/students/",
+      "https://scholartrack-backend-7vzy.onrender.com/api/students/update/",
       {
-        method: "PUT",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Username: user.username,
@@ -108,16 +102,18 @@ function Students() {
       return;
     }
 
-    alert("✅ Student updated");
+    alert("✅ Student updated successfully!");
     fetchStudents();
   };
 
-  // ================= DELETE (ADMIN) =================
+  // =======================
+  // 🗑 DELETE (ADMIN ONLY)
+  // =======================
   const handleDelete = async () => {
     if (!isAdmin) return;
 
     if (!formData.StudentID) {
-      alert("Enter StudentID");
+      alert("Enter Student ID");
       return;
     }
 
@@ -128,6 +124,7 @@ function Students() {
       {
         method: "DELETE",
         headers: {
+          "Content-Type": "application/json",
           Username: user.username,
         },
       }
@@ -142,13 +139,41 @@ function Students() {
     <div className="page-container">
       <h2>Students</h2>
 
+      {/* ❗ NO FORM TAG — prevents PUT */}
       <div className="form-container">
-        <input name="StudentID" placeholder="Student ID" value={formData.StudentID} onChange={handleChange} />
-        <input name="FirstName" placeholder="First Name" value={formData.FirstName} onChange={handleChange} />
-        <input name="LastName" placeholder="Last Name" value={formData.LastName} onChange={handleChange} />
-        <input name="Grade" placeholder="Grade" value={formData.Grade} onChange={handleChange} />
+        <input
+          name="StudentID"
+          placeholder="Student ID"
+          value={formData.StudentID}
+          onChange={handleChange}
+        />
 
-        <select name="SchoolID" value={formData.SchoolID} onChange={handleChange}>
+        <input
+          name="FirstName"
+          placeholder="First Name"
+          value={formData.FirstName}
+          onChange={handleChange}
+        />
+
+        <input
+          name="LastName"
+          placeholder="Last Name"
+          value={formData.LastName}
+          onChange={handleChange}
+        />
+
+        <input
+          name="Grade"
+          placeholder="Grade"
+          value={formData.Grade}
+          onChange={handleChange}
+        />
+
+        <select
+          name="SchoolID"
+          value={formData.SchoolID}
+          onChange={handleChange}
+        >
           <option value="">Select School</option>
           {schools.map((s) => (
             <option key={s.SchoolID} value={s.SchoolID}>
@@ -157,30 +182,71 @@ function Students() {
           ))}
         </select>
 
-        {isAdmin && (
-          <>
-            <input name="StudentPhone" placeholder="Student Phone" value={formData.StudentPhone} onChange={handleChange} />
-            <input name="GuardianName" placeholder="Guardian Name" value={formData.GuardianName} onChange={handleChange} />
-            <input name="GuardianPhone" placeholder="Guardian Phone" value={formData.GuardianPhone} onChange={handleChange} />
-            <input name="Email" placeholder="Email" value={formData.Email} onChange={handleChange} />
-          </>
-        )}
-
-        <select name="STEMInterest" value={formData.STEMInterest} onChange={handleChange}>
-          <option value="">STEM Interest?</option>
+        <select
+          name="STEMInterest"
+          value={formData.STEMInterest}
+          onChange={handleChange}
+        >
+          <option value="">STEM Interest</option>
           <option value="Yes">Yes</option>
           <option value="No">No</option>
         </select>
 
-        <input type="date" name="EnrollmentDate" value={formData.EnrollmentDate} onChange={handleChange} />
+        <input
+          type="date"
+          name="EnrollmentDate"
+          value={formData.EnrollmentDate}
+          onChange={handleChange}
+        />
+
+        {/* ADMIN ONLY CONTACT INFO */}
+        {isAdmin && (
+          <>
+            <input
+              name="StudentPhone"
+              placeholder="Student Phone"
+              value={formData.StudentPhone}
+              onChange={handleChange}
+            />
+            <input
+              name="GuardianName"
+              placeholder="Guardian Name"
+              value={formData.GuardianName}
+              onChange={handleChange}
+            />
+            <input
+              name="GuardianPhone"
+              placeholder="Guardian Phone"
+              value={formData.GuardianPhone}
+              onChange={handleChange}
+            />
+            <input
+              name="Email"
+              placeholder="Email"
+              value={formData.Email}
+              onChange={handleChange}
+            />
+          </>
+        )}
 
         <div style={{ display: "flex", gap: "10px" }}>
-          <button onClick={handleAdd}>➕ Add</button>
-          <button onClick={handleUpdate}>✏️ Update</button>
-          {isAdmin && <button onClick={handleDelete}>🗑 Delete</button>}
+          <button type="button" onClick={handleAdd}>
+            ➕ Add Student
+          </button>
+
+          <button type="button" onClick={handleUpdate}>
+            ✏️ Update Student
+          </button>
+
+          {isAdmin && (
+            <button type="button" className="delete-btn" onClick={handleDelete}>
+              🗑 Delete Student
+            </button>
+          )}
         </div>
       </div>
 
+      {/* TABLE */}
       <table className="data-table">
         <thead>
           <tr>
@@ -190,6 +256,14 @@ function Students() {
             <th>School</th>
             <th>STEM</th>
             <th>Enroll Date</th>
+            {isAdmin && (
+              <>
+                <th>Student Phone</th>
+                <th>Guardian</th>
+                <th>Guardian Phone</th>
+                <th>Email</th>
+              </>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -201,6 +275,15 @@ function Students() {
               <td>{s.SchoolName}</td>
               <td>{s.STEMInterest}</td>
               <td>{s.EnrollmentDate}</td>
+
+              {isAdmin && (
+                <>
+                  <td>{s.StudentPhone}</td>
+                  <td>{s.GuardianName}</td>
+                  <td>{s.GuardianPhone}</td>
+                  <td>{s.Email}</td>
+                </>
+              )}
             </tr>
           ))}
         </tbody>
