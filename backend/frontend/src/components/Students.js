@@ -17,10 +17,8 @@ function Students() {
     EnrollmentDate: "",
   });
 
-  // AUTH
   const user = JSON.parse(localStorage.getItem("user"));
   const isAdmin = user?.role === "admin";
-  const isStaff = user?.role === "teacher";
 
   useEffect(() => {
     fetchStudents();
@@ -45,11 +43,9 @@ function Students() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   // =======================
-  // ➕ ADD STUDENT (POST)
+  // ➕ ADD STUDENT
   // =======================
   const handleAdd = async () => {
-    if (!formData.StudentID) return alert("Student ID is required");
-
     const res = await fetch(
       "https://scholartrack-backend-7vzy.onrender.com/api/students/",
       {
@@ -63,34 +59,39 @@ function Students() {
     );
 
     const data = await res.json();
-    if (!res.ok) return alert(data.error || "Failed to add student");
+    if (!res.ok) return alert(data.error || "Add failed");
 
-    alert("✅ Student added successfully!");
+    alert("✅ Student added");
     fetchStudents();
   };
 
   // =======================
-  // ✏️ UPDATE STUDENT (PUT)
+  // ✏️ UPDATE (PATCH)
   // =======================
   const handleUpdate = async () => {
-    if (!formData.StudentID) return alert("Student ID is required");
+    if (!formData.StudentID)
+      return alert("Student ID required");
 
     const res = await fetch(
-      `https://scholartrack-backend-7vzy.onrender.com/api/students/${formData.StudentID}/`,
+      "https://scholartrack-backend-7vzy.onrender.com/api/update-stem/",
       {
-        method: "PUT",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Username: user.username,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          StudentID: formData.StudentID,
+          STEMInterest: formData.STEMInterest,
+          EnrollmentDate: formData.EnrollmentDate,
+        }),
       }
     );
 
     const data = await res.json();
     if (!res.ok) return alert(data.error || "Update failed");
 
-    alert("✅ Student updated successfully!");
+    alert("✅ Student updated");
     fetchStudents();
   };
 
@@ -99,11 +100,13 @@ function Students() {
   // =======================
   const handleDelete = async () => {
     if (!isAdmin) return;
-    if (!formData.StudentID) return alert("Enter Student ID");
+    if (!formData.StudentID)
+      return alert("Student ID required");
+
     if (!window.confirm("Delete this student?")) return;
 
     const res = await fetch(
-      `https://scholartrack-backend-7vzy.onrender.com/api/students/${formData.StudentID}/`,
+      `https://scholartrack-backend-7vzy.onrender.com/api/students/?StudentID=${formData.StudentID}`,
       {
         method: "DELETE",
         headers: { Username: user.username },
@@ -119,41 +122,13 @@ function Students() {
     <div className="page-container">
       <h2>Students</h2>
 
-      {/* ❗ NO FORM TAG — prevents PUT */}
       <div className="form-container">
-        <input
-          name="StudentID"
-          placeholder="Student ID"
-          value={formData.StudentID}
-          onChange={handleChange}
-        />
+        <input name="StudentID" placeholder="Student ID" onChange={handleChange} />
+        <input name="FirstName" placeholder="First Name" onChange={handleChange} />
+        <input name="LastName" placeholder="Last Name" onChange={handleChange} />
+        <input name="Grade" placeholder="Grade" onChange={handleChange} />
 
-        <input
-          name="FirstName"
-          placeholder="First Name"
-          value={formData.FirstName}
-          onChange={handleChange}
-        />
-
-        <input
-          name="LastName"
-          placeholder="Last Name"
-          value={formData.LastName}
-          onChange={handleChange}
-        />
-
-        <input
-          name="Grade"
-          placeholder="Grade"
-          value={formData.Grade}
-          onChange={handleChange}
-        />
-
-        <select
-          name="SchoolID"
-          value={formData.SchoolID}
-          onChange={handleChange}
-        >
+        <select name="SchoolID" onChange={handleChange}>
           <option value="">Select School</option>
           {schools.map((s) => (
             <option key={s.SchoolID} value={s.SchoolID}>
@@ -162,88 +137,36 @@ function Students() {
           ))}
         </select>
 
-        <select
-          name="STEMInterest"
-          value={formData.STEMInterest}
-          onChange={handleChange}
-        >
-          <option value="">STEM Interest</option>
+        <select name="STEMInterest" onChange={handleChange}>
+          <option value="">STEM?</option>
           <option value="Yes">Yes</option>
           <option value="No">No</option>
         </select>
 
-        <input
-          type="date"
-          name="EnrollmentDate"
-          value={formData.EnrollmentDate}
-          onChange={handleChange}
-        />
+        <input type="date" name="EnrollmentDate" onChange={handleChange} />
 
-        {/* ADMIN ONLY CONTACT INFO */}
         {isAdmin && (
           <>
-            <input
-              name="StudentPhone"
-              placeholder="Student Phone"
-              value={formData.StudentPhone}
-              onChange={handleChange}
-            />
-            <input
-              name="GuardianName"
-              placeholder="Guardian Name"
-              value={formData.GuardianName}
-              onChange={handleChange}
-            />
-            <input
-              name="GuardianPhone"
-              placeholder="Guardian Phone"
-              value={formData.GuardianPhone}
-              onChange={handleChange}
-            />
-            <input
-              name="Email"
-              placeholder="Email"
-              value={formData.Email}
-              onChange={handleChange}
-            />
+            <input name="StudentPhone" placeholder="Student Phone" onChange={handleChange} />
+            <input name="GuardianName" placeholder="Guardian Name" onChange={handleChange} />
+            <input name="GuardianPhone" placeholder="Guardian Phone" onChange={handleChange} />
+            <input name="Email" placeholder="Email" onChange={handleChange} />
           </>
         )}
 
         <div style={{ display: "flex", gap: "10px" }}>
-          <button type="button" onClick={handleAdd}>
-            ➕ Add Student
-          </button>
-
-          <button type="button" onClick={handleUpdate}>
-            ✏️ Update Student
-          </button>
-
-          {isAdmin && (
-            <button type="button" className="delete-btn" onClick={handleDelete}>
-              🗑 Delete Student
-            </button>
-          )}
+          <button onClick={handleAdd}>➕ Add</button>
+          <button onClick={handleUpdate}>✏️ Update</button>
+          {isAdmin && <button onClick={handleDelete}>🗑 Delete</button>}
         </div>
       </div>
 
-      {/* TABLE */}
       <table className="data-table">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Grade</th>
-            <th>School</th>
-            <th>STEM</th>
-            <th>Enroll Date</th>
-            {isAdmin && (
-              <>
-                <th>Student Phone</th>
-                <th>Guardian</th>
-                <th>Guardian Phone</th>
-                <th>Email</th>
-              </>
-            )}
+            <th>ID</th><th>Name</th><th>Grade</th><th>School</th>
+            <th>STEM</th><th>Date</th>
+            {isAdmin && <th>Contact</th>}
           </tr>
         </thead>
         <tbody>
@@ -255,15 +178,7 @@ function Students() {
               <td>{s.SchoolName}</td>
               <td>{s.STEMInterest}</td>
               <td>{s.EnrollmentDate}</td>
-
-              {isAdmin && (
-                <>
-                  <td>{s.StudentPhone}</td>
-                  <td>{s.GuardianName}</td>
-                  <td>{s.GuardianPhone}</td>
-                  <td>{s.Email}</td>
-                </>
-              )}
+              {isAdmin && <td>{s.Email}</td>}
             </tr>
           ))}
         </tbody>
