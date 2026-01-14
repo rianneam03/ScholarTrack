@@ -171,19 +171,7 @@ def students_list(request):
 
         student_id = data.get('StudentID')
 
-        max_len = Student._meta.get_field("studentid").max_length
-
-        if len(student_id) > max_len:
-            return Response(
-                {"error": f"Student ID is too long. Maximum allowed is {max_len} digits."},
-                status=400
-            )
-
-        if not student_id.isdigit():
-            return Response(
-                {"error": "Student ID must contain digits only."},
-                status=400
-            )
+        student_id = str(student_id).strip()
 
         # --- StudentID is REQUIRED for everyone ---
         if not student_id:
@@ -192,8 +180,22 @@ def students_list(request):
             status=400
         )
 
-        student_id = str(student_id).strip()
+        # --- Digits only ---
+        if not student_id.isdigit():
+            return Response(
+                {"error": "Student ID must contain digits only."},
+                status=400
+            )
+        
+        # --- Length check ---
+        max_len = Student._meta.get_field("studentid").max_length
+        if len(student_id) > max_len:
+            return Response(
+                {"error": f"Student ID is too long. Maximum allowed is {max_len} digits."},
+                status=400
+            )
 
+        # --- Uniqueness ---
         if student_id and Student.objects.filter(studentid=student_id).exists():
             return Response({"error": "StudentID already exists."}, status=400)
 
