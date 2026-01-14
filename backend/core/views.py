@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.db import models
+import re
 
 # --- CSRF token endpoint ---
 def csrf(request):
@@ -170,14 +171,28 @@ def students_list(request):
 
         student_id = data.get('StudentID')
 
-        # Treat blank string as missing
-        if student_id == "":
-            student_id = None
+        max_len = Student._meta.get_field("studentid").max_length
 
-        # STAFF: auto-generate ID if missing
-        if is_staff and not student_id:
-            max_id = Student.objects.aggregate(max_id=models.Max('studentid'))['max_id'] or 0
-            student_id = max_id + 1
+        if len(student_id) > max_len:
+            return Response(
+                {"error": f"Student ID is too long. Maximum allowed is {max_len} digits."},
+                status=400
+            )
+
+        if not student_id.isdigit():
+            return Response(
+                {"error": "Student ID must contain digits only."},
+                status=400
+            )
+
+        # --- StudentID is REQUIRED for everyone ---
+        if not student_id:
+            return Response(
+            {"error": "Student ID is required."},
+            status=400
+        )
+
+        student_id = str(student_id).strip()
 
         if student_id and Student.objects.filter(studentid=student_id).exists():
             return Response({"error": "StudentID already exists."}, status=400)
