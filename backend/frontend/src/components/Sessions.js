@@ -69,7 +69,7 @@ function Sessions() {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div className="page-container">
       <h2>Sessions</h2>
 
       {/* --- Add Session Form --- */}
