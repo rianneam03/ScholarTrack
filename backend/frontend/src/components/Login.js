@@ -63,13 +63,6 @@ function Login() {
         <br /><br />
         <button
           type="submit"
-          style={{
-            padding: "12px 40px",
-            //background: "#2e8b57",
-            color: "white",
-            border: "none",
-            //fontSize: 16,
-          }}
         >
           LOGIN NOW
         </button>
