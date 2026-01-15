@@ -70,7 +70,7 @@ function Sessions() {
 
   return (
     <div className="container">
-      Sessions
+      <h2>Sessions</h2>
 
       {/* --- Add Session Form --- */}
       <form onSubmit={handleSubmit} style={{ marginBottom: "20px" }}>
