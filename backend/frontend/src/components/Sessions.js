@@ -69,8 +69,8 @@ function Sessions() {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Sessions</h2>
+    <div className="container">
+      Sessions
 
       {/* --- Add Session Form --- */}
       <form onSubmit={handleSubmit} style={{ marginBottom: "20px" }}>
