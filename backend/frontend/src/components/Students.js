@@ -155,7 +155,7 @@ function Students() {
           </>
         )}
 
-        <div className= "container">
+        <div style={{ display: "flex", gap: "10px" }}>
           <button onClick={handleAdd}>➕ Add</button>
           <button onClick={handleUpdate}>✏️ Update</button>
           {isAdmin && <button onClick={handleDelete}>🗑 Delete</button>}
