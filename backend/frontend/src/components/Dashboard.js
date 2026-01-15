@@ -19,7 +19,7 @@ function Dashboard() {
   if (!data) return <div>Loading dashboard...</div>;
 
   return (
-    <div>
+    <div className="container">
       <h1>Dashboard</h1>
       <p><strong>Total Students:</strong> {data.total_students}</p>
       <p><strong>Total Schools:</strong> {data.total_schools}</p>
