@@ -188,3 +188,11 @@ tr:hover {
     font-size: 14px;
   }
 }
+
+/* 🌿 Container for pages like Dashboard */
+.container {
+  padding: 20px;         /* space inside edges */
+  max-width: 1200px;     /* optional: keeps content from stretching too wide */
+  margin: 0 auto;        /* centers the container horizontally */
+  font-family: inherit;   /* ensures the app-wide font is used */
+}
