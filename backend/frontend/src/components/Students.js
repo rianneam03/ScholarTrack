@@ -170,7 +170,7 @@ function Students() {
             {isAdmin && (
               <>
                 <th>Student Phone</th>
-                <th>Guardian</th>
+                <th>Guardian Name</th>
                 <th>Guardian Phone</th>
                 <th>Email</th>
               </>
