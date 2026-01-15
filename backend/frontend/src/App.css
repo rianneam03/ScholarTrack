@@ -1,16 +1,23 @@
 /* 🌿 GLOBAL COLORS */
 :root {
-  --forest-green: #5B7A5C;
-  --gold-accent: #C6A15B;
-  --off-white: #f9f9f7;
-  --text-dark: #2e2e2e;
-  --muted-red: #8B4B4B; /* Softer delete color */
+  --app-blue: #1E3A5F;          /* Primary Color (Dark Slate Blue) */
+  --accent-teal: #4FA3B8;       /* Secondary Accent */
+  --app-bg: #F4F7FB;            /* App Background */
+  --card-bg: #FFFFFF;            /* Cards / Forms */
+  --card-border: #E3E8EF;        /* Card border */
+  --shadow-color: rgba(0, 0, 0, 0.06);
+  --text-dark: #2E2E2E;          /* General text */
+  --danger-red: #C0392B;         /* Delete buttons */
+  --danger-hover: #A93226;
+  --secondary-bg: #E9EFF5;       /* Secondary buttons / subtle backgrounds */
+  --table-header-bg: #F0F4F8;
+  --table-row-hover: #F7FAFC;
 }
 
 /* 🌿 BODY */
 body {
-  font-family: 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--off-white);
+  font-family: 'Inter', 'Source Sans 3', 'IBM Plex Sans', sans-serif;
+  background-color: var(--app-bg);
   color: var(--text-dark);
   margin: 0;
   padding: 0;
@@ -18,10 +25,10 @@ body {
 
 /* 🌿 NAVBAR */
 .navbar {
-  background-color: var(--forest-green);
+  background-color: var(--app-blue);
   color: white;
   padding: 10px 20px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 6px var(--shadow-color);
 }
 
 .navbar-links {
@@ -31,7 +38,6 @@ body {
   gap: 20px;
 }
 
-/* ✅ Fix purple visited links */
 .navbar a {
   color: white;
   text-decoration: none;
@@ -40,11 +46,11 @@ body {
 }
 
 .navbar a:visited {
-  color: white; /* No more purple links */
+  color: white;
 }
 
 .navbar a:hover {
-  color: var(--gold-accent);
+  color: var(--accent-teal);
 }
 
 .navbar-user {
@@ -63,90 +69,112 @@ body {
 }
 
 .navbar-logout:hover {
-  background-color: var(--gold-accent);
+  background-color: var(--accent-teal);
   color: var(--text-dark);
 }
 
-/* 🌿 SECTION HEADINGS */
+/* 🌿 HEADINGS */
 h2, h3 {
-  color: var(--forest-green);
+  color: var(--app-blue);
   text-align: left;
   margin-bottom: 12px;
-  border-left: 5px solid var(--gold-accent);
+  border-left: 5px solid var(--accent-teal);
   padding-left: 10px;
 }
 
-/* 🌿 FORMS */
-form {
-  background-color: white;
+/* 🌿 CARDS / FORMS */
+form, .card {
+  background-color: var(--card-bg);
   padding: 16px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px var(--shadow-color);
   margin-bottom: 20px;
+  border: 1px solid var(--card-border);
 }
 
-input, select, button {
+/* 🌿 INPUTS */
+input, select, textarea, button {
   margin: 6px;
-  padding: 8px;
+  padding: 10px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 14px;
+  font-family: inherit;
 }
 
-input:focus, select:focus {
+input:focus, select:focus, textarea:focus {
   outline: none;
-  border-color: var(--forest-green);
-  box-shadow: 0 0 4px rgba(91, 122, 92, 0.4);
+  border-color: var(--app-blue);
+  box-shadow: 0 0 4px rgba(30, 58, 95, 0.3);
 }
 
 /* 🌿 BUTTONS */
 button {
-  background-color: var(--forest-green);
-  color: white;
-  border: none;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
+  border-radius: 8px;
+  padding: 8px 16px;
 }
 
-button:hover {
-  background-color: var(--gold-accent);
-  color: var(--text-dark);
+/* Primary Button */
+button.primary {
+  background-color: var(--app-blue);
+  color: white;
+  border: none;
 }
 
-/* Delete button variant */
+button.primary:hover {
+  background-color: #162E4A;
+}
+
+/* Secondary Button */
+button.secondary {
+  background-color: var(--secondary-bg);
+  color: var(--app-blue);
+  border: none;
+}
+
+button.secondary:hover {
+  background-color: #DCE6F0;
+}
+
+/* Danger Button */
 button.delete {
-  background-color: var(--muted-red);
+  background-color: var(--danger-red);
+  color: white;
+  border: none;
 }
 
 button.delete:hover {
-  background-color: var(--gold-accent);
-  color: var(--text-dark);
+  background-color: var(--danger-hover);
 }
 
 /* 🌿 TABLES */
 table {
   width: 100%;
   border-collapse: collapse;
-  background-color: white;
-  border-radius: 8px;
+  background-color: var(--card-bg);
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 24px var(--shadow-color);
 }
 
 th {
-  background-color: var(--forest-green);
-  color: white;
-  padding: 10px;
+  background-color: var(--table-header-bg);
+  color: var(--text-dark);
+  padding: 12px;
   text-align: left;
+  font-weight: 500;
 }
 
 td {
-  padding: 10px;
+  padding: 12px;
   border-bottom: 1px solid #ddd;
 }
 
 tr:hover {
-  background-color: #f0f5f0;
+  background-color: var(--table-row-hover);
 }
 
 /* 🌿 RESPONSIVE */
