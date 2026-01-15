@@ -167,7 +167,15 @@ function Students() {
           <tr>
             <th>ID</th><th>Name</th><th>Grade</th><th>School</th>
             <th>STEM</th><th>Date</th>
-            {isAdmin && <th>Contact</th>}
+            {isAdmin && (
+              <>
+                <th>Student Phone</th>
+                <th>Guardian</th>
+                <th>Guardian Phone</th>
+                <th>Email</th>
+              </>
+            )}
+
           </tr>
         </thead>
         <tbody>
@@ -179,7 +187,15 @@ function Students() {
               <td>{s.SchoolName}</td>
               <td>{s.STEMInterest}</td>
               <td>{s.EnrollmentDate}</td>
-              {isAdmin && <td>{s.Email}</td>}
+              {isAdmin && (
+                <>
+                  <td>{s.StudentPhone || "-"}</td>
+                  <td>{s.GuardianName || "-"}</td>
+                  <td>{s.GuardianPhone || "-"}</td>
+                  <td>{s.Email || "-"}</td>
+                </>
+              )}
+
             </tr>
           ))}
         </tbody>
