@@ -111,7 +111,7 @@ function Attendance() {
   };
 
   return (
-    <div style={{ padding: 20 }}>
+    <div className="page-container">
       <h2>Attendance</h2>
 
       {/* Session picker */}
