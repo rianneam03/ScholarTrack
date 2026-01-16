@@ -111,12 +111,12 @@ function Attendance() {
   };
 
   return (
-    <div className="page-container">
+    <div className="container">
       <h2>Attendance</h2>
 
       {/* Session picker */}
       <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 16 }}>
-        <label><strong>Session:&nbsp;</strong></label>
+        <label>Session:&nbsp;</label>
         <select
           value={selectedSessionID}
           onChange={(e) => setSelectedSessionID(e.target.value)}
