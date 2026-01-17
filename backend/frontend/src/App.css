@@ -196,3 +196,12 @@ tr:hover {
   margin: 0 auto;        /* centers the container horizontally */
   font-family: inherit;   /* ensures the app-wide font is used */
 }
+
+/* Align filter bar with heading text (not border) */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0 28px;
+  padding-left: 15px; /* 👈 THIS is the key */
+}
