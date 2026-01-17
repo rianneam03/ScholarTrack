@@ -71,6 +71,7 @@ body {
   font-size: 1.5rem;      /* bigger text for logo */
   font-weight: 700;        /* bold */
   color: white;            /* logo color */
+  align-items: center;
   margin-right: auto;      /* pushes links to the right */
 }
 
