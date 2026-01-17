@@ -134,17 +134,17 @@ function Attendance() {
 
       {!loading && selectedSessionID && (
         <>
-          <div style={{ marginBottom: 10 }}>
+          <div className="action-bar">
             <button onClick={saveChanges} disabled={saving}>
               {saving ? "Saving…" : "Save Changes"}
             </button>
           </div>
 
-          <table border="1" cellPadding="8" width="100%">
+          <table className="data-table">
             <thead>
               <tr>
-                <th style={{ textAlign: "left" }}>Student</th>
-                <th style={{ textAlign: "left" }}>Status</th>
+                <th>Student</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
@@ -172,7 +172,7 @@ function Attendance() {
       )}
 
       {!selectedSessionID && (
-        <div style={{ opacity: 0.8 }}>Pick a session to load its students and attendance.</div>
+        <div className="helper-text">Pick a session to load its students and attendance.</div>
       )}
     </div>
   );

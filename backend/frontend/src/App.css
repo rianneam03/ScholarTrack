@@ -205,3 +205,15 @@ tr:hover {
   margin: 18px 0 28px;
   padding-left: 15px; /* 👈 THIS is the key */
 }
+
+.action-bar {
+  margin-bottom: 16px;
+  padding-left: 15px; /* aligns with heading text */
+}
+
+.helper-text {
+  opacity: 0.75;
+  padding-left: 15px;
+  margin-top: 8px;
+  font-style: italic;
+}
