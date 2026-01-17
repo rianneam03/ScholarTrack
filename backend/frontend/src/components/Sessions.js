@@ -73,9 +73,9 @@ function Sessions() {
       <h2>Sessions</h2>
 
       {/* --- Add Session Form --- */}
-      <h3>Add New Session</h3>
       <form onSubmit={handleSubmit} className="form-container">
-        <input className= "form-container input"
+        <h3>Add New Session</h3>
+        <input
           type="text"
           name="Title"
           placeholder="Title"
