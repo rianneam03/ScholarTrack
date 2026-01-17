@@ -73,7 +73,7 @@ function Sessions() {
       <h2>Sessions</h2>
 
       {/* --- Add Session Form --- */}
-      <form onSubmit={handleSubmit} style={{ marginBottom: "20px" }}>
+      <form onSubmit={handleSubmit} className="session-form">
         <h3>Add New Session</h3>
         <input
           type="text"
@@ -117,11 +117,11 @@ function Sessions() {
           )}
         </select>
 
-        <button type="submit">Add Session</button>
+        <button className="primary" type="submit">Add Session</button>
       </form>
 
       {/* --- Sessions Table --- */}
-      <table border="1" cellPadding="10" width="100%">
+      <table >
         <thead>
           <tr>
             <th>ID</th>

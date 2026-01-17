@@ -42,7 +42,7 @@ function Login() {
   return (
     <div className="login-page">
       <h1>ScholarTrack Login</h1>
-      <form onSubmit={handleSubmit} style={{ marginTop: 30 }}>
+      <form onSubmit={handleSubmit} className="login-form">
         <input
           type="text"
           placeholder="Username"
@@ -59,7 +59,7 @@ function Login() {
           required
         />
         <br /><br />
-        <button
+        <button className="primary"
           type="submit"
         >
           LOGIN NOW
@@ -67,9 +67,7 @@ function Login() {
       </form>
 
       <p
-        className={`login-message ${
-          message.includes("SUCCESS") ? "success" : "error"
-        }`}
+        className="login-message success|error"
       >
         {message}
       </p>

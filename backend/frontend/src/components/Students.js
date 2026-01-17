@@ -156,13 +156,13 @@ function Students() {
         )}
 
         <div style={{ display: "flex", gap: "10px" }}>
-          <button onClick={handleAdd}>➕ Add</button>
-          <button onClick={handleUpdate}>✏️ Update</button>
-          {isAdmin && <button onClick={handleDelete}>🗑 Delete</button>}
+          <button className="primary" onClick={handleAdd}>➕ Add</button>
+          <button className="primary" onClick={handleUpdate}>✏️ Update</button>
+          {isAdmin && <button className="primary" onClick={handleDelete}>🗑 Delete</button>}
         </div>
       </div>
 
-      <table className="data-table">
+      <table>
         <thead>
           <tr>
             <th>ID</th><th>Name</th><th>Grade</th><th>School</th>

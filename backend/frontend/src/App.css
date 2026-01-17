@@ -1,29 +1,48 @@
-/* 🌿 GLOBAL COLORS */
+/* =====================================================
+   🌿 GLOBAL THEME VARIABLES
+===================================================== */
 :root {
-  --app-blue: #1E3A5F;          /* Primary Color (Dark Slate Blue) */
-  --accent-teal: #4FA3B8;       /* Secondary Accent */
-  --app-bg: #F4F7FB;            /* App Background */
-  --card-bg: #FFFFFF;            /* Cards / Forms */
-  --card-border: #E3E8EF;        /* Card border */
+  --app-blue: #1E3A5F;
+  --accent-teal: #4FA3B8;
+  --app-bg: #F4F7FB;
+
+  --card-bg: #FFFFFF;
+  --card-border: #E3E8EF;
   --shadow-color: rgba(0, 0, 0, 0.06);
-  --text-dark: #2E2E2E;          /* General text */
-  --danger-red: #C0392B;         /* Delete buttons */
+
+  --text-dark: #2E2E2E;
+
+  --secondary-bg: #E9EFF5;
+
+  --danger-red: #C0392B;
   --danger-hover: #A93226;
-  --secondary-bg: #E9EFF5;       /* Secondary buttons / subtle backgrounds */
+
   --table-header-bg: #F0F4F8;
   --table-row-hover: #F7FAFC;
 }
 
-/* 🌿 BODY */
+/* =====================================================
+   🌿 BASE / GLOBAL
+===================================================== */
 body {
   font-family: 'Inter', 'Source Sans 3', 'IBM Plex Sans', sans-serif;
   background-color: var(--app-bg);
   color: var(--text-dark);
   margin: 0;
-  padding: 0;
 }
 
-/* 🌿 NAVBAR */
+/* =====================================================
+   🌿 PAGE LAYOUT
+===================================================== */
+.page-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* =====================================================
+   🌿 NAVBAR
+===================================================== */
 .navbar {
   background-color: var(--app-blue);
   color: white;
@@ -42,11 +61,6 @@ body {
   color: white;
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.navbar a:visited {
-  color: white;
 }
 
 .navbar a:hover {
@@ -54,18 +68,15 @@ body {
 }
 
 .navbar-user {
-  color: #eee;
   font-style: italic;
 }
 
 .navbar-logout {
   background: transparent;
   border: 1px solid white;
-  border-radius: 4px;
   padding: 4px 10px;
-  color: white;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.3s ease;
 }
 
 .navbar-logout:hover {
@@ -73,84 +84,97 @@ body {
   color: var(--text-dark);
 }
 
-/* 🌿 HEADINGS */
-h2, h3 {
+/* =====================================================
+   🌿 HEADINGS
+===================================================== */
+h2,
+h3 {
   color: var(--app-blue);
-  text-align: left;
   margin-bottom: 12px;
   border-left: 5px solid var(--accent-teal);
   padding-left: 10px;
 }
 
-/* 🌿 CARDS / FORMS */
-form, .card {
+/* =====================================================
+   🌿 CARDS / FORMS
+===================================================== */
+form,
+.card {
   background-color: var(--card-bg);
-  padding: 16px;
+  border: 1px solid var(--card-border);
   border-radius: 16px;
+  padding: 16px;
   box-shadow: 0 8px 24px var(--shadow-color);
   margin-bottom: 20px;
-  border: 1px solid var(--card-border);
 }
 
-/* 🌿 INPUTS */
-input, select, textarea, button {
-  margin: 6px;
+/* =====================================================
+   🌿 INPUTS
+===================================================== */
+input,
+select,
+textarea {
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
   font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
   font-family: inherit;
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus,
+select:focus,
+textarea:focus {
   outline: none;
   border-color: var(--app-blue);
   box-shadow: 0 0 4px rgba(30, 58, 95, 0.3);
 }
 
-/* 🌿 BUTTONS */
+/* =====================================================
+   🌿 BUTTON SYSTEM
+===================================================== */
 button {
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border-radius: 8px;
+  font-family: inherit;
   padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  border: none;
+  transition: all 0.25s ease;
 }
 
-/* Primary Button */
+/* Primary */
 button.primary {
   background-color: var(--app-blue);
   color: white;
-  border: none;
 }
 
 button.primary:hover {
   background-color: #162E4A;
 }
 
-/* Secondary Button */
+/* Secondary */
 button.secondary {
   background-color: var(--secondary-bg);
   color: var(--app-blue);
-  border: none;
 }
 
 button.secondary:hover {
   background-color: #DCE6F0;
 }
 
-/* Danger Button */
+/* Danger */
 button.delete {
   background-color: var(--danger-red);
   color: white;
-  border: none;
 }
 
 button.delete:hover {
   background-color: var(--danger-hover);
 }
 
-/* 🌿 TABLES */
+/* =====================================================
+   🌿 TABLES
+===================================================== */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -162,10 +186,9 @@ table {
 
 th {
   background-color: var(--table-header-bg);
-  color: var(--text-dark);
   padding: 12px;
-  text-align: left;
   font-weight: 500;
+  text-align: left;
 }
 
 td {
@@ -177,57 +200,30 @@ tr:hover {
   background-color: var(--table-row-hover);
 }
 
-/* 🌿 RESPONSIVE */
-@media (max-width: 768px) {
-  .navbar-links {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  form, table {
-    font-size: 14px;
-  }
-}
-
-/* 🌿 Container for pages like Dashboard */
-.container {
-  padding: 20px;         /* space inside edges */
-  max-width: 1200px;     /* optional: keeps content from stretching too wide */
-  margin: 0 auto;        /* centers the container horizontally */
-  font-family: inherit;   /* ensures the app-wide font is used */
-}
-
-/* Align filter bar with heading text (not border) */
-.filter-bar {
+/* =====================================================
+   🌿 FILTER / ACTION BARS
+===================================================== */
+.filter-bar,
+.action-bar {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 18px 0 28px;
-  padding-left: 15px; /* 👈 THIS is the key */
-}
-
-.action-bar {
   margin-bottom: 16px;
-  padding-left: 15px; /* aligns with heading text */
+  padding-left: 15px;
 }
 
 .helper-text {
   opacity: 0.75;
   padding-left: 15px;
-  margin-top: 8px;
   font-style: italic;
 }
 
-/* LOGIN PAGE */
-
+/* =====================================================
+   🌿 LOGIN PAGE
+===================================================== */
 .login-page {
   padding: 40px;
   text-align: center;
-  font-family: Arial, sans-serif;
-}
-
-.login-page h1 {
-  margin-bottom: 30px;
 }
 
 .login-form {
@@ -235,34 +231,6 @@ tr:hover {
   flex-direction: column;
   align-items: center;
   gap: 20px;
-}
-
-.login-form input {
-  width: 300px;
-  padding: 12px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-
-.login-form input:focus {
-  outline: none;
-  border-color: #1E3A5F; /* green theme */
-}
-
-.login-form button {
-  padding: 12px 26px;
-  font-size: 16px;
-  font-weight: bold;
-  background-color: #1E3A5F;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.login-form button:hover {
-  background-color: #4FA3B8;
 }
 
 .login-message {
@@ -276,4 +244,14 @@ tr:hover {
 
 .login-message.error {
   color: red;
+}
+
+/* =====================================================
+   🌿 RESPONSIVE
+===================================================== */
+@media (max-width: 768px) {
+  .navbar-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }

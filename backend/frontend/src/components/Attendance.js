@@ -135,12 +135,12 @@ function Attendance() {
       {!loading && selectedSessionID && (
         <>
           <div className="action-bar">
-            <button onClick={saveChanges} disabled={saving}>
+            <button className="primary" onClick={saveChanges} disabled={saving}>
               {saving ? "Saving…" : "Save Changes"}
             </button>
           </div>
 
-          <table className="data-table">
+          <table>
             <thead>
               <tr>
                 <th>Student</th>
