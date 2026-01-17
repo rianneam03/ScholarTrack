@@ -81,7 +81,7 @@ body {
 
 .navbar-logout:hover {
   background-color: var(--accent-teal);
-  color: var(white);
+  color: var(--text-dark);
 }
 
 /* =====================================================
