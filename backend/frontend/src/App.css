@@ -222,7 +222,7 @@ tr:hover {
    🌿 LOGIN PAGE
 ===================================================== */
 .login-page {
-  padding: 20px;
+  padding: 40px;
   text-align: center;
 }
 
@@ -230,7 +230,7 @@ tr:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 5px;
 }
 
 .login-message {
