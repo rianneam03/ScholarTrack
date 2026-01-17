@@ -26,7 +26,7 @@ function Navbar() {
 
   return (
     <nav className="navbar">
-      <div className="navbar-a">ScholarTrack</div>
+      <div className="navbar-brand">ScholarTrack</div>
 
       <div className="navbar-links">
         {user ? (
