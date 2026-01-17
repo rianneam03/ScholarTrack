@@ -66,10 +66,10 @@ function Login() {
         </button>
       </form>
 
-      <p className={`login-message ${message.includes("SUCCESS") ? "success" : "error"}`}>
+      <p className={`login-message. ${message.includes("SUCCESS") ? "success" : "error"}`}>
         {message}
       </p>
-      
+
     </div>
   );
 }
