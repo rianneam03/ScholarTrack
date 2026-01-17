@@ -40,7 +40,7 @@ function Login() {
   };
 
   return (
-    <div style={{ padding: 40, textAlign: "center", fontFamily: "Arial" }}>
+    <div className="login-page">
       <h1>ScholarTrack Login</h1>
       <form onSubmit={handleSubmit} style={{ marginTop: 30 }}>
         <input
@@ -48,7 +48,6 @@ function Login() {
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          style={{ width: 300, padding: 12, fontSize: 16 }}
           required
         />
         <br /><br />
@@ -57,7 +56,6 @@ function Login() {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          style={{ width: 300, padding: 12, fontSize: 16 }}
           required
         />
         <br /><br />
@@ -69,11 +67,9 @@ function Login() {
       </form>
 
       <p
-        style={{
-          marginTop: 20,
-          fontWeight: "bold",
-          color: message.includes("SUCCESS") ? "green" : "red",
-        }}
+        className={`login-message ${
+          message.includes("SUCCESS") ? "success" : "error"
+        }`}
       >
         {message}
       </p>
