@@ -123,7 +123,7 @@ function Students() {
     <div className="page-container">
       <h2>Students</h2>
 
-      <div className="card">
+      <div className="form-container">
         <input name="StudentID" placeholder="Student ID" onChange={handleChange} />
         <input name="FirstName" placeholder="First Name" onChange={handleChange} />
         <input name="LastName" placeholder="Last Name" onChange={handleChange} />
