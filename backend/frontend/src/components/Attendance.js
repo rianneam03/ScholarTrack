@@ -115,7 +115,7 @@ function Attendance() {
       <h2>Attendance</h2>
 
       {/* Session picker */}
-      <div style={{ display: "flex", gap: 20, alignItems: "center", marginBottom: 16 }}>
+      <div>
         <label><strong>Session:&nbsp;</strong></label>
         <select
           value={selectedSessionID}
