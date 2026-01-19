@@ -94,7 +94,7 @@ function Sessions() {
 
     try {
       const res = await fetch(
-        `https://scholartrack-backend-7vzy.onrender.com/api/sessions/${sessionId}`,
+        `https://scholartrack-backend-7vzy.onrender.com/api/sessions/${sessionId}/`,
         { method: "DELETE" }
       );
 
