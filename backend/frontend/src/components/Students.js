@@ -139,7 +139,7 @@ function Students() {
         </select>
 
         <select name="STEMInterest" onChange={handleChange}>
-          <option value="">STEM?</option>
+          <option value="">STEM Interest</option>
           <option value="Yes">Yes</option>
           <option value="No">No</option>
         </select>
