@@ -17,6 +17,11 @@ function Students() {
     EnrollmentDate: "",
   });
 
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: "asc",
+  });
+
   const user = JSON.parse(localStorage.getItem("user"));
   const isAdmin = user?.role === "admin";
 
@@ -119,6 +124,41 @@ function Students() {
     fetchStudents();
   };
 
+  const sortStudents = (key) => {
+    let direction = "asc";
+
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+
+  const sorted = [...students].sort((a, b) => {
+    let aVal = a[key];
+    let bVal = b[key];
+
+    // Date sorting
+    if (key === "EnrollmentDate") {
+      aVal = new Date(aVal);
+      bVal = new Date(bVal);
+      return direction === "asc" ? aVal - bVal : bVal - aVal;
+    }
+
+    // Numeric sorting (StudentID)
+    if (key === "StudentID") {
+      return direction === "asc"
+        ? Number(aVal) - Number(bVal)
+        : Number(bVal) - Number(aVal);
+    }
+
+    // String sorting (LastName)
+    return direction === "asc"
+      ? String(aVal).localeCompare(String(bVal))
+      : String(bVal).localeCompare(String(aVal));
+  });
+
+  setStudents(sorted);
+  setSortConfig({ key, direction });
+};
+
   return (
     <div className="page-container">
       <h2>Students</h2>
@@ -165,8 +205,31 @@ function Students() {
       <table>
         <thead>
           <tr>
-            <th>ID</th><th>Name</th><th>Grade</th><th>School</th>
-            <th>STEM</th><th>Date</th>
+            <th
+              onClick={() => sortStudents("StudentID")}
+              style={{ cursor: "pointer" }}
+            >
+              ID {sortConfig.key === "StudentID" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+            </th>
+
+            <th
+              onClick={() => sortStudents("LastName")}
+              style={{ cursor: "pointer" }}
+            >
+              Name {sortConfig.key === "LastName" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+            </th>
+
+            <th>Grade</th>
+            <th>School</th>
+            <th>STEM</th>
+
+            <th
+              onClick={() => sortStudents("EnrollmentDate")}
+              style={{ cursor: "pointer" }}
+            >
+              Date {sortConfig.key === "EnrollmentDate" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+            </th>
+
             {isAdmin && (
               <>
                 <th>Student Phone</th>
@@ -175,9 +238,9 @@ function Students() {
                 <th>Email</th>
               </>
             )}
-
           </tr>
         </thead>
+
         <tbody>
           {students.map((s) => (
             <tr key={s.StudentID}>
