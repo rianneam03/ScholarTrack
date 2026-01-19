@@ -95,9 +95,14 @@ function Sessions() {
     try {
       const res = await fetch(
         `https://scholartrack-backend-7vzy.onrender.com/api/sessions/${sessionId}/`,
-        { method: "DELETE" }
+        {
+          method: "DELETE",
+          headers: {
+            "Username": user.username,   // 🔑 REQUIRED
+          },
+        }
       );
-
+      
       if (!res.ok) {
         const text = await res.text(); // handle HTML or error text
         console.error("Failed to delete session:", text);
