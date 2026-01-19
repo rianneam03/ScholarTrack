@@ -68,6 +68,32 @@ function Sessions() {
     }
   };
 
+  const handleDelete = async (sessionId) => {
+  if (!window.confirm("Are you sure you want to delete this session?")) return;
+
+  try {
+    const res = await fetch(
+      `https://scholartrack-backend-7vzy.onrender.com/api/sessions/${sessionId}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "Failed to delete session");
+      return;
+    }
+
+    alert("🗑️ Session deleted");
+    fetchSessions(); // refresh table
+  } catch (err) {
+    console.error(err);
+    alert("Server error while deleting session");
+  }
+};
+
   return (
     <div className="page-container">
       <h2>Sessions</h2>
@@ -124,27 +150,37 @@ function Sessions() {
       <table >
         <thead>
           <tr>
-            <th>ID</th>
             <th>Title</th>
             <th>Date</th>
             <th>Description</th>
             <th>School</th>
+            {isAdmin && <th>Actions</th>}
           </tr>
         </thead>
         <tbody>
           {sessions.length > 0 ? (
             sessions.map((s) => (
               <tr key={s.SessionID}>
-                <td>{s.SessionID}</td>
                 <td>{s.Title}</td>
                 <td>{s.SessionDate}</td>
                 <td>{s.Description}</td>
                 <td>{s.SchoolName || "-"}</td>
+                
+                {isAdmin && (
+                  <td>
+                    <button
+                      className="delete"
+                      onClick={() => handleDelete(s.SessionID)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                )}
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="5">No sessions found.</td>
+              <td colSpan={isAdmin ? "5" : "4"}>No sessions found.</td>
             </tr>
           )}
         </tbody>
