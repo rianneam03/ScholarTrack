@@ -79,6 +79,22 @@ def sessions_list(request):
             import traceback
             traceback.print_exc()
             return Response({"error": str(e)}, status=500)
+        
+@api_view(['DELETE'])
+def session_detail(request, session_id):
+    # Only admins can delete
+    username = request.headers.get("Username")
+    user = User.objects.filter(username=username).first()
+    if not user or user.role != "admin":
+        return Response({"error": "Unauthorized"}, status=403)
+
+    try:
+        session = Session.objects.get(pk=session_id)
+    except Session.DoesNotExist:
+        return Response({"error": "Session not found"}, status=404)
+
+    session.delete()
+    return Response({"message": f"Session {session_id} deleted successfully!"})
 
 # --- Attendance list API ---
 @api_view(['GET', 'POST'])
