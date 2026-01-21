@@ -71,29 +71,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.scholartrack.wsgi.application'
 
-# Database
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'mssql',
-#        'NAME': 'ScholarTrackDB',  # your SQL database name
-#        'USER': 'EDUDB_admin',                   # your SQL Server username
-#        'PASSWORD': 'EduScholarsDB25',  # your SQL password
-#        'HOST': 'scholartrack-server.database.windows.net',             # or your server name
-#        'PORT': '',                  # default MSSQL port
-#        'OPTIONS': {
-#            'driver': 'ODBC Driver 17 for SQL Server',  # or Driver 18 if installed
-#            'trustServerCertificate': True,  
-#        },
-#    }
-#}
-
-#DATABASES = {
-#    'default': dj_database_url.parse(
-#        "postgresql://scholar_admin:7DP5AZHqQtBlgd0LlSgOm7VKvt5w8jaa@" 
-#        "dpg-d4ga1kfgi27c73eb8ukg-a.oregon-postgres.render.com/eduscholartrackdb"        
-#    )
-#}
-
 # Database - Render provides DATABASE_URL automatically
 DATABASES = {
     'default': dj_database_url.config(
