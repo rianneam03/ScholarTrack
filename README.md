@@ -9,7 +9,7 @@
 - **Frontend:** React  
 - **Backend:** Django, Django REST Framework  
 - **Database:** SQL Server / SQLite (local development)  
-- **Deployment:** Render (backend)  
+- **Deployment:** Render (backend + frontend)  
 - **Environment Variables:** `python-dotenv` for backend secrets, `.env` for frontend API URL  
 
 ---
