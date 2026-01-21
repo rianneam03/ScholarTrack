@@ -4,6 +4,11 @@ import sys
 import os
 import dj_database_url
 
+from dotenv import load_dotenv
+
+# Load .env from backend folder
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), '.env'))
+
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -12,8 +17,8 @@ CSRF_TRUSTED_ORIGINS = [
     "https://scholartrack-backend.onrender.com"    
 ]
 
-SECRET_KEY = 'django-insecure-your-secret-key'  # Replace later with env variable
-DEBUG = True
+SECRET_KEY = os.environ.get("SECRET_KEY")
+DEBUG = os.environ.get("DEBUG") == "True"
                  
 ALLOWED_HOSTS = [
     #"scholartrack-nou4.onrender.com",

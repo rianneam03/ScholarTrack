@@ -1,0 +1,9 @@
+# Ignore backend secrets
+.env
+
+# Ignore local database
+*.sqlite3
+
+# Ignore Python cache
+__pycache__/
+*.pyc
