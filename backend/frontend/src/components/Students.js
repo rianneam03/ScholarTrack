@@ -131,32 +131,38 @@ function Students() {
       direction = "desc";
     }
 
-  const sorted = [...students].sort((a, b) => {
-    let aVal = a[key];
-    let bVal = b[key];
+    const sorted = [...students].sort((a, b) => {
+      let aVal = a[key];
+      let bVal = b[key];
 
-    // Date sorting
-    if (key === "EnrollmentDate") {
-      aVal = new Date(aVal);
-      bVal = new Date(bVal);
-      return direction === "asc" ? aVal - bVal : bVal - aVal;
-    }
+      // Date sorting
+      if (key === "EnrollmentDate") {
+        aVal = new Date(aVal);
+        bVal = new Date(bVal);
+        return direction === "asc" ? aVal - bVal : bVal - aVal;
+      }
 
-    // Numeric sorting (StudentID)
-    if (key === "StudentID") {
+      // Numeric sorting (StudentID)
+      if (key === "StudentID") {
+        return direction === "asc"
+          ? Number(aVal) - Number(bVal)
+          : Number(bVal) - Number(aVal);
+      }
+
+      // String sorting (LastName)
       return direction === "asc"
-        ? Number(aVal) - Number(bVal)
-        : Number(bVal) - Number(aVal);
-    }
+        ? String(aVal).localeCompare(String(bVal))
+        : String(bVal).localeCompare(String(aVal));
+    });
 
-    // String sorting (LastName)
-    return direction === "asc"
-      ? String(aVal).localeCompare(String(bVal))
-      : String(bVal).localeCompare(String(aVal));
-  });
+    setStudents(sorted);
+    setSortConfig({ key, direction });
+  };
 
-  setStudents(sorted);
-  setSortConfig({ key, direction });
+// 🔽 PUT IT **RIGHT HERE**
+const renderSortArrow = (key) => {
+  if (sortConfig.key !== key) return null;
+  return sortConfig.direction === "asc" ? " ▲" : " ▼";
 };
 
   return (
