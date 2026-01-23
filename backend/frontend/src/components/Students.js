@@ -1,4 +1,8 @@
-import React, { useEffect, useState } from "react";
+
+  //const user = JSON.parse(localStorage.getItem("user"));
+  //const isAdmin = user?.role === "admin";
+
+  import React, { useEffect, useState } from "react";
 
 function Students() {
   const [students, setStudents] = useState([]);
@@ -22,6 +26,10 @@ function Students() {
     direction: "asc",
   });
 
+  // TEMPORARY: hardcoded user for local testing
+  //const user = { username: "admin", role: "admin" };
+  //const isAdmin = true;
+
   const user = JSON.parse(localStorage.getItem("user"));
   const isAdmin = user?.role === "admin";
 
@@ -31,16 +39,12 @@ function Students() {
   }, []);
 
   const fetchStudents = async () => {
-    const res = await fetch(
-      "https://scholartrack-backend-7vzy.onrender.com/api/students/"
-    );
+    const res = await fetch("https://scholartrack-backend-7vzy.onrender.com/api/students/");
     setStudents(await res.json());
   };
 
   const fetchSchools = async () => {
-    const res = await fetch(
-      "https://scholartrack-backend-7vzy.onrender.com/api/schools/"
-    );
+    const res = await fetch("https://scholartrack-backend-7vzy.onrender.com/api/schools/");
     setSchools(await res.json());
   };
 
@@ -51,17 +55,14 @@ function Students() {
   // ➕ ADD STUDENT
   // =======================
   const handleAdd = async () => {
-    const res = await fetch(
-      "https://scholartrack-backend-7vzy.onrender.com/api/students/",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Username: user.username,
-        },
-        body: JSON.stringify(formData),
-      }
-    );
+    const res = await fetch("https://scholartrack-backend-7vzy.onrender.com/api/students/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Username: user.username,
+      },
+      body: JSON.stringify(formData),
+    });
 
     const data = await res.json();
     if (!res.ok) return alert(data.error || "Add failed");
@@ -74,28 +75,19 @@ function Students() {
   // ✏️ UPDATE (PATCH)
   // =======================
   const handleUpdate = async () => {
-    if (!formData.StudentID) {
-      alert("Student ID required");
-      return;
-    }
+    if (!formData.StudentID) return alert("Student ID required");
 
-    const res = await fetch(
-      "https://scholartrack-backend-7vzy.onrender.com/api/students/",
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Username: user.username,
-        },
-        body: JSON.stringify(formData),
-      }
-    );
+    const res = await fetch("https://scholartrack-backend-7vzy.onrender.com/api/students/", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Username: user.username,
+      },
+      body: JSON.stringify(formData),
+    });
 
     const data = await res.json();
-    if (!res.ok) {
-      alert(data.error || "Update failed");
-      return;
-    }
+    if (!res.ok) return alert(data.error || "Update failed");
 
     alert("✅ Student updated successfully!");
     fetchStudents();
@@ -106,9 +98,7 @@ function Students() {
   // =======================
   const handleDelete = async () => {
     if (!isAdmin) return;
-    if (!formData.StudentID)
-      return alert("Student ID required");
-
+    if (!formData.StudentID) return alert("Student ID required");
     if (!window.confirm("Delete this student?")) return;
 
     const res = await fetch(
@@ -126,30 +116,20 @@ function Students() {
 
   const sortStudents = (key) => {
     let direction = "asc";
-
-    if (sortConfig.key === key && sortConfig.direction === "asc") {
-      direction = "desc";
-    }
+    if (sortConfig.key === key && sortConfig.direction === "asc") direction = "desc";
 
     const sorted = [...students].sort((a, b) => {
       let aVal = a[key];
       let bVal = b[key];
 
-      // Date sorting
       if (key === "EnrollmentDate") {
         aVal = new Date(aVal);
         bVal = new Date(bVal);
         return direction === "asc" ? aVal - bVal : bVal - aVal;
       }
 
-      // Numeric sorting (StudentID)
-      if (key === "StudentID") {
-        return direction === "asc"
-          ? Number(aVal) - Number(bVal)
-          : Number(bVal) - Number(aVal);
-      }
+      if (key === "StudentID") return direction === "asc" ? Number(aVal) - Number(bVal) : Number(bVal) - Number(aVal);
 
-      // String sorting (LastName)
       return direction === "asc"
         ? String(aVal).localeCompare(String(bVal))
         : String(bVal).localeCompare(String(aVal));
@@ -159,11 +139,13 @@ function Students() {
     setSortConfig({ key, direction });
   };
 
-// 🔽 PUT IT **RIGHT HERE**
-const renderSortArrow = (key) => {
-  if (sortConfig.key !== key) return null;
-  return sortConfig.direction === "asc" ? " ▲" : " ▼";
-};
+  // =======================
+  // Render sort arrows
+  // =======================
+  const renderSortArrow = (key) => {
+    if (sortConfig.key !== key) return null;
+    return sortConfig.direction === "asc" ? " ▲" : " ▼";
+  };
 
   return (
     <div className="page-container">
@@ -211,31 +193,18 @@ const renderSortArrow = (key) => {
       <table>
         <thead>
           <tr>
-            <th
-              onClick={() => sortStudents("StudentID")}
-              style={{ cursor: "pointer" }}
-            >
-              ID {sortConfig.key === "StudentID" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+            <th onClick={() => sortStudents("StudentID")} style={{ cursor: "pointer" }}>
+              ID {renderSortArrow("StudentID")}
             </th>
-
-            <th
-              onClick={() => sortStudents("LastName")}
-              style={{ cursor: "pointer" }}
-            >
-              Name {sortConfig.key === "LastName" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+            <th onClick={() => sortStudents("LastName")} style={{ cursor: "pointer" }}>
+              Name {renderSortArrow("LastName")}
             </th>
-
             <th>Grade</th>
             <th>School</th>
             <th>STEM</th>
-
-            <th
-              onClick={() => sortStudents("EnrollmentDate")}
-              style={{ cursor: "pointer" }}
-            >
-              Date {sortConfig.key === "EnrollmentDate" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+            <th onClick={() => sortStudents("EnrollmentDate")} style={{ cursor: "pointer" }}>
+              Date {renderSortArrow("EnrollmentDate")}
             </th>
-
             {isAdmin && (
               <>
                 <th>Student Phone</th>
@@ -264,7 +233,6 @@ const renderSortArrow = (key) => {
                   <td>{s.Email || "-"}</td>
                 </>
               )}
-
             </tr>
           ))}
         </tbody>
