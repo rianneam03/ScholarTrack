@@ -1,3 +1,6 @@
+import openpyxl
+from django.http import HttpResponse
+from django.contrib.auth.decorators import user_passes_test
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Student, School, Session, Attendance, User
@@ -298,6 +301,64 @@ def students_list(request):
 
         student.save()
         return Response({"message": "Student updated successfully"})
+    
+#Export list
+@api_view(["GET"])
+def export_students_excel(request):
+    # 🔐 Admin-only check (matches your app logic)
+    username = request.headers.get("Username")
+    user = User.objects.filter(username=username).first()
+
+    if not user or user.role != "admin":
+        return Response({"error": "Unauthorized"}, status=403)
+
+    students = Student.objects.select_related("school").all()
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Students"
+
+    # Header row
+    headers = [
+        "StudentID",
+        "First Name",
+        "Last Name",
+        "Grade",
+        "School",
+        "STEM Interest",
+        "Enrollment Date",
+        "Student Phone",
+        "Guardian Name",
+        "Guardian Phone",
+        "Email",
+    ]
+    ws.append(headers)
+
+    # Data rows
+    for s in students:
+        ws.append([
+            s.studentid,
+            s.firstname,
+            s.lastname,
+            s.grade,
+            s.school.school if s.school else "",
+            s.steminterest,
+            s.enrollmentdate.strftime("%Y-%m-%d") if s.enrollmentdate else "",
+            s.studentphone,
+            s.guardianname,
+            s.guardianphone,
+            s.email,
+        ])
+
+    # Create response
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response["Content-Disposition"] = 'attachment; filename="students.xlsx"'
+
+    wb.save(response)
+    return response
+
 
 # --- Schools list API ---
 @api_view(['GET', 'POST'])
@@ -359,3 +420,4 @@ def login_user(request):
             "userid": user.userid,
             "role": getattr(user, "role", "teacher")
         })
+

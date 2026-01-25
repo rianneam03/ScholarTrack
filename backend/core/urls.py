@@ -3,6 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.urls import path
 from . import views
 from backend.core.views import csrf   # your csrf view
+from .views import export_students_excel
 
 @csrf_exempt
 def health_check(request):
@@ -12,6 +13,7 @@ urlpatterns = [
     path("", health_check),
     path('api/dashboard_data/', views.dashboard_data, name='dashboard_data'),
     path('api/students/', views.students_list, name='students_list'),
+    path("api/students/export/", export_students_excel),
     path('api/sessions/', views.sessions_list, name='sessions_list'),
     path('api/sessions/<int:session_id>/', views.session_detail, name='session_detail'),
     path('api/schools/', views.schools_list, name='schools_list'),

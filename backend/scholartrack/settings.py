@@ -1,37 +1,40 @@
 import os
 from pathlib import Path
-import sys
-import os
 import dj_database_url
 from dotenv import load_dotenv
 
-
-# Load .env from backend folder
-load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), '.env'))
-
-# Base directory
+# ----------------------
+# BASE DIR & LOAD ENV
+# ----------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")  # loads .env in project root
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://scholartrack-frontend.onrender.com",
-    "https://scholartrack-backend.onrender.com"    
-]
-
+# ----------------------
+# SECURITY
+# ----------------------
 SECRET_KEY = os.environ.get("SECRET_KEY")
-DEBUG = os.environ.get("DEBUG") == "True"
-                 
-ALLOWED_HOSTS = [
-    #"scholartrack-nou4.onrender.com",
-    #"localhost",
-    #"127.0.0.1"
-    "*"
-]
+DEBUG = os.environ.get("DEBUG", "False") == "True"
+ALLOWED_HOSTS = ["*"]  # you can restrict later for production
 
-# Applications
+# ----------------------
+# DATABASE
+# ----------------------
+# Use Postgres from .env if set
+DATABASES = {
+    "default": dj_database_url.config(
+        default=f"postgresql://{os.environ.get('DB_USER')}:{os.environ.get('DB_PASSWORD')}@{os.environ.get('DB_HOST')}:{os.environ.get('DB_PORT')}/{os.environ.get('DB_NAME')}",
+        conn_max_age=600,
+        ssl_require=not DEBUG,  # SSL in production, skip in local dev
+    )
+}
+
+# ----------------------
+# APPLICATIONS
+# ----------------------
 INSTALLED_APPS = [
-    "corsheaders",        # ✅ must be at the top
+    "corsheaders",
     "rest_framework",
-    "backend.core",               # your app
+    "backend.core",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -41,7 +44,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",  # ✅ must come before CommonMiddleware
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -51,78 +54,79 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'backend.scholartrack.urls'
+ROOT_URLCONF = "backend.scholartrack.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "templates"],  # you can create templates folder later
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'backend.scholartrack.wsgi.application'
+WSGI_APPLICATION = "backend.scholartrack.wsgi.application"
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=f"postgresql://{os.environ.get('DB_USER')}:{os.environ.get('DB_PASSWORD')}@{os.environ.get('DB_HOST')}/{os.environ.get('DB_NAME')}",
-        conn_max_age=600,
-        ssl_require=True
-    )
-}
-
-
-# Password validation
+# ----------------------
+# PASSWORD VALIDATION
+# ----------------------
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-# Internationalization
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'America/Chicago'
+# ----------------------
+# INTERNATIONALIZATION
+# ----------------------
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = "America/Chicago"
 USE_I18N = True
 USE_TZ = True
 
-# Static files
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+# ----------------------
+# STATIC FILES
+# ----------------------
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
-# Default primary key field type
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# ----------------------
+# CORS & CSRF
+# ----------------------
 
 CORS_ALLOWED_ORIGINS = [
     "https://scholartrack-frontend.onrender.com",
 ]
-
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = ["content-type", "authorization", "username"]
 
-
-CORS_ALLOW_HEADERS = [
-    "content-type",
-    "authorization",
-    "username",  # ✅ THIS IS THE FIX
+CSRF_TRUSTED_ORIGINS = [
+    "https://scholartrack-frontend.onrender.com",
+    "https://scholartrack-backend.onrender.com",
 ]
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
-
 CORS_ALLOW_ALL_ORIGINS = False
 
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+# ----------------------
+# AUTHENTICATION
+# ----------------------
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
 
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend'
-]
+AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.ModelBackend"]
+
+# ----------------------
+# DEFAULTS
+# ----------------------
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

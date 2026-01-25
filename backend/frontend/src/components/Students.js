@@ -26,10 +26,6 @@ function Students() {
     direction: "asc",
   });
 
-  // TEMPORARY: hardcoded user for local testing
-  //const user = { username: "admin", role: "admin" };
-  //const isAdmin = true;
-
   const user = JSON.parse(localStorage.getItem("user"));
   const isAdmin = user?.role === "admin";
 
@@ -140,6 +136,40 @@ function Students() {
   };
 
   // =======================
+  // Export Student Data
+  // =======================
+  const handleExport = async () => {
+    try {
+      const res = await fetch(
+        "https://scholartrack-backend-7vzy.onrender.com/api/students/export/",
+        {
+          headers: {
+            Username: user.username,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        alert("Export failed");
+        return;
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "students.xlsx";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (err) {
+      console.error(err);
+      alert("Error exporting data");
+    }
+  };
+
+  // =======================
   // Render sort arrows
   // =======================
   const renderSortArrow = (key) => {
@@ -187,6 +217,12 @@ function Students() {
           <button className="primary" onClick={handleAdd}>➕ Add</button>
           <button className="primary" onClick={handleUpdate}>✏️ Update</button>
           {isAdmin && <button className="primary" onClick={handleDelete}>🗑 Delete</button>}
+          {isAdmin && (
+            <button className="primary" onClick={handleExport}>
+              📥 Export Students
+            </button>
+)}
+
         </div>
       </div>
 
