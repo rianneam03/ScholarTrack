@@ -418,20 +418,39 @@ def admin_create_user(request):
         return Response({"error": "Forbidden"}, status=403)
 
     data = request.data
+
+    # Required fields check
+    if not data.get("username") or not data.get("email"):
+        return Response({"error": "Username and email are required"}, status=400)
+
     token = secrets.token_urlsafe(32)
 
-    user = User.objects.create(
-        username=data["username"],
-        email=data["email"],
-        role=data.get("role", "teacher"),
-        password="",  # No password yet
-        is_active=False,
-        activation_token=token
-    )
+    try:
+        # Create user
+        user = User(
+            username=data["username"],
+            email=data["email"],
+            role=data.get("role", "teacher"),
+            is_active=False,
+            activation_token=token
+        )
 
-    send_activation_email(user.email, token)
+        # Set a random password for now (or None if nullable)
+        user.password = make_password(secrets.token_urlsafe(16))
+        user.save()
 
-    return Response({"message": "User created, activation email sent"})
+        # Send activation email safely
+        try:
+            send_activation_email(user.email, token)
+        except Exception as e:
+            print("Failed to send email:", e)
+
+        return Response({"message": "User created, activation email sent"})
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return Response({"error": str(e)}, status=500)
 
 # ---Activation endpoint ---
 @api_view(["POST"])
