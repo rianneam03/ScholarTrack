@@ -49,6 +49,13 @@ function Navbar() {
               </>
             )}
 
+            {/* Admin-only link */}
+            {role === "admin" && (
+              <NavLink to="/admin/users" className={({ isActive }) => (isActive ? "active" : "")}>
+                Manage Users
+              </NavLink>
+            )}
+
             <span className="navbar-user">
               Hi, {user.fullname || user.username} ({role})
             </span>

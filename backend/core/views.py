@@ -1,4 +1,8 @@
 import openpyxl
+import secrets
+import re
+from .utils import send_activation_email
+from django.contrib.auth.hashers import make_password, check_password
 from django.http import HttpResponse
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.decorators import api_view
@@ -10,7 +14,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.db import models
-import re
 
 # --- CSRF token endpoint ---
 def csrf(request):
@@ -386,6 +389,89 @@ def students_by_school(request, school_id):
     ]
     return Response(data)
 
+# --- Admin Sees existing users and creates new User ---
+@api_view(["GET"])
+def list_users(request):
+    username = request.headers.get("Username")
+    admin = User.objects.filter(username=username).first()
+    if not admin or admin.role != "admin":
+        return Response({"error": "Forbidden"}, status=403)
+
+    users = User.objects.all()
+    data = [
+        {
+            "username": u.username,
+            "email": u.email,
+            "role": u.role,
+            "is_active": u.is_active,
+        }
+        for u in users
+    ]
+    return Response(data)
+
+@api_view(["POST"])
+def admin_create_user(request):
+    username = request.headers.get("Username")
+    admin = User.objects.filter(username=username).first()
+
+    if not admin or admin.role != "admin":
+        return Response({"error": "Forbidden"}, status=403)
+
+    data = request.data
+    token = secrets.token_urlsafe(32)
+
+    user = User.objects.create(
+        username=data["username"],
+        email=data["email"],
+        role=data.get("role", "teacher"),
+        password="",  # No password yet
+        is_active=False,
+        activation_token=token
+    )
+
+    send_activation_email(user.email, token)
+
+    return Response({"message": "User created, activation email sent"})
+
+# ---Activation endpoint ---
+@api_view(["POST"])
+def activate_account(request):
+    token = request.data.get("token")
+    password = request.data.get("password")
+
+    if not token or not password:
+        return Response({"error": "Token and password are required"}, status=400)
+
+    user = User.objects.filter(activation_token=token).first()
+    if not user:
+        return Response({"error": "Invalid token"}, status=400)
+
+    from django.contrib.auth.hashers import make_password
+    user.password = make_password(password)
+    user.is_active = True
+    user.activation_token = None
+    user.save()
+
+    return Response({"message": "Account activated"})
+
+#Email activation
+@api_view(["POST"])
+def activate_account(request):
+    token = request.data.get("token")
+    password = request.data.get("password")
+
+    user = User.objects.filter(activation_token=token).first()
+    if not user:
+        return Response({"error": "Invalid or expired token"}, status=400)
+
+    # Hash password with Django’s PBKDF2
+    user.password = make_password(password)
+    user.is_active = True
+    user.activation_token = None
+    user.save()
+
+    return Response({"message": "Account activated! You can now log in."})
+
 # --- Login ---
 @csrf_exempt
 @api_view(['GET', 'POST', 'OPTIONS'])
@@ -406,12 +492,15 @@ def login_user(request):
         password = request.data.get("password")
 
         user = User.objects.filter(username=username).first()
+        if not user.is_active:
+            return Response({"error": "Account not activated"}, status=403)
+
         if not user:
             return Response({"error": "User not found"}, status=404)
 
-        if password != user.password:
+        if not check_password(password, user.password):
             return Response({"error": "Invalid password"}, status=400)
-
+        
         return Response({
             "message": "Login successful!",
             "username": user.username,

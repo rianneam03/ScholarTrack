@@ -101,6 +101,9 @@ class User(models.Model):
     email = models.CharField(db_column='email', max_length=100, blank=True, null=True)
     createdat = models.DateTimeField(db_column='createdat', blank=True, null=True)
     role = models.CharField(db_column='role', max_length=20, default='teacher')
+    is_active = models.BooleanField(default=True)
+    activation_token = models.CharField(max_length=64, blank=True, null=True)
+
 
     class Meta:
         managed = False

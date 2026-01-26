@@ -1,14 +1,18 @@
 import "./App.css";
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+// --- Components ---
 import Navbar from "./components/Navbar";
 import Dashboard from "./components/Dashboard";
 import Students from "./components/Students";
 import Sessions from "./components/Sessions";
 import Attendance from "./components/Attendance";
 import Login from "./components/Login";
+import AdminUsers from "./components/AdminUsers";
+import ActivateAccount from "./components/ActivateAccount";
 
-// 🔒 Simple private route wrapper
+// --- Private Route Wrapper ---
 function PrivateRoute({ children, allowedRoles }) {
   const user = JSON.parse(localStorage.getItem("user"));
   if (!user || !allowedRoles.includes(user.role)) {
@@ -21,8 +25,13 @@ function App() {
   return (
     <Router>
       <Navbar />
+
       <Routes>
-        {/* 🔒 Dashboard is now protected */}
+        {/* ----------------- Public Routes ----------------- */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/activate" element={<ActivateAccount />} />
+
+        {/* ----------------- Dashboard ----------------- */}
         <Route
           path="/"
           element={
@@ -31,10 +40,6 @@ function App() {
             </PrivateRoute>
           }
         />
-
-        {/* Public login route */}
-        <Route path="/login" element={<Login />} />
-        
         <Route
           path="/dashboard"
           element={
@@ -44,8 +49,17 @@ function App() {
           }
         />
 
+        {/* ----------------- Admin Routes ----------------- */}
+        <Route
+          path="/admin/users"
+          element={
+            <PrivateRoute allowedRoles={["admin"]}>
+              <AdminUsers />
+            </PrivateRoute>
+          }
+        />
 
-        {/* Restricted routes */}
+        {/* ----------------- Teacher/Admin Routes ----------------- */}
         <Route
           path="/students"
           element={
