@@ -19,8 +19,9 @@ urlpatterns = [
     path('api/schools/', views.schools_list, name='schools_list'),
     path('api/attendance/', views.attendance_list, name='attendance_list'),
     path('api/schools/<int:school_id>/students/', views.students_by_school, name='students_by_school'),
-    path("admin/create-user/", views.admin_create_user, name="admin-create-user"),
-    path("activate-account/", views.activate_account, name="activate-account"),
+    path("api/admin/create-user/", views.admin_create_user, name="admin-create-user"),
+    path("api/users/", views.list_users, name="list-users"),
+    path("api/activate/", views.activate_account, name="activate-account"),
     path('api/login/', views.login_user, name='login_user'),   # ← NOW no conflict
     path("api/csrf/", csrf),
 ]

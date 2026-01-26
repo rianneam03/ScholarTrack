@@ -454,24 +454,6 @@ def activate_account(request):
 
     return Response({"message": "Account activated"})
 
-#Email activation
-@api_view(["POST"])
-def activate_account(request):
-    token = request.data.get("token")
-    password = request.data.get("password")
-
-    user = User.objects.filter(activation_token=token).first()
-    if not user:
-        return Response({"error": "Invalid or expired token"}, status=400)
-
-    # Hash password with Django’s PBKDF2
-    user.password = make_password(password)
-    user.is_active = True
-    user.activation_token = None
-    user.save()
-
-    return Response({"message": "Account activated! You can now log in."})
-
 # --- Login ---
 @csrf_exempt
 @api_view(['GET', 'POST', 'OPTIONS'])
@@ -492,11 +474,11 @@ def login_user(request):
         password = request.data.get("password")
 
         user = User.objects.filter(username=username).first()
-        if not user.is_active:
-            return Response({"error": "Account not activated"}, status=403)
-
         if not user:
             return Response({"error": "User not found"}, status=404)
+
+        if not user.is_active:
+            return Response({"error": "Account not activated"}, status=403)
 
         if not check_password(password, user.password):
             return Response({"error": "Invalid password"}, status=400)
