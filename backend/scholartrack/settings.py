@@ -11,7 +11,7 @@ load_dotenv(BASE_DIR / ".env")  # loads .env in project root
 
 # ----------------------
 # SECURITY
-# ----------------------
+# --------------1   --------
 SECRET_KEY = os.environ.get("SECRET_KEY")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 ALLOWED_HOSTS = ["*"]  # you can restrict later for production
