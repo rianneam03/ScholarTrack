@@ -1,7 +1,6 @@
 import "./App.css";
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 // --- Components ---
 import Navbar from "./components/Navbar";
@@ -13,31 +12,16 @@ import Login from "./components/Login";
 import AdminUsers from "./components/AdminUsers";
 import ActivateAccount from "./components/ActivateAccount";
 
-export function ProtectedRoute({ children }) {
-  const user = JSON.parse(localStorage.getItem("user"));
-  return user ? children : <Navigate to="/login" />;
-}
-
-<Route
-  path="/dashboard"
-  element={
-    <ProtectedRoute>
-      <Dashboard />
-      <Students />
-      <Sessions />
-      <Attendance />
-      <AdminUsers />
-    </ProtectedRoute>
-  }
-/>
-
-
 // --- Private Route Wrapper ---
 function PrivateRoute({ children, allowedRoles }) {
   const user = JSON.parse(localStorage.getItem("user"));
-  if (!user || !allowedRoles.includes(user.role)) {
-    return <Login />; // redirect to login if not authorized
+  const location = useLocation();
+
+  // User must exist, be active, and have allowed role
+  if (!user || !user.is_active || !allowedRoles.includes(user.role)) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
+
   return children;
 }
 
@@ -104,6 +88,9 @@ function App() {
             </PrivateRoute>
           }
         />
+
+        {/* ----------------- Catch-all for unknown routes ----------------- */}
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
   );

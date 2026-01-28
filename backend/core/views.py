@@ -400,7 +400,8 @@ def list_users(request):
     users = User.objects.all()
     data = [
         {
-            "username": u.username,
+            "fullname": u.fullname,
+            "username": u.username,   # can be null if not activated
             "email": u.email,
             "role": u.role,
             "is_active": u.is_active,
