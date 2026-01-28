@@ -420,7 +420,7 @@ def admin_create_user(request):
     data = request.data
 
     # Required fields check
-    if not data.get("username") or not data.get("email"):
+    if not data.get("fullname") or not data.get("email"):
         return Response({"error": "Username and email are required"}, status=400)
 
     token = secrets.token_urlsafe(32)
@@ -428,16 +428,17 @@ def admin_create_user(request):
     try:
         # Create user
         user = User(
-            username=data["username"],
+            fullname=data["fullname"],
             email=data["email"],
             role=data.get("role", "teacher"),
             is_active=False,
             activation_token=token
         )
 
-        # Set a random password for now (or None if nullable)
-        user.password = make_password(secrets.token_urlsafe(16))
+        # Set unusable password
+        user.set_unusable_password()
         user.save()
+
 
         # Send activation email safely
         try:
@@ -456,16 +457,26 @@ def admin_create_user(request):
 @api_view(["POST"])
 def activate_account(request):
     token = request.data.get("token")
+    username = request.data.get("username")
     password = request.data.get("password")
 
     if not token or not password:
-        return Response({"error": "Token and password are required"}, status=400)
+        return Response({"error": "Token, username and password are required"}, status=400)
 
     user = User.objects.filter(activation_token=token).first()
     if not user:
-        return Response({"error": "Invalid token"}, status=400)
+        return Response({"error": "Invalid or expired token"}, status=400)
+
+    # Username must be unique
+    if User.objects.filter(username=username).exists():
+        return Response(
+            {"error": "Username already taken"},
+            status=400
+        )
+
 
     from django.contrib.auth.hashers import make_password
+    user.username = username
     user.password = make_password(password)
     user.is_active = True
     user.activation_token = None
