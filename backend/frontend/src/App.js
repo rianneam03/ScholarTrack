@@ -1,6 +1,7 @@
 import "./App.css";
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 // --- Components ---
 import Navbar from "./components/Navbar";
@@ -11,6 +12,25 @@ import Attendance from "./components/Attendance";
 import Login from "./components/Login";
 import AdminUsers from "./components/AdminUsers";
 import ActivateAccount from "./components/ActivateAccount";
+
+export function ProtectedRoute({ children }) {
+  const user = JSON.parse(localStorage.getItem("user"));
+  return user ? children : <Navigate to="/login" />;
+}
+
+<Route
+  path="/dashboard"
+  element={
+    <ProtectedRoute>
+      <Dashboard />
+      <Students />
+      <Sessions />
+      <Attendance />
+      <AdminUsers />
+    </ProtectedRoute>
+  }
+/>
+
 
 // --- Private Route Wrapper ---
 function PrivateRoute({ children, allowedRoles }) {

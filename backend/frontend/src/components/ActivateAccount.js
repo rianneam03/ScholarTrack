@@ -1,86 +1,74 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const ActivateAccount = () => {
-  const { token } = useParams();
+export default function ActivateAccount() {
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
+  const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
 
-    if (!username || !password) {
-      setError("Username and password are required");
+    if (!username) {
+      setMessage("Please choose a username");
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setMessage("Passwords do not match");
       return;
     }
 
     try {
-      await axios.post(
-        "http://127.0.0.1:8000/api/auth/activate/",
-        {
-          token,
-          username,
-          password,
-        }
+      const res = await axios.post(
+        "https://scholartrack-backend-7vzy.onrender.com/api/activate/",
+        { token, username, password },
+        { withCredentials: true }
       );
 
-      setSuccess(true);
+      setMessage(res.data.message);
+
+      // Redirect to login after 2 seconds
       setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
-      setError(
-        err.response?.data?.error ||
-        "Activation failed. Please check your link."
-      );
+      setMessage(err.response?.data?.error || "Activation failed. Please check your link.");
     }
   };
 
   return (
-    <div>
+    <div className="activation-container">
       <h2>Activate Your Account</h2>
-
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {success && <p style={{ color: "green" }}>Account activated!</p>}
-
-      {!success && (
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Choose a username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-
-          <input
-            type="password"
-            placeholder="Create a password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-
-          <input
-            type="password"
-            placeholder="Confirm password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-
-          <button type="submit">Activate Account</button>
-        </form>
-      )}
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Choose Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="New password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Confirm password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+        />
+        <button type="submit">Set Password & Activate</button>
+      </form>
+      {message && <p>{message}</p>}
     </div>
   );
-};
-
-export default ActivateAccount;
+}

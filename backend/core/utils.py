@@ -30,7 +30,7 @@ def send_activation_email(to_email, token):
         </p>
 
         <p>
-            — ScholarTrack Team
+            — Education For Scholars Team
         </p>
         """
     )

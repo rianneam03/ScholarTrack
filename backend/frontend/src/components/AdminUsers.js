@@ -13,6 +13,8 @@ export default function AdminUsers() {
   const user = JSON.parse(localStorage.getItem("user"));
   const username = user?.username;
 
+  console.log("Sending new user:", newUser);
+
   const fetchUsers = async () => {
     try {
       const res = await axios.get(

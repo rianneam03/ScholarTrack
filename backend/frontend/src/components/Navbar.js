@@ -2,6 +2,11 @@ import React, { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import "../App.css";
 
+function ProtectedRoute({ children }) {
+  const user = JSON.parse(localStorage.getItem("user"));
+  return user ? children : <Navigate to="/login" />;
+}
+
 function Navbar() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
