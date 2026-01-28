@@ -421,7 +421,7 @@ def admin_create_user(request):
 
     # Required fields check
     if not data.get("fullname") or not data.get("email"):
-        return Response({"error": "Username and email are required"}, status=400)
+        return Response({"error": "Full Name and email are required"}, status=400)
 
     token = secrets.token_urlsafe(32)
 
