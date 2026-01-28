@@ -432,13 +432,9 @@ def admin_create_user(request):
             email=data["email"],
             role=data.get("role", "teacher"),
             is_active=False,
-            activation_token=token
+            activation_token=token,
+            password=None
         )
-
-        # Set unusable password
-        user.set_unusable_password()
-        user.save()
-
 
         # Send activation email safely
         try:
@@ -460,7 +456,7 @@ def activate_account(request):
     username = request.data.get("username")
     password = request.data.get("password")
 
-    if not token or not password:
+    if not token or not username or not password:
         return Response({"error": "Token, username and password are required"}, status=400)
 
     user = User.objects.filter(activation_token=token).first()

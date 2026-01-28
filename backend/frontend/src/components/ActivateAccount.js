@@ -1,122 +1,86 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-export default function AdminUsers() {
-  const [users, setUsers] = useState([]);
-  const [newUser, setNewUser] = useState({
-    fullname: "",
-    email: "",
-    role: "teacher",
-  });
-  const [message, setMessage] = useState({ text: "", type: "" });
+const ActivateAccount = () => {
+  const { token } = useParams();
+  const navigate = useNavigate();
 
-  const user = JSON.parse(localStorage.getItem("user"));
-  const username = user?.username;
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
-  const fetchUsers = async () => {
-    try {
-      const res = await axios.get(
-        "https://scholartrack-backend-7vzy.onrender.com/api/users/",
-        { headers: { Username: username }, withCredentials: true }
-      );
-      setUsers(res.data);
-    } catch (err) {
-      console.error(err);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (!username || !password) {
+      setError("Username and password are required");
+      return;
     }
-  };
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
 
-  const handleChange = (e) => {
-    setNewUser({ ...newUser, [e.target.name]: e.target.value });
-  };
-
-  const handleCreate = async () => {
     try {
-      const res = await axios.post(
-        "https://scholartrack-backend-7vzy.onrender.com/api/admin/create-user/",
-        newUser,
-        { headers: { Username: username }, withCredentials: true }
+      await axios.post(
+        "http://127.0.0.1:8000/api/auth/activate/",
+        {
+          token,
+          username,
+          password,
+        }
       );
 
-      setMessage({ text: res.data.message, type: "success" });
-      fetchUsers();
-      setNewUser({ fullname: "", email: "", role: "teacher" });
+      setSuccess(true);
+      setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
-      setMessage({
-        text: err.response?.data?.error || "Error creating user",
-        type: "error",
-      });
+      setError(
+        err.response?.data?.error ||
+        "Activation failed. Please check your link."
+      );
     }
   };
 
   return (
-    <div className="page-container">
-      <h2>Admin - User Management</h2>
+    <div>
+      <h2>Activate Your Account</h2>
 
-      {/* USERS TABLE */}
-      <div className="card">
-        <h3>Existing Users</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Full Name</th>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Active</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((u, idx) => (
-              <tr key={idx}>
-                <td>{u.fullname}</td>
-                <td>{u.username || "—"}</td>
-                <td>{u.email}</td>
-                <td>{u.role}</td>
-                <td className={u.is_active ? "active" : "inactive"}>
-                  {u.is_active ? "Yes" : "No"}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {success && <p style={{ color: "green" }}>Account activated!</p>}
 
-      {/* CREATE USER FORM */}
-      <div className="card">
-        <h3>Create New User</h3>
-        <div className="form-container">
+      {!success && (
+        <form onSubmit={handleSubmit}>
           <input
-            name="fullname"
-            placeholder="Full Name"
-            value={newUser.fullname}
-            onChange={handleChange}
+            type="text"
+            placeholder="Choose a username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
-          <input
-            name="email"
-            placeholder="Email"
-            value={newUser.email}
-            onChange={handleChange}
-          />
-          <select name="role" value={newUser.role} onChange={handleChange}>
-            <option value="teacher">Teacher</option>
-            <option value="admin">Admin</option>
-            <option value="donor">Donor</option>
-          </select>
-          <button className="primary" onClick={handleCreate}>
-            Create User
-          </button>
-        </div>
 
-        {message.text && (
-          <p className={message.type === "success" ? "success" : "error"}>
-            {message.text}
-          </p>
-        )}
-      </div>
+          <input
+            type="password"
+            placeholder="Create a password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <input
+            type="password"
+            placeholder="Confirm password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+
+          <button type="submit">Activate Account</button>
+        </form>
+      )}
     </div>
   );
-}
+};
+
+export default ActivateAccount;
