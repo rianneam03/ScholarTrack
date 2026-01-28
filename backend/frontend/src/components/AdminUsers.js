@@ -4,7 +4,7 @@ import axios from "axios";
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [newUser, setNewUser] = useState({
-    username: "",
+    fullname: "",
     email: "",
     role: "teacher",
   });
@@ -40,9 +40,10 @@ export default function AdminUsers() {
         newUser,
         { headers: { Username: username }, withCredentials: true }
       );
+
       setMessage({ text: res.data.message, type: "success" });
       fetchUsers();
-      setNewUser({ username: "", email: "", role: "teacher" });
+      setNewUser({ fullname: "", email: "", role: "teacher" });
     } catch (err) {
       setMessage({
         text: err.response?.data?.error || "Error creating user",
@@ -61,6 +62,7 @@ export default function AdminUsers() {
         <table>
           <thead>
             <tr>
+              <th>Full Name</th>
               <th>Username</th>
               <th>Email</th>
               <th>Role</th>
@@ -70,7 +72,8 @@ export default function AdminUsers() {
           <tbody>
             {users.map((u, idx) => (
               <tr key={idx}>
-                <td>{u.username}</td>
+                <td>{u.fullname}</td>
+                <td>{u.username || "—"}</td>
                 <td>{u.email}</td>
                 <td>{u.role}</td>
                 <td className={u.is_active ? "active" : "inactive"}>
@@ -87,9 +90,9 @@ export default function AdminUsers() {
         <h3>Create New User</h3>
         <div className="form-container">
           <input
-            name="username"
-            placeholder="Username"
-            value={newUser.username}
+            name="fullname"
+            placeholder="Full Name"
+            value={newUser.fullname}
             onChange={handleChange}
           />
           <input
@@ -107,12 +110,9 @@ export default function AdminUsers() {
             Create User
           </button>
         </div>
+
         {message.text && (
-          <p
-            className={`login-message ${
-              message.type === "success" ? "success" : "error"
-            }`}
-          >
+          <p className={message.type === "success" ? "success" : "error"}>
             {message.text}
           </p>
         )}

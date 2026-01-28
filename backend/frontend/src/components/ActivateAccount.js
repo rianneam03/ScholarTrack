@@ -1,60 +1,122 @@
-import { useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
-export default function ActivateAccount() {
-  const [searchParams] = useSearchParams();
-  const token = searchParams.get("token");
-  const navigate = useNavigate();
+export default function AdminUsers() {
+  const [users, setUsers] = useState([]);
+  const [newUser, setNewUser] = useState({
+    fullname: "",
+    email: "",
+    role: "teacher",
+  });
+  const [message, setMessage] = useState({ text: "", type: "" });
 
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const user = JSON.parse(localStorage.getItem("user"));
+  const username = user?.username;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (password !== confirmPassword) {
-      setMessage("Passwords do not match");
-      return;
+  const fetchUsers = async () => {
+    try {
+      const res = await axios.get(
+        "https://scholartrack-backend-7vzy.onrender.com/api/users/",
+        { headers: { Username: username }, withCredentials: true }
+      );
+      setUsers(res.data);
+    } catch (err) {
+      console.error(err);
     }
+  };
 
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const handleChange = (e) => {
+    setNewUser({ ...newUser, [e.target.name]: e.target.value });
+  };
+
+  const handleCreate = async () => {
     try {
       const res = await axios.post(
-        "https://scholartrack-backend-7vzy.onrender.com/api/activate/",
-        { token, password },
-        { withCredentials: true }
+        "https://scholartrack-backend-7vzy.onrender.com/api/admin/create-user/",
+        newUser,
+        { headers: { Username: username }, withCredentials: true }
       );
-      setMessage(res.data.message);
 
-      // Redirect to login after 2 seconds
-      setTimeout(() => navigate("/login"), 2000);
+      setMessage({ text: res.data.message, type: "success" });
+      fetchUsers();
+      setNewUser({ fullname: "", email: "", role: "teacher" });
     } catch (err) {
-      setMessage(err.response?.data?.error || "Activation failed");
+      setMessage({
+        text: err.response?.data?.error || "Error creating user",
+        type: "error",
+      });
     }
   };
 
   return (
-    <div>
-      <h2>Activate Your Account</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="password"
-          placeholder="New password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Confirm password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Set Password</button>
-      </form>
-      {message && <p>{message}</p>}
+    <div className="page-container">
+      <h2>Admin - User Management</h2>
+
+      {/* USERS TABLE */}
+      <div className="card">
+        <h3>Existing Users</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Full Name</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Active</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((u, idx) => (
+              <tr key={idx}>
+                <td>{u.fullname}</td>
+                <td>{u.username || "—"}</td>
+                <td>{u.email}</td>
+                <td>{u.role}</td>
+                <td className={u.is_active ? "active" : "inactive"}>
+                  {u.is_active ? "Yes" : "No"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* CREATE USER FORM */}
+      <div className="card">
+        <h3>Create New User</h3>
+        <div className="form-container">
+          <input
+            name="fullname"
+            placeholder="Full Name"
+            value={newUser.fullname}
+            onChange={handleChange}
+          />
+          <input
+            name="email"
+            placeholder="Email"
+            value={newUser.email}
+            onChange={handleChange}
+          />
+          <select name="role" value={newUser.role} onChange={handleChange}>
+            <option value="teacher">Teacher</option>
+            <option value="admin">Admin</option>
+            <option value="donor">Donor</option>
+          </select>
+          <button className="primary" onClick={handleCreate}>
+            Create User
+          </button>
+        </div>
+
+        {message.text && (
+          <p className={message.type === "success" ? "success" : "error"}>
+            {message.text}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
