@@ -14,6 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.db import models
+from django.utils import timezone
 
 # --- CSRF token endpoint ---
 def csrf(request):
@@ -434,7 +435,8 @@ def admin_create_user(request):
             role=data.get("role", "teacher"),
             is_active=False,
             activation_token=token,
-            password=""
+            password="",
+            createdat=timezone.now()
         )
 
         user.save()
