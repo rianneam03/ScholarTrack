@@ -434,8 +434,10 @@ def admin_create_user(request):
             role=data.get("role", "teacher"),
             is_active=False,
             activation_token=token,
-            password=None
+            password=""
         )
+
+        user.save()
 
         # Send activation email safely
         try:
