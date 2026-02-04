@@ -431,7 +431,7 @@ def schools_list(request):
 # --- Students by school ---
 @api_view(['GET'])
 def students_by_school(request, school_id):
-    students = Student.objects.filter(schoolid=school_id)
+    students = Student.objects.filter(school__schoolid=school_id)
     data = [
         {"StudentID": s.studentid, "FirstName": s.firstname, "LastName": s.lastname, "Grade": s.grade}
         for s in students
