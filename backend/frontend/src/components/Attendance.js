@@ -1,65 +1,26 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 
 function Attendance() {
   const [sessions, setSessions] = useState([]);
   const [selectedSessionID, setSelectedSessionID] = useState("");
-  const [selectedSchoolID, setSelectedSchoolID] = useState("");
   const [students, setStudents] = useState([]);
   const [attendanceRows, setAttendanceRows] = useState([]);
   const [origMap, setOrigMap] = useState({});
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // ---- Auth / role ----
   const user = JSON.parse(localStorage.getItem("user"));
   const isAdmin = user?.role === "admin";
 
-  // ======================
-  // Load sessions
-  // ======================
   useEffect(() => {
     fetch("https://scholartrack-backend-7vzy.onrender.com/api/sessions/")
-      .then((r) => r.json())
-      .then((data) => setSessions(data))
-      .catch((e) => console.error("Sessions load error:", e));
+      .then(r => r.json())
+      .then(setSessions)
+      .catch(e => console.error("Sessions load error:", e));
   }, []);
 
-  // ======================
-  // Lock attendance if week ended
-  // ======================
-  const isLocked = useMemo(() => {
-    if (!selectedSessionID) return false;
-
-    const session = sessions.find(
-      (s) => String(s.SessionID) === String(selectedSessionID)
-    );
-    if (!session?.SessionDate) return false;
-
-    const sessionDate = new Date(session.SessionDate);
-
-    const startOfWeek = new Date(sessionDate);
-    startOfWeek.setDate(sessionDate.getDate() - sessionDate.getDay());
-
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);
-    endOfWeek.setHours(23, 59, 59, 999);
-
-    return new Date() > endOfWeek;
-  }, [selectedSessionID, sessions]);
-
-  // ======================
-  // Load students + attendance
-  // ======================
   useEffect(() => {
-    if (!selectedSessionID) return;
-
-    const sess = sessions.find(
-      (s) => String(s.SessionID) === String(selectedSessionID)
-    );
-    const schoolId = sess?.SchoolID ? String(sess.SchoolID) : "";
-    setSelectedSchoolID(schoolId);
-
-    if (!schoolId) {
+    if (!selectedSessionID) {
       setStudents([]);
       setAttendanceRows([]);
       setOrigMap({});
@@ -67,79 +28,46 @@ function Attendance() {
     }
 
     setLoading(true);
-
     const pStudents = fetch(
-      `https://scholartrack-backend-7vzy.onrender.com/api/students/?school_id=${encodeURIComponent(
-        schoolId
-      )}`
-    ).then((r) => r.json());
+      `https://scholartrack-backend-7vzy.onrender.com/api/students/?school_id=${selectedSessionID}`
+    ).then(r => r.json());
 
     const pAttendance = fetch(
-      `https://scholartrack-backend-7vzy.onrender.com/api/attendance/?session_id=${encodeURIComponent(
-        selectedSessionID
-      )}`
-    ).then((r) => r.json());
+      `https://scholartrack-backend-7vzy.onrender.com/api/attendance/?session_id=${selectedSessionID}`
+    ).then(r => r.json());
 
     Promise.all([pStudents, pAttendance])
       .then(([stuData, attData]) => {
         setStudents(stuData || []);
-
         const map = {};
-        (attData || []).forEach((row) => {
-          if (row.StudentID) {
-            map[String(row.StudentID)] = row.Status || "Absent";
-          }
+        (attData || []).forEach(r => {
+          if (r.StudentID) map[r.StudentID] = r.Status || "Absent";
         });
         setOrigMap(map);
 
-        const rows = (stuData || []).map((s) => ({
+        const rows = (stuData || []).map(s => ({
           StudentID: s.StudentID,
           FirstName: s.FirstName,
           LastName: s.LastName,
-          Status: map[String(s.StudentID)] || "Absent",
+          Status: map[s.StudentID] || "Absent",
         }));
         setAttendanceRows(rows);
       })
-      .catch((e) => console.error("Load students/attendance error:", e))
+      .catch(e => console.error(e))
       .finally(() => setLoading(false));
-  }, [selectedSessionID, sessions]);
+  }, [selectedSessionID]);
 
-  // ======================
-  // Change status (if not locked)
-  // ======================
   const changeStatus = (studentID, newStatus) => {
-    if (isLocked) return;
-    setAttendanceRows((prev) =>
-      prev.map((r) =>
-        String(r.StudentID) === String(studentID)
-          ? { ...r, Status: newStatus }
-          : r
-      )
+    setAttendanceRows(prev =>
+      prev.map(r => (r.StudentID === studentID ? { ...r, Status: newStatus } : r))
     );
   };
 
-  // ======================
-  // Save attendance
-  // ======================
   const saveChanges = async () => {
-    if (!selectedSessionID) {
-      alert("Please select a session first.");
-      return;
-    }
-
-    if (isLocked) {
-      alert("Attendance for this session is locked.");
-      return;
-    }
-
     const diffs = attendanceRows.filter(
-      (r) => (origMap[String(r.StudentID)] || "Absent") !== r.Status
+      r => (origMap[r.StudentID] || "Absent") !== r.Status
     );
-
-    if (diffs.length === 0) {
-      alert("No changes to save.");
-      return;
-    }
+    if (diffs.length === 0) return alert("No changes to save.");
 
     setSaving(true);
     try {
@@ -156,84 +84,47 @@ function Attendance() {
             }),
           }
         );
-
         const data = await res.json();
-        if (!res.ok || data.error) {
-          throw new Error(data.error || "Failed to save attendance");
-        }
+        if (!res.ok || data.error) throw new Error(data.error || "Failed to save");
       }
-
-      const fresh = await fetch(
-        `https://scholartrack-backend-7vzy.onrender.com/api/attendance/?session_id=${encodeURIComponent(
-          selectedSessionID
-        )}`
-      ).then((r) => r.json());
-
-      const newMap = {};
-      (fresh || []).forEach((row) => {
-        if (row.StudentID)
-          newMap[String(row.StudentID)] = row.Status || "Absent";
-      });
-      setOrigMap(newMap);
-
       alert("✅ Attendance saved.");
     } catch (err) {
       console.error(err);
-      alert("❌ Error while saving attendance.");
+      alert("❌ Error saving attendance.");
     } finally {
       setSaving(false);
     }
   };
 
-  // ======================
-  // Admin export attendance
-  // ======================
-  const handleExportAttendance = async () => {
+  const exportAttendance = async () => {
     try {
       const res = await fetch(
-        "https://scholartrack-backend-7vzy.onrender.com/api/attendance/export/",
-        {
-          headers: {
-            Username: user.username,
-          },
-        }
+        `https://scholartrack-backend-7vzy.onrender.com/api/attendance/export/?session_id=${selectedSessionID}`,
+        { headers: { Username: user.username } }
       );
-
-      if (!res.ok) {
-        alert("Export failed");
-        return;
-      }
-
+      if (!res.ok) return alert("Export failed");
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
-
       const a = document.createElement("a");
       a.href = url;
-      a.download = "attendance.csv";
-      document.body.appendChild(a);
+      a.download = "attendance.xlsx";
       a.click();
       a.remove();
     } catch (err) {
       console.error(err);
-      alert("Error exporting attendance");
+      alert("Export failed");
     }
   };
 
-  // ======================
-  // Render
-  // ======================
   return (
     <div className="page-container">
       <h2>Attendance</h2>
 
       <div className="filter-bar">
-        <label><strong>Session:&nbsp;</strong></label>
-        <select
-          value={selectedSessionID}
-          onChange={(e) => setSelectedSessionID(e.target.value)}
-        >
+        <label><strong>Session: </strong></label>
+        <select value={selectedSessionID} onChange={e => setSelectedSessionID(e.target.value)}>
           <option value="">-- Select Session --</option>
-          {sessions.map((s) => (
+          {sessions.map(s => (
             <option key={s.SessionID} value={s.SessionID}>
               {s.Title} ({s.SessionDate}) {s.SchoolName ? `— ${s.SchoolName}` : ""}
             </option>
@@ -246,26 +137,16 @@ function Attendance() {
       {!loading && selectedSessionID && (
         <>
           <div className="action-bar">
-            <button
-              className="primary"
-              onClick={saveChanges}
-              disabled={saving || isLocked}
-            >
+            <button className="primary" onClick={saveChanges} disabled={saving}>
               {saving ? "Saving…" : "Save Changes"}
             </button>
 
             {isAdmin && (
-              <button className="primary" onClick={handleExportAttendance}>
+              <button className="primary" onClick={exportAttendance}>
                 📥 Export Attendance
               </button>
             )}
           </div>
-
-          {isLocked && (
-            <div className="helper-text" style={{ color: "#b00020" }}>
-              Attendance for this session is locked because the week has ended.
-            </div>
-          )}
 
           <table>
             <thead>
@@ -276,39 +157,33 @@ function Attendance() {
             </thead>
             <tbody>
               {attendanceRows.length > 0 ? (
-                attendanceRows.map((row) => (
-                  <tr key={row.StudentID}>
-                    <td>{row.FirstName} {row.LastName}</td>
-                    <td>
-                      <select
-                        value={row.Status}
-                        disabled={isLocked}
-                        onChange={(e) =>
-                          changeStatus(row.StudentID, e.target.value)
-                        }
-                      >
-                        <option value="Present">Present</option>
-                        <option value="Absent">Absent</option>
-                      </select>
-                    </td>
-                  </tr>
-                ))
+                attendanceRows.map(row => {
+                  // Lock if session date passed the week
+                  const sess = sessions.find(s => s.SessionID === selectedSessionID);
+                  const locked = sess && new Date(sess.SessionDate).getTime() + 7*24*60*60*1000 < Date.now();
+
+                  return (
+                    <tr key={row.StudentID}>
+                      <td>{row.FirstName} {row.LastName}</td>
+                      <td>
+                        <select
+                          value={row.Status}
+                          disabled={locked}
+                          onChange={e => changeStatus(row.StudentID, e.target.value)}
+                        >
+                          <option value="Present">Present</option>
+                          <option value="Absent">Absent</option>
+                        </select>
+                      </td>
+                    </tr>
+                  );
+                })
               ) : (
-                <tr>
-                  <td colSpan="2">
-                    No students found for this session’s school.
-                  </td>
-                </tr>
+                <tr><td colSpan="2">No students found for this session’s school.</td></tr>
               )}
             </tbody>
           </table>
         </>
-      )}
-
-      {!selectedSessionID && (
-        <div className="helper-text">
-          Pick a session to load its students and attendance.
-        </div>
       )}
     </div>
   );

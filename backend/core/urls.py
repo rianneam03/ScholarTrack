@@ -18,6 +18,7 @@ urlpatterns = [
     path('api/sessions/<int:session_id>/', views.session_detail, name='session_detail'),
     path('api/schools/', views.schools_list, name='schools_list'),
     path('api/attendance/', views.attendance_list, name='attendance_list'),
+    path("api/attendance/export/", views.export_attendance, name="export_attendance"),
     path('api/schools/<int:school_id>/students/', views.students_by_school, name='students_by_school'),
     path("api/admin/create-user/", views.admin_create_user, name="admin-create-user"),
     path("api/users/", views.list_users, name="list-users"),

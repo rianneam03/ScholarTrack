@@ -1,3 +1,5 @@
+import io
+#import xlsxwriter
 import openpyxl
 import secrets
 import re
@@ -103,60 +105,106 @@ def session_detail(request, session_id):
     session.delete()
     return Response({"message": f"Session {session_id} deleted successfully!"})
 
-# --- Attendance list API ---
-@api_view(['GET', 'POST'])
+# --- Attendance API ---
+@api_view(["GET", "POST"])
 def attendance_list(request):
-    if request.method == 'GET':
-        session_id = request.GET.get('session_id')
-        attendance_records = Attendance.objects.all()
+    if request.method == "GET":
+        session_id = request.GET.get("session_id")
+        records = Attendance.objects.select_related("studentid", "sessionid", "sessionid__schoolid").all()
         if session_id:
-            attendance_records = attendance_records.filter(sessionid=session_id)
+            records = records.filter(sessionid__sessionid=session_id)
 
-        data = []
-        for a in attendance_records:
-            data.append({
-                "AttendanceID": a.attendanceid,
-                "StudentID": a.studentid.studentid if a.studentid else None,
-                "StudentName": f"{a.studentid.firstname} {a.studentid.lastname}" if a.studentid else None,
-                "SessionID": a.sessionid.sessionid if a.sessionid else None,
-                "SessionTitle": a.sessionid.title if a.sessionid else None,
-                "Status": a.status,
-            })
+        data = [
+            {
+                "AttendanceID": r.attendanceid,
+                "StudentID": r.studentid.studentid,
+                "FirstName": r.studentid.firstname,
+                "LastName": r.studentid.lastname,
+                "SessionID": r.sessionid.sessionid,
+                "SessionTitle": r.sessionid.title,
+                "School": r.sessionid.schoolid.school if r.sessionid.schoolid else "",
+                "Status": r.status,
+            }
+            for r in records
+        ]
         return Response(data)
 
-    elif request.method == 'POST':
+    elif request.method == "POST":
         data = request.data
-        if not data.get('StudentID'):
-            return Response({"error": "StudentID is required."}, status=400)
-        if not data.get('SessionID'):
-            return Response({"error": "SessionID is required."}, status=400)
-        if not data.get('Status'):
-            return Response({"error": "Status is required."}, status=400)
+        student_id = data.get("StudentID")
+        session_id = data.get("SessionID")
+        status = data.get("Status")
 
-        student_obj = Student.objects.filter(studentid=data.get('StudentID')).first()
-        if not student_obj:
-            return Response({"error": "Invalid StudentID"}, status=400)
+        if not student_id or not session_id or not status:
+            return Response({"error": "StudentID, SessionID and Status are required"}, status=400)
 
-        session_obj = Session.objects.filter(sessionid=data.get('SessionID')).first()
-        if not session_obj:
-            return Response({"error": "Invalid SessionID"}, status=400)
+        student = Student.objects.filter(studentid=student_id).first()
+        session = Session.objects.filter(sessionid=session_id).first()
+        if not student or not session:
+            return Response({"error": "Invalid StudentID or SessionID"}, status=400)
 
-        attendance = Attendance.objects.filter(
-            studentid=student_obj,
-            sessionid=session_obj
-        ).first()
+        # --- Lock after week ---
+        if timezone.now().date() > session.sessiondate + timedelta(days=7):
+            return Response({"error": "Attendance cannot be changed after the week of the session"}, status=403)
 
+        attendance = Attendance.objects.filter(studentid=student, sessionid=session).first()
         if attendance:
-            attendance.status = data.get('Status')
+            attendance.status = status
             attendance.save()
             return Response({"message": "Attendance updated"})
         else:
-            Attendance.objects.create(
-                studentid=student_obj,
-                sessionid=session_obj,
-                status=data.get('Status')
-            )
+            Attendance.objects.create(studentid=student, sessionid=session, status=status)
             return Response({"message": "Attendance created"})
+
+
+# --- Export Attendance ---
+@api_view(["GET"])
+def export_attendance(request):
+    username = request.headers.get("Username")
+    user = User.objects.filter(username=username).first()
+    if not user or user.role != "admin":
+        return Response({"error": "Forbidden"}, status=403)
+
+    # Filters
+    session_id = request.GET.get("session_id")
+    school_id = request.GET.get("school_id")
+
+    records = Attendance.objects.select_related("studentid", "sessionid", "sessionid__schoolid").all()
+    if session_id:
+        records = records.filter(sessionid__sessionid=session_id)
+    if school_id:
+        records = records.filter(sessionid__schoolid__schoolid=school_id)
+
+    # Create workbook
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Attendance"
+
+    # Header row
+    headers = ["StudentID", "First Name", "Last Name", "SessionID", "Session Title", "School", "Status"]
+    ws.append(headers)
+
+    # Data rows
+    for r in records:
+        ws.append([
+            r.studentid.studentid,
+            r.studentid.firstname,
+            r.studentid.lastname,
+            r.sessionid.sessionid,
+            r.sessionid.title,
+            r.sessionid.schoolid.school if r.sessionid.schoolid else "",
+            r.status,
+        ])
+
+    # Create response
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response["Content-Disposition"] = 'attachment; filename="attendance.xlsx"'
+
+    wb.save(response)
+    return response
+
 
 # --- Students list API ---
 @api_view(['GET', 'POST', 'DELETE', 'PATCH'])
