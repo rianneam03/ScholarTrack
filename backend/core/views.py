@@ -15,6 +15,7 @@ from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.db import models
 from django.utils import timezone
+from .serializers import AttendanceSerializer
 
 # --- CSRF token endpoint ---
 def csrf(request):

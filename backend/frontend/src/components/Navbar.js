@@ -51,9 +51,14 @@ function Navbar() {
 
             {/* Admin-only link */}
             {role === "admin" && (
-              <NavLink to="/admin/users" className={({ isActive }) => (isActive ? "active" : "")}>
-                Manage Users
-              </NavLink>
+              <>
+                <NavLink to="/schools" className={({ isActive }) => (isActive ? "active" : "")}>
+                  Schools
+                </NavLink>
+                <NavLink to="/admin/users" className={({ isActive }) => (isActive ? "active" : "")}>
+                  Manage Users
+                </NavLink>
+              </>
             )}
 
             <span className="navbar-user">

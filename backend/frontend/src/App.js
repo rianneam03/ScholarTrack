@@ -7,6 +7,7 @@ import Navbar from "./components/Navbar";
 import Dashboard from "./components/Dashboard";
 import Students from "./components/Students";
 import Sessions from "./components/Sessions";
+import Schools from "./components/Schools";
 import Attendance from "./components/Attendance";
 import Login from "./components/Login";
 import AdminUsers from "./components/AdminUsers";
@@ -54,6 +55,15 @@ function App() {
         />
 
         {/* ----------------- Admin Routes ----------------- */}
+        <Route
+          path="/schools"
+          element={
+            <PrivateRoute allowedRoles={["admin"]}>
+              <Schools />
+            </PrivateRoute>
+          }
+        />
+
         <Route
           path="/admin/users"
           element={
