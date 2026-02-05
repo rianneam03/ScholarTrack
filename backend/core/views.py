@@ -346,57 +346,52 @@ def students_list(request):
     
 #Export list
 @api_view(["GET"])
-def export_students_excel(request):
-    # 🔐 Admin-only check (matches your app logic)
+def export_attendance(request):
+    # 🔐 Admin check
     username = request.headers.get("Username")
     user = User.objects.filter(username=username).first()
 
     if not user or user.role != "admin":
         return Response({"error": "Unauthorized"}, status=403)
 
-    students = Student.objects.select_related("school").all()
+    attendance = Attendance.objects.select_related(
+        "studentid",
+        "sessionid",
+        "sessionid__schoolid"
+    ).all()
 
     wb = openpyxl.Workbook()
     ws = wb.active
-    ws.title = "Students"
+    ws.title = "Attendance"
 
     # Header row
     headers = [
-        "StudentID",
+        "Student ID",
         "First Name",
         "Last Name",
-        "Grade",
         "School",
-        "STEM Interest",
-        "Enrollment Date",
-        "Student Phone",
-        "Guardian Name",
-        "Guardian Phone",
-        "Email",
+        "Session Title",
+        "Session Date",
+        "Status",
     ]
     ws.append(headers)
 
     # Data rows
-    for s in students:
+    for a in attendance:
         ws.append([
-            s.studentid,
-            s.firstname,
-            s.lastname,
-            s.grade,
-            s.school.school if s.school else "",
-            s.steminterest,
-            s.enrollmentdate.strftime("%Y-%m-%d") if s.enrollmentdate else "",
-            s.studentphone,
-            s.guardianname,
-            s.guardianphone,
-            s.email,
+            a.studentid.studentid if a.studentid else "",
+            a.studentid.firstname if a.studentid else "",
+            a.studentid.lastname if a.studentid else "",
+            a.sessionid.schoolid.school if a.sessionid and a.sessionid.schoolid else "",
+            a.sessionid.title if a.sessionid else "",
+            a.sessionid.sessiondate.strftime("%Y-%m-%d") if a.sessionid and a.sessionid.sessiondate else "",
+            a.status,
         ])
 
-    # Create response
     response = HttpResponse(
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-    response["Content-Disposition"] = 'attachment; filename="students.xlsx"'
+    response["Content-Disposition"] = 'attachment; filename="attendance.xlsx"'
 
     wb.save(response)
     return response
