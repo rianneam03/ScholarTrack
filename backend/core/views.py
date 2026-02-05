@@ -1,5 +1,5 @@
 import io
-#import xlsxwriter
+import xlsxwriter
 import openpyxl
 import secrets
 import re
@@ -163,7 +163,7 @@ def export_attendance(request):
     username = request.headers.get("Username")
     user = User.objects.filter(username=username).first()
     if not user or user.role != "admin":
-        return Response({"error": "Forbidden"}, status=403)
+        return HttpResponse("Forbidden", status=403)
 
     # Filters
     session_id = request.GET.get("session_id")
@@ -175,36 +175,33 @@ def export_attendance(request):
     if school_id:
         records = records.filter(sessionid__schoolid__schoolid=school_id)
 
-    # Create workbook
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "Attendance"
+    # Create Excel
+    output = io.BytesIO()
+    workbook = xlsxwriter.Workbook(output)
+    worksheet = workbook.add_worksheet("Attendance")
 
-    # Header row
-    headers = ["StudentID", "First Name", "Last Name", "SessionID", "Session Title", "School", "Status"]
-    ws.append(headers)
+    headers = ["StudentID", "FirstName", "LastName", "SessionID", "SessionTitle", "School", "Status"]
+    for col, h in enumerate(headers):
+        worksheet.write(0, col, h)
 
-    # Data rows
-    for r in records:
-        ws.append([
-            r.studentid.studentid,
-            r.studentid.firstname,
-            r.studentid.lastname,
-            r.sessionid.sessionid,
-            r.sessionid.title,
-            r.sessionid.schoolid.school if r.sessionid.schoolid else "",
-            r.status,
-        ])
+    for row_num, rec in enumerate(records, start=1):
+        worksheet.write(row_num, 0, rec.studentid.studentid)
+        worksheet.write(row_num, 1, rec.studentid.firstname)
+        worksheet.write(row_num, 2, rec.studentid.lastname)
+        worksheet.write(row_num, 3, rec.sessionid.sessionid)
+        worksheet.write(row_num, 4, rec.sessionid.title)
+        worksheet.write(row_num, 5, rec.sessionid.schoolid.school if rec.sessionid.schoolid else "")
+        worksheet.write(row_num, 6, rec.status)
 
-    # Create response
+    workbook.close()
+    output.seek(0)
+
     response = HttpResponse(
+        output.read(),
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
     response["Content-Disposition"] = 'attachment; filename="attendance.xlsx"'
-
-    wb.save(response)
     return response
-
 
 # --- Students list API ---
 @api_view(['GET', 'POST', 'DELETE', 'PATCH'])
@@ -431,7 +428,7 @@ def schools_list(request):
 # --- Students by school ---
 @api_view(['GET'])
 def students_by_school(request, school_id):
-    students = Student.objects.filter(school__schoolid=school_id)
+    students = Student.objects.filter(schoolid=school_id)
     data = [
         {"StudentID": s.studentid, "FirstName": s.firstname, "LastName": s.lastname, "Grade": s.grade}
         for s in students
