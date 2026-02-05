@@ -12,6 +12,7 @@ function Attendance() {
   const user = JSON.parse(localStorage.getItem("user"));
   const isAdmin = user?.role === "admin";
 
+  // Load sessions on mount
   useEffect(() => {
     fetch("https://scholartrack-backend-7vzy.onrender.com/api/sessions/")
       .then(r => r.json())
@@ -19,6 +20,7 @@ function Attendance() {
       .catch(e => console.error("Sessions load error:", e));
   }, []);
 
+  // Load students and attendance when a session is selected
   useEffect(() => {
     if (!selectedSessionID) {
       setStudents([]);
@@ -28,8 +30,11 @@ function Attendance() {
     }
 
     setLoading(true);
+    const selectedSession = sessions.find(s => s.SessionID === selectedSessionID);
+    const schoolID = selectedSession?.SchoolID || "";
+
     const pStudents = fetch(
-      `https://scholartrack-backend-7vzy.onrender.com/api/students/?school_id=${selectedSessionID}`
+      `https://scholartrack-backend-7vzy.onrender.com/api/students/?school_id=${schoolID}`
     ).then(r => r.json());
 
     const pAttendance = fetch(
@@ -55,7 +60,7 @@ function Attendance() {
       })
       .catch(e => console.error(e))
       .finally(() => setLoading(false));
-  }, [selectedSessionID]);
+  }, [selectedSessionID, sessions]);
 
   const changeStatus = (studentID, newStatus) => {
     setAttendanceRows(prev =>
@@ -158,7 +163,6 @@ function Attendance() {
             <tbody>
               {attendanceRows.length > 0 ? (
                 attendanceRows.map(row => {
-                  // Lock if session date passed the week
                   const sess = sessions.find(s => s.SessionID === selectedSessionID);
                   const locked = sess && new Date(sess.SessionDate).getTime() + 7*24*60*60*1000 < Date.now();
 
