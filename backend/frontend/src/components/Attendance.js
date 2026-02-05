@@ -189,9 +189,14 @@ function Attendance() {
   // Admin export attendance
   // ======================
   const handleExportAttendance = async () => {
+    if (!selectedSessionID) {
+      alert("Please select a session first.");
+      return;
+    }
+
     try {
       const res = await fetch(
-        "https://scholartrack-backend-7vzy.onrender.com/api/attendance/export/?session_id=${selectedSessionID}",
+        `https://scholartrack-backend-7vzy.onrender.com/api/attendance/export/?session_id=${selectedSessionID}`,
         {
           headers: {
             Username: user.username,
@@ -200,8 +205,7 @@ function Attendance() {
       );
 
       if (!res.ok) {
-        alert("Export failed");
-        return;
+        throw new Error("Export failed");
       }
 
       const blob = await res.blob();
@@ -218,6 +222,7 @@ function Attendance() {
       alert("Error exporting attendance");
     }
   };
+
 
   // ======================
   // Render
