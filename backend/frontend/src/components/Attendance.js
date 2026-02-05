@@ -191,7 +191,7 @@ function Attendance() {
   const handleExportAttendance = async () => {
     try {
       const res = await fetch(
-        "https://scholartrack-backend-7vzy.onrender.com/api/attendance/export/",
+        "https://scholartrack-backend-7vzy.onrender.com/api/attendance/export/?session_id=${selectedSessionID}",
         {
           headers: {
             Username: user.username,
@@ -209,7 +209,7 @@ function Attendance() {
 
       const a = document.createElement("a");
       a.href = url;
-      a.download = "attendance.csv";
+      a.download = "attendance.xlsx";
       document.body.appendChild(a);
       a.click();
       a.remove();

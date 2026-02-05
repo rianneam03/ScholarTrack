@@ -160,18 +160,22 @@ def attendance_list(request):
         
 @api_view(["GET"])
 def export_attendance(request):
-    # 🔐 Admin check
+    # 🔐 Admin-only
     username = request.headers.get("Username")
     user = User.objects.filter(username=username).first()
 
     if not user or user.role != "admin":
         return Response({"error": "Unauthorized"}, status=403)
 
+    session_id = request.GET.get("session_id")
+    if not session_id:
+        return Response({"error": "session_id is required"}, status=400)
+
     attendance = Attendance.objects.select_related(
         "studentid",
         "sessionid",
         "sessionid__schoolid"
-    ).all()
+    ).filter(sessionid__sessionid=session_id)
 
     wb = openpyxl.Workbook()
     ws = wb.active
@@ -189,7 +193,7 @@ def export_attendance(request):
     ]
     ws.append(headers)
 
-    # Data rows
+    # Rows
     for a in attendance:
         ws.append([
             a.studentid.studentid if a.studentid else "",
@@ -205,10 +209,8 @@ def export_attendance(request):
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
     response["Content-Disposition"] = 'attachment; filename="attendance.xlsx"'
-
     wb.save(response)
     return response
-
 
 # --- Students list API ---
 @api_view(['GET', 'POST', 'DELETE', 'PATCH'])
