@@ -160,41 +160,55 @@ def attendance_list(request):
         
 @api_view(["GET"])
 def export_attendance(request):
+    # 🔐 Admin check
     username = request.headers.get("Username")
     user = User.objects.filter(username=username).first()
+
     if not user or user.role != "admin":
-        return Response({"error": "Forbidden"}, status=403)
+        return Response({"error": "Unauthorized"}, status=403)
 
-    # Get all attendance records (or filter by your business rules)
-    records = Attendance.objects.all()  # or filter by week/session
+    attendance = Attendance.objects.select_related(
+        "studentid",
+        "sessionid",
+        "sessionid__schoolid"
+    ).all()
 
-    # Create Excel file in memory
-    output = io.BytesIO()
-    workbook = xlsxwriter.Workbook(output)
-    worksheet = workbook.add_worksheet("Attendance")
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Attendance"
 
-    # Write headers
-    headers = ["StudentID", "FirstName", "LastName", "SessionID", "Status"]
-    for col, header in enumerate(headers):
-        worksheet.write(0, col, header)
+    # Header row
+    headers = [
+        "Student ID",
+        "First Name",
+        "Last Name",
+        "School",
+        "Session Title",
+        "Session Date",
+        "Status",
+    ]
+    ws.append(headers)
 
-    # Write data
-    for row_num, rec in enumerate(records, start=1):
-        worksheet.write(row_num, 0, rec.StudentID)
-        worksheet.write(row_num, 1, rec.Student.FirstName)
-        worksheet.write(row_num, 2, rec.Student.LastName)
-        worksheet.write(row_num, 3, rec.SessionID)
-        worksheet.write(row_num, 4, rec.Status)
-
-    workbook.close()
-    output.seek(0)
+    # Data rows
+    for a in attendance:
+        ws.append([
+            a.studentid.studentid if a.studentid else "",
+            a.studentid.firstname if a.studentid else "",
+            a.studentid.lastname if a.studentid else "",
+            a.sessionid.schoolid.school if a.sessionid and a.sessionid.schoolid else "",
+            a.sessionid.title if a.sessionid else "",
+            a.sessionid.sessiondate.strftime("%Y-%m-%d") if a.sessionid and a.sessionid.sessiondate else "",
+            a.status,
+        ])
 
     response = HttpResponse(
-        output.read(),
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-    response['Content-Disposition'] = 'attachment; filename="attendance.xlsx"'
+    response["Content-Disposition"] = 'attachment; filename="attendance.xlsx"'
+
+    wb.save(response)
     return response
+
 
 # --- Students list API ---
 @api_view(['GET', 'POST', 'DELETE', 'PATCH'])
