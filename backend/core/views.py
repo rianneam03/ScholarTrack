@@ -418,23 +418,41 @@ def export_students_excel(request):
     wb.save(response)
     return response
 
-
-# --- Schools list API ---
-@api_view(['GET', 'POST'])
-def schools_list(request):
-    if request.method == "GET":
-        schools = School.objects.all()
-        serializer = SchoolSerializer(schools, many=True)
-        return Response(serializer.data)
-
-    if request.method == "POST":
-        serializer = SchoolSerializer(data=request.data)
-
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=400)
-
-        serializer.save()
-        return Response(serializer.data, status=201)
+# --- Schools list API --- 
+@api_view(["GET", "POST"]) 
+def schools_list(request): 
+    if request.method == "GET": 
+        schools = School.objects.all() 
+        data = [ 
+          { 
+            "SchoolID": s.schoolid, 
+            "SchoolName": s.school 
+          } 
+          for s in schools 
+        ] 
+        return Response(data) 
+    if request.method == "POST": 
+        school_name = request.data.get("SchoolName") 
+        
+        if not school_name: 
+            return Response({"error": "SchoolName is required"}, status=400) 
+        
+        try: 
+            school = School.objects.create( 
+                school=school_name.strip() 
+            ) 
+            return Response( 
+                { 
+                    "SchoolID": school.schoolid, 
+                    "SchoolName": school.school 
+                }, 
+                status=201 
+            ) 
+        
+        except Exception as e: 
+            import traceback 
+            traceback.print_exc() 
+            return Response({"error": str(e)}, status=500)
 
 # --- Students by school ---
 @api_view(['GET'])
