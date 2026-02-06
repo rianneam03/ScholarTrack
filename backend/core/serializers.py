@@ -5,4 +5,3 @@ class SchoolSerializer(serializers.ModelSerializer):
     class Meta:
         model = School
         fields = ['schoolid', 'school']
-        read
