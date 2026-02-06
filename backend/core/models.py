@@ -9,11 +9,9 @@ class School(models.Model):
     school = models.CharField(db_column='school', max_length=100, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'schools'
         verbose_name = "School"
         verbose_name_plural = "Schools"
-
 
 # ----------------------------
 #  Student Model
