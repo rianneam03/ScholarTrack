@@ -15,7 +15,7 @@ from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.db import models
 from django.utils import timezone
-from .serializers import AttendanceSerializer
+from .serializers import SchoolSerializer
 
 # --- CSRF token endpoint ---
 def csrf(request):
@@ -422,18 +422,19 @@ def export_students_excel(request):
 # --- Schools list API ---
 @api_view(['GET', 'POST'])
 def schools_list(request):
-    if request.method == 'GET':
+    if request.method == "GET":
         schools = School.objects.all()
-        data = [{"SchoolID": s.schoolid, "SchoolName": s.school} for s in schools]
-        return Response(data)
+        serializer = SchoolSerializer(schools, many=True)
+        return Response(serializer.data)
 
-    elif request.method == 'POST':
-        data = request.data
-        if not data.get('SchoolName'):
-            return Response({"error": "SchoolName is required."}, status=400)
+    if request.method == "POST":
+        serializer = SchoolSerializer(data=request.data)
 
-        school = School.objects.create(school=data.get('SchoolName'))
-        return Response({"message": "School added successfully!", "SchoolID": school.schoolid})
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=400)
+
+        serializer.save()
+        return Response(serializer.data, status=201)
 
 # --- Students by school ---
 @api_view(['GET'])
