@@ -33,7 +33,7 @@ class Student(models.Model):
         models.DO_NOTHING,
         db_column='schoolid',
         blank=True,
-        null=True
+        null=False
     )
 
     studentphone = models.CharField(db_column='studentphone', max_length=20, blank=True, null=True)
@@ -69,7 +69,7 @@ class Session(models.Model):
         models.DO_NOTHING,
         db_column='schoolid',
         blank=True,
-        null=True
+        null=False
     )
 
     class Meta:
@@ -93,7 +93,7 @@ class Attendance(models.Model):
         models.DO_NOTHING,
         db_column='studentid',
         blank=True,
-        null=True
+        null=False
     )
 
     session = models.ForeignKey(
@@ -101,7 +101,7 @@ class Attendance(models.Model):
         models.DO_NOTHING,
         db_column='sessionid',
         blank=True,
-        null=True
+        null=False
     )
 
     status = models.CharField(db_column='status', max_length=20, blank=True, null=True)
