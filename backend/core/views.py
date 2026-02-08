@@ -47,7 +47,8 @@ def dashboard_data(request):
 @api_view(['GET', 'POST'])
 def sessions_list(request):
     if request.method == 'GET':
-        sessions = Session.objects.all()
+        # Select related school to avoid extra queries
+        sessions = Session.objects.select_related('school').all()
         data = []
         for s in sessions:
             data.append({
@@ -55,8 +56,8 @@ def sessions_list(request):
                 "Title": s.title,
                 "SessionDate": s.sessiondate,
                 "Description": s.description,
-                "SchoolID": s.schoolid.schoolid if s.schoolid else None,
-                "SchoolName": s.schoolid.school if s.schoolid else None,
+                "SchoolID": s.school.schoolid if s.school else None,
+                "SchoolName": s.school.school if s.school else None,
             })
         return Response(data)
 
@@ -75,7 +76,7 @@ def sessions_list(request):
                 title=data.get('Title'),
                 sessiondate=data.get('SessionDate'),
                 description=data.get('Description'),
-                schoolid=school_obj
+                school=school_obj
             )
 
             return Response({
@@ -87,7 +88,7 @@ def sessions_list(request):
             import traceback
             traceback.print_exc()
             return Response({"error": str(e)}, status=500)
-        
+
 @api_view(['DELETE'])
 def session_detail(request, session_id):
     # Only admins can delete
@@ -109,24 +110,26 @@ def session_detail(request, session_id):
 def attendance_list(request):
     if request.method == 'GET':
         session_id = request.GET.get('session_id')
-        attendance_records = Attendance.objects.all()
+        # Select related student and session to optimize queries
+        attendance_records = Attendance.objects.select_related('student', 'session').all()
         if session_id:
-            attendance_records = attendance_records.filter(sessionid=session_id)
+            attendance_records = attendance_records.filter(session__sessionid=session_id)
 
         data = []
         for a in attendance_records:
             data.append({
                 "AttendanceID": a.attendanceid,
-                "StudentID": a.studentid.studentid if a.studentid else None,
-                "StudentName": f"{a.studentid.firstname} {a.studentid.lastname}" if a.studentid else None,
-                "SessionID": a.sessionid.sessionid if a.sessionid else None,
-                "SessionTitle": a.sessionid.title if a.sessionid else None,
+                "StudentID": a.student.studentid if a.student else None,
+                "StudentName": f"{a.student.firstname} {a.student.lastname}" if a.student else None,
+                "SessionID": a.session.sessionid if a.session else None,
+                "SessionTitle": a.session.title if a.session else None,
                 "Status": a.status,
             })
         return Response(data)
 
     elif request.method == 'POST':
         data = request.data
+        # Validate required fields
         if not data.get('StudentID'):
             return Response({"error": "StudentID is required."}, status=400)
         if not data.get('SessionID'):
@@ -143,8 +146,8 @@ def attendance_list(request):
             return Response({"error": "Invalid SessionID"}, status=400)
 
         attendance = Attendance.objects.filter(
-            studentid=student_obj,
-            sessionid=session_obj
+            student=student_obj,
+            session=session_obj
         ).first()
 
         if attendance:
@@ -153,12 +156,12 @@ def attendance_list(request):
             return Response({"message": "Attendance updated"})
         else:
             Attendance.objects.create(
-                studentid=student_obj,
-                sessionid=session_obj,
+                student=student_obj,
+                session=session_obj,
                 status=data.get('Status')
             )
             return Response({"message": "Attendance created"})
-        
+
 @api_view(["GET"])
 def export_attendance(request):
     # 🔐 Admin-only
