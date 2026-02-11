@@ -18,7 +18,7 @@ function Attendance() {
   // Load sessions
   // ======================
   useEffect(() => {
-    fetch("https://scholartrack-backend-7vzy.onrender.com/api/sessions/")
+    fetch("https://scholartrack-backend-bgas.onrender.com/api/sessions/")
       .then((r) => r.json())
       .then((data) => setSessions(data))
       .catch((e) => console.error("Sessions load error:", e));
@@ -69,13 +69,13 @@ function Attendance() {
     setLoading(true);
 
     const pStudents = fetch(
-      `https://scholartrack-backend-7vzy.onrender.com/api/students/?school_id=${encodeURIComponent(
+      `https://scholartrack-backend-bgas.onrender.com/api/students/?school_id=${encodeURIComponent(
         schoolId
       )}`
     ).then((r) => r.json());
 
     const pAttendance = fetch(
-      `https://scholartrack-backend-7vzy.onrender.com/api/attendance/?session_id=${encodeURIComponent(
+      `https://scholartrack-backend-bgas.onrender.com/api/attendance/?session_id=${encodeURIComponent(
         selectedSessionID
       )}`
     ).then((r) => r.json());
@@ -145,7 +145,7 @@ function Attendance() {
     try {
       for (const row of diffs) {
         const res = await fetch(
-          "https://scholartrack-backend-7vzy.onrender.com/api/attendance/",
+          "https://scholartrack-backend-bgas.onrender.com/api/attendance/",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -164,7 +164,7 @@ function Attendance() {
       }
 
       const fresh = await fetch(
-        `https://scholartrack-backend-7vzy.onrender.com/api/attendance/?session_id=${encodeURIComponent(
+        `https://scholartrack-backend-bgas.onrender.com/api/attendance/?session_id=${encodeURIComponent(
           selectedSessionID
         )}`
       ).then((r) => r.json());
@@ -196,7 +196,7 @@ function Attendance() {
 
     try {
       const res = await fetch(
-        `https://scholartrack-backend-7vzy.onrender.com/api/attendance/export/?session_id=${selectedSessionID}`,
+        `https://scholartrack-backend-bgas.onrender.com/api/attendance/export/?session_id=${selectedSessionID}`,
         {
           headers: {
             Username: user.username,

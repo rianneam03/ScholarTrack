@@ -18,7 +18,7 @@ function Sessions() {
   const fetchSessions = async () => {
     try {
       const res = await fetch(
-        "https://scholartrack-backend-7vzy.onrender.com/api/sessions/"
+        "https://scholartrack-backend-bgas.onrender.com/api/sessions/"
       );
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       const data = await res.json();
@@ -33,7 +33,7 @@ function Sessions() {
   const fetchSchools = async () => {
     try {
       const res = await fetch(
-        "https://scholartrack-backend-7vzy.onrender.com/api/schools/"
+        "https://scholartrack-backend-bgas.onrender.com/api/schools/"
       );
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       const data = await res.json();
@@ -60,7 +60,7 @@ function Sessions() {
 
     try {
       const res = await fetch(
-        "https://scholartrack-backend-7vzy.onrender.com/api/sessions/",
+        "https://scholartrack-backend-bgas.onrender.com/api/sessions/",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -94,7 +94,7 @@ function Sessions() {
 
     try {
       const res = await fetch(
-        `https://scholartrack-backend-7vzy.onrender.com/api/sessions/${sessionId}/`,
+        `https://scholartrack-backend-bgas.onrender.com/api/sessions/${sessionId}/`,
         {
           method: "DELETE",
           headers: {

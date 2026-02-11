@@ -6,7 +6,7 @@ function Dashboard() {
   useEffect(() => {
     async function fetchDashboard() {
       try {
-        const res = await fetch("https://scholartrack-backend-7vzy.onrender.com/api/dashboard_data/");
+        const res = await fetch("https://scholartrack-backend-bgas.onrender.com/api/dashboard_data/");
         const json = await res.json();
         setData(json);
       } catch (err) {

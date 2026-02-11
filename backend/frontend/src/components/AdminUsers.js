@@ -18,7 +18,7 @@ export default function AdminUsers() {
   const fetchUsers = async () => {
     try {
       const res = await axios.get(
-        "https://scholartrack-backend-7vzy.onrender.com/api/users/",
+        "https://scholartrack-backend-bgas.onrender.com/api/users/",
         { headers: { Username: username }, withCredentials: true }
       );
       setUsers(res.data);
@@ -38,7 +38,7 @@ export default function AdminUsers() {
   const handleCreate = async () => {
     try {
       const res = await axios.post(
-        "https://scholartrack-backend-7vzy.onrender.com/api/admin/create-user/",
+        "https://scholartrack-backend-bgas.onrender.com/api/admin/create-user/",
         newUser,
         { headers: { Username: username }, withCredentials: true }
       );

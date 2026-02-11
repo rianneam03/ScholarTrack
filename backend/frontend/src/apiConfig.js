@@ -3,5 +3,5 @@
 
 
 // Temporary hard-coded URL — this WILL work
-const API_BASE = "https://scholartrack-backend-7vzy.onrender.com/api";
+const API_BASE = "https://scholartrack-backend-bgas.onrender.com/api";
 export default API_BASE;

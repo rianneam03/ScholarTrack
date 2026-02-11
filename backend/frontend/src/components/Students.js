@@ -73,7 +73,7 @@ function Students() {
   const handleUpdate = async () => {
     if (!formData.StudentID) return alert("Student ID required");
 
-    const res = await fetch("https://scholartrack-backend-7vzy.onrender.com/api/students/", {
+    const res = await fetch("https://scholartrack-backend-bgas.onrender.com/api/students/", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -98,7 +98,7 @@ function Students() {
     if (!window.confirm("Delete this student?")) return;
 
     const res = await fetch(
-      `https://scholartrack-backend-7vzy.onrender.com/api/students/?StudentID=${formData.StudentID}`,
+      `https://scholartrack-backend-bgas.onrender.com/api/students/?StudentID=${formData.StudentID}`,
       {
         method: "DELETE",
         headers: { Username: user.username },
@@ -141,7 +141,7 @@ function Students() {
   const handleExport = async () => {
     try {
       const res = await fetch(
-        "https://scholartrack-backend-7vzy.onrender.com/api/students/export/",
+        "https://scholartrack-backend-bgas.onrender.com/api/students/export/",
         {
           headers: {
             Username: user.username,

@@ -5,7 +5,7 @@ function Login() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  const LOGIN_URL = "https://scholartrack-backend-7vzy.onrender.com/api/login/";
+  const LOGIN_URL = "https://scholartrack-backend-bgas.onrender.com/api/login/";
 
   const handleSubmit = async (e) => {
     e.preventDefault();

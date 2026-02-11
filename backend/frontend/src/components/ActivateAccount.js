@@ -23,7 +23,7 @@ export default function ActivateAccount() {
     try {
       // POST token, username, password to backend
       const res = await axios.post(
-        "https://scholartrack-backend-7vzy.onrender.com/api/activate/",
+        "https://scholartrack-backend-bgas.onrender.com/api/activate/",
         {
           token,
           username,   // <- send username
