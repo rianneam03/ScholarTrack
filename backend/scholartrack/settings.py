@@ -111,7 +111,7 @@ CORS_ALLOW_HEADERS = ["content-type", "authorization", "username"]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://scholartrack-frontend-lpnr.onrender.com",
-    "https://scholartrack-backend-bgas.onrender.com/api",
+    "https://scholartrack-backend-bgas.onrender.com",
 ]
 
 SESSION_COOKIE_SECURE = True
