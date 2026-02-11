@@ -104,14 +104,14 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 # ----------------------
 
 CORS_ALLOWED_ORIGINS = [
-    "https://scholartrack-frontend.onrender.com",
+    "https://scholartrack-frontend-lpnr.onrender.com",
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = ["content-type", "authorization", "username"]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://scholartrack-frontend.onrender.com",
-    "https://scholartrack-backend.onrender.com",
+    "https://scholartrack-frontend-lpnr.onrender.com",
+    "https://scholartrack-backend-bgas.onrender.com/api",
 ]
 
 SESSION_COOKIE_SECURE = True
