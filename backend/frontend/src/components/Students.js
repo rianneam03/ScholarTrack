@@ -35,12 +35,12 @@ function Students() {
   }, []);
 
   const fetchStudents = async () => {
-    const res = await fetch("https://scholartrack-backend-7vzy.onrender.com/api/students/");
+    const res = await fetch("https://scholartrack-backend-bgas.onrender.com/api/students/");
     setStudents(await res.json());
   };
 
   const fetchSchools = async () => {
-    const res = await fetch("https://scholartrack-backend-7vzy.onrender.com/api/schools/");
+    const res = await fetch("https://scholartrack-backend-bgas.onrender.com/api/schools/");
     setSchools(await res.json());
   };
 
@@ -51,7 +51,7 @@ function Students() {
   // ➕ ADD STUDENT
   // =======================
   const handleAdd = async () => {
-    const res = await fetch("https://scholartrack-backend-7vzy.onrender.com/api/students/", {
+    const res = await fetch("https://scholartrack-backend-bgas.onrender.com/api/students/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
