@@ -9,7 +9,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Student, School, Session, Attendance, User
 from django.utils import timezone
-from datetime import timedelta
+from datetime import timedelta, date
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
@@ -348,10 +348,10 @@ def students_list(request):
         if student_id and Student.objects.filter(studentid=student_id).exists():
             return Response({"error": "StudentID already exists."}, status=400)
 
-        # --- Clean Enrollment Date ---
+        # --- Clean/Default Enrollment Date ---
         enrollment_date = data.get('EnrollmentDate')
-        if enrollment_date == "":
-            enrollment_date = None
+        if not enrollment_date:
+            enrollment_date = date.today()
 
         # --- School is Required ---
         school_id = data.get('SchoolID')
