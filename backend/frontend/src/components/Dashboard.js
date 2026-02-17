@@ -41,30 +41,36 @@ function Dashboard() {
       <h2>Dashboard</h2>
 
       {/* 1. OVERVIEW STATS */}
-      <div className="section-title">Program Overview</div>
+      <h3>Program Overview</h3>
       <div className="stats-grid">
         <div className="stat-card">
-          <h3>Total Students</h3>
+          <h4>Total Students</h4>
           <p className="stat-value">{data.total_students}</p>
         </div>
         <div className="stat-card">
-          <h3>Total Schools</h3>
+          <h4>Total Schools</h4>
           <p className="stat-value">{data.total_schools}</p>
         </div>
         <div className="stat-card">
-          <h3>Sessions Conducted</h3>
+          <h4>Sessions Conducted</h4>
           <p className="stat-value">{data.sessions_conducted}</p>
-          <p className="stat-sub">Upcoming: {data.upcoming_sessions}</p>
+          <div className="stat-sub">
+            <span className="label">Upcoming:</span>
+            <span className="value">{data.upcoming_sessions}</span>
+          </div>
         </div>
         <div className="stat-card">
-          <h3>Avg Attendance</h3>
+          <h4>Avg Attendance</h4>
           <p className="stat-value">{data.avg_attendance}</p>
-          <p className="stat-sub">Rate: {data.attendance_rate}%</p>
+          <div className="stat-sub">
+            <span className="label">Rate:</span>
+            <span className="value">{data.attendance_rate}%</span>
+          </div>
         </div>
       </div>
 
       {/* 2. DEMOGRAPHICS & IMPACT */}
-      <div className="section-title">Demographics & Impact</div>
+      <h3>Demographics & Impact</h3>
       <div className="charts-container">
 
         {/* Students by School (High Impact) */}
