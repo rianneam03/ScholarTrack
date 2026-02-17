@@ -76,16 +76,16 @@ function Dashboard() {
         {/* Students by Site (High Impact) */}
         <div className="chart-wrapper">
           <h3>Students by Site</h3>
-          <div style={{ width: "100%", height: 350 }}>
+          <div style={{ width: "100%", height: 400 }}>
             <ResponsiveContainer>
-              <BarChart data={data.students_by_school} margin={{ bottom: 50 }}>
+              <BarChart data={data.students_by_school} margin={{ bottom: 100 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                   dataKey="name"
                   interval={0}
                   angle={-45}
                   textAnchor="end"
-                  height={60}
+                  height={120}
                   tick={{ fontSize: 12 }}
                 />
                 <YAxis allowDecimals={false} />
