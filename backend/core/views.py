@@ -65,10 +65,11 @@ def dashboard_data(request):
         for item in grades_qs
     ]
 
-    # 4. Students by School (High Impact)
-    schools_qs = Student.objects.values('school__school').annotate(count=Count('studentid')).order_by('-count')
+    # 4. Students by Site (High Impact)
+    # Use School as base to include those with 0 students
+    schools_qs = School.objects.annotate(count=Count('student')).order_by('-count')
     students_by_school = [
-        {"name": item['school__school'] or "Unknown", "value": item['count']}
+        {"name": item.school, "value": item.count}
         for item in schools_qs
     ]
 
