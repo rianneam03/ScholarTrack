@@ -237,7 +237,7 @@ function Students() {
             </th>
             <th>Grade</th>
             <th>School</th>
-            <th>STEM</th>
+            <th>STEM Interest</th>
             <th onClick={() => sortStudents("EnrollmentDate")} style={{ cursor: "pointer" }}>
               Date {renderSortArrow("EnrollmentDate")}
             </th>
