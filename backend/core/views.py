@@ -67,8 +67,7 @@ def dashboard_data(request):
 
     # 4. Students by Site (High Impact)
     # Use School as base to include those with 0 students
-    # Note: 'student_set' is the default related_name for the ForeignKey in Student model
-    schools_qs = School.objects.annotate(count=Count('student_set')).order_by('-count')
+    schools_qs = School.objects.annotate(count=Count('student')).order_by('-count')
     students_by_school = [
         {"name": item.school, "value": item.count}
         for item in schools_qs
@@ -349,11 +348,19 @@ def students_list(request):
         if student_id and Student.objects.filter(studentid=student_id).exists():
             return Response({"error": "StudentID already exists."}, status=400)
 
-        school_obj = None
-        if data.get('SchoolID'):
-            school_obj = School.objects.filter(schoolid=data.get('SchoolID')).first()
-            if not school_obj:
-                return Response({"error": "Invalid SchoolID"}, status=400)
+        # --- Clean Enrollment Date ---
+        enrollment_date = data.get('EnrollmentDate')
+        if enrollment_date == "":
+            enrollment_date = None
+
+        # --- School is Required ---
+        school_id = data.get('SchoolID')
+        if not school_id:
+             return Response({"error": "School is required."}, status=400)
+
+        school_obj = School.objects.filter(schoolid=school_id).first()
+        if not school_obj:
+            return Response({"error": "Invalid SchoolID"}, status=400)
 
         student = Student.objects.create(
             studentid=student_id,
@@ -366,7 +373,7 @@ def students_list(request):
             guardianphone=data.get('GuardianPhone'),
             email=data.get('Email'),
             steminterest=data.get('STEMInterest'),
-            enrollmentdate=data.get('EnrollmentDate')
+            enrollmentdate=enrollment_date
         )
 
         return Response({"message": "Student added successfully!", "StudentID": student.studentid})
