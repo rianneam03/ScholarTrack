@@ -74,7 +74,7 @@ function Dashboard() {
       <div className="charts-container">
 
         {/* Students by School (High Impact) */}
-        <div className="chart-wrapper full-width">
+        <div className="chart-wrapper">
           <h3>Students by School</h3>
           <div style={{ width: "100%", height: 300 }}>
             <ResponsiveContainer>
@@ -90,7 +90,7 @@ function Dashboard() {
         </div>
 
         {/* Growth Over Time */}
-        <div className="chart-wrapper full-width">
+        <div className="chart-wrapper">
           <h3>Program Growth (New Enrollments)</h3>
           <div style={{ width: "100%", height: 300 }}>
             <ResponsiveContainer>
