@@ -76,7 +76,7 @@ function Dashboard() {
         {/* Students by Site (High Impact) */}
         <div className="chart-wrapper">
           <h3>Students by Site</h3>
-          <div style={{ width: "100%", height: 300 }}>
+          <div style={{ width: "100%", height: 300, marginTop: "20px" }}>
             <ResponsiveContainer>
               <BarChart data={data.students_by_school} margin={{ bottom: 70 }}>
                 <CartesianGrid strokeDasharray="3 3" />
