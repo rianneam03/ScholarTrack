@@ -30,22 +30,64 @@ def dashboard_data(request):
     stem_percent = round((stem_yes / total_students) * 100, 2) if total_students else 0
 
     today = timezone.now().date()
-    # Count ALL future sessions
-    upcoming_sessions = Session.objects.filter(sessiondate__gte=today).count()
+    
+    # --- Session Stats ---
+    # 3. Session Completion
+    # total sessions conducted = sessions where date < today
+    total_sessions_conducted = Session.objects.filter(sessiondate__lt=today).count()
+    # total sessions scheduled = sessions where date >= today
+    total_sessions_upcoming = Session.objects.filter(sessiondate__gte=today).count()
+
+    # --- Attendance Rate ---
+    # Global attendance rate = (Total Present / Total Records) * 100
+    total_attendance_records = Attendance.objects.count()
+    total_present = Attendance.objects.filter(status__iexact='Present').count()
+    attendance_rate = 0
+    if total_attendance_records > 0:
+        attendance_rate = round((total_present / total_attendance_records) * 100, 1)
+
+    # Avg attendance per session
+    # We can approximate this as (Total Present / Total Sessions Conducted) (if > 0)
+    # or more accurately aggregate per session. Let's do simple average for now.
+    avg_attendance = 0
+    if total_sessions_conducted > 0:
+        avg_attendance = round(total_present / total_sessions_conducted, 1)
+
 
     # --- Graph Data ---
-    # 1. Students by Grade
-    # We want a list of { "name": "Grade X", "value": count }
-    # Using Django aggregation:
     from django.db.models import Count
+    from django.db.models.functions import TruncMonth
+
+    # 1. Students by Grade
     grades_qs = Student.objects.values('grade').annotate(count=Count('grade')).order_by('grade')
     students_by_grade = [
         {"name": item['grade'] or "Unknown", "value": item['count']}
         for item in grades_qs
     ]
 
+    # 4. Students by School (High Impact)
+    schools_qs = Student.objects.values('school__school').annotate(count=Count('studentid')).order_by('-count')
+    students_by_school = [
+        {"name": item['school__school'] or "Unknown", "value": item['count']}
+        for item in schools_qs
+    ]
+
+    # 5. Growth Over Time (New Students per Month)
+    # Assuming 'enrollmentdate' is the field to track when they joined.
+    # Note: SQLite might have issues with TruncMonth depending on Django version/setup, but usually fine.
+    # If using Postgres (which user said they are), this is perfect.
+    growth_qs = Student.objects.filter(enrollmentdate__isnull=False)\
+        .annotate(month=TruncMonth('enrollmentdate'))\
+        .values('month')\
+        .annotate(count=Count('studentid'))\
+        .order_by('month')
+    
+    student_growth = [
+        {"name": item['month'].strftime("%Y-%m"), "value": item['count']}
+        for item in growth_qs
+    ]
+
     # 2. STEM Interest
-    # "Yes" vs "No" (or others)
     stem_yes_count = Student.objects.filter(steminterest='Yes').count()
     stem_no_count = total_students - stem_yes_count
     stem_data = [
@@ -57,8 +99,13 @@ def dashboard_data(request):
         "total_students": total_students,
         "total_schools": total_schools,
         "stem_percent": stem_percent,
-        "upcoming_sessions": upcoming_sessions,
+        "upcoming_sessions": total_sessions_upcoming,
+        "sessions_conducted": total_sessions_conducted,
+        "attendance_rate": attendance_rate,
+        "avg_attendance": avg_attendance,
         "students_by_grade": students_by_grade,
+        "students_by_school": students_by_school,
+        "student_growth": student_growth,
         "stem_data": stem_data
     }
     return Response(data)

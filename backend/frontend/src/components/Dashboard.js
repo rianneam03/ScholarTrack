@@ -12,6 +12,8 @@ import {
   PieChart,
   Pie,
   Cell,
+  LineChart,
+  Line,
 } from "recharts";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8", "#82ca9d"];
@@ -38,6 +40,8 @@ function Dashboard() {
     <div className="page-container">
       <h2>Dashboard</h2>
 
+      {/* 1. OVERVIEW STATS */}
+      <div className="section-title">Program Overview</div>
       <div className="stats-grid">
         <div className="stat-card">
           <h3>Total Students</h3>
@@ -48,18 +52,54 @@ function Dashboard() {
           <p className="stat-value">{data.total_schools}</p>
         </div>
         <div className="stat-card">
-          <h3>STEM Interest</h3>
-          <p className="stat-value">{data.stem_percent}%</p>
+          <h3>Sessions Conducted</h3>
+          <p className="stat-value">{data.sessions_conducted}</p>
+          <p className="stat-sub">Upcoming: {data.upcoming_sessions}</p>
         </div>
         <div className="stat-card">
-          <h3>Upcoming Sessions</h3>
-          <p className="stat-value">{data.upcoming_sessions}</p>
+          <h3>Avg Attendance</h3>
+          <p className="stat-value">{data.avg_attendance}</p>
+          <p className="stat-sub">Rate: {data.attendance_rate}%</p>
         </div>
       </div>
 
+      {/* 2. DEMOGRAPHICS & IMPACT */}
+      <div className="section-title">Demographics & Impact</div>
       <div className="charts-container">
 
-        {/* Bar Chart: Students by Grade */}
+        {/* Students by School (High Impact) */}
+        <div className="chart-wrapper full-width">
+          <h3>Students by School</h3>
+          <div style={{ width: "100%", height: 300 }}>
+            <ResponsiveContainer>
+              <BarChart data={data.students_by_school}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis allowDecimals={false} />
+                <Tooltip />
+                <Bar dataKey="value" fill="#4FA3B8" name="Students" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Growth Over Time */}
+        <div className="chart-wrapper full-width">
+          <h3>Program Growth (New Enrollments)</h3>
+          <div style={{ width: "100%", height: 300 }}>
+            <ResponsiveContainer>
+              <LineChart data={data.student_growth}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis allowDecimals={false} />
+                <Tooltip />
+                <Line type="monotone" dataKey="value" stroke="#1E3A5F" strokeWidth={3} name="New Students" />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Existing Charts */}
         <div className="chart-wrapper">
           <h3>Students by Grade</h3>
           <div style={{ width: "100%", height: 300 }}>
@@ -75,7 +115,6 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Pie Chart: STEM Interest */}
         <div className="chart-wrapper">
           <h3>STEM Interest Distribution</h3>
           <div style={{ width: "100%", height: 300 }}>
