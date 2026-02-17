@@ -78,15 +78,16 @@ function Dashboard() {
           <h3>Students by Site</h3>
           <div style={{ width: "100%", height: 300 }}>
             <ResponsiveContainer>
-              <BarChart data={data.students_by_school} margin={{ bottom: 100 }}>
+              <BarChart data={data.students_by_school} margin={{ bottom: 70 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                   dataKey="name"
                   interval={0}
                   angle={-45}
                   textAnchor="end"
-                  height={120}
-                  tick={{ fontSize: 12 }}
+                  height={80}
+                  tick={{ fontSize: 10 }}
+                  tickFormatter={(val) => val.length > 15 ? val.slice(0, 15) + '...' : val}
                 />
                 <YAxis allowDecimals={false} />
                 <Tooltip />
