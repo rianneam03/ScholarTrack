@@ -30,16 +30,36 @@ def dashboard_data(request):
     stem_percent = round((stem_yes / total_students) * 100, 2) if total_students else 0
 
     today = timezone.now().date()
-    upcoming_sessions = Session.objects.filter(
-        sessiondate__gte=today,
-        sessiondate__lte=today + timedelta(days=7)
-    ).count()
+    # Count ALL future sessions
+    upcoming_sessions = Session.objects.filter(sessiondate__gte=today).count()
+
+    # --- Graph Data ---
+    # 1. Students by Grade
+    # We want a list of { "name": "Grade X", "value": count }
+    # Using Django aggregation:
+    from django.db.models import Count
+    grades_qs = Student.objects.values('grade').annotate(count=Count('grade')).order_by('grade')
+    students_by_grade = [
+        {"name": item['grade'] or "Unknown", "value": item['count']}
+        for item in grades_qs
+    ]
+
+    # 2. STEM Interest
+    # "Yes" vs "No" (or others)
+    stem_yes_count = Student.objects.filter(steminterest='Yes').count()
+    stem_no_count = total_students - stem_yes_count
+    stem_data = [
+        {"name": "STEM Interest", "value": stem_yes_count},
+        {"name": "Other", "value": stem_no_count},
+    ]
 
     data = {
         "total_students": total_students,
         "total_schools": total_schools,
         "stem_percent": stem_percent,
-        "upcoming_sessions": upcoming_sessions
+        "upcoming_sessions": upcoming_sessions,
+        "students_by_grade": students_by_grade,
+        "stem_data": stem_data
     }
     return Response(data)
 
