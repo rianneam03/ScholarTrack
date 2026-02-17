@@ -67,7 +67,8 @@ def dashboard_data(request):
 
     # 4. Students by Site (High Impact)
     # Use School as base to include those with 0 students
-    schools_qs = School.objects.annotate(count=Count('student')).order_by('-count')
+    # Note: 'student_set' is the default related_name for the ForeignKey in Student model
+    schools_qs = School.objects.annotate(count=Count('student_set')).order_by('-count')
     students_by_school = [
         {"name": item.school, "value": item.count}
         for item in schools_qs
