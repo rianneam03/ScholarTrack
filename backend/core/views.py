@@ -600,3 +600,55 @@ def login_user(request):
             "role": getattr(user, "role", "teacher")
         })
 
+# --- Needs API ---
+from .serializers import NeedSerializer
+from .models import Need
+
+@api_view(['GET', 'POST'])
+def needs_list(request):
+    if request.method == 'GET':
+        needs = Need.objects.all().order_by('-created_at')
+        serializer = NeedSerializer(needs, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        # Only admin or teacher can create needs
+        username = request.headers.get("Username")
+        user = User.objects.filter(username=username).first()
+        if not user or user.role not in ["admin", "teacher"]:
+            return Response({"error": "Unauthorized"}, status=403)
+
+        serializer = NeedSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def need_detail(request, need_id):
+    try:
+        need = Need.objects.get(pk=need_id)
+    except Need.DoesNotExist:
+        return Response({"error": "Need not found"}, status=404)
+
+    if request.method == 'GET':
+        serializer = NeedSerializer(need)
+        return Response(serializer.data)
+
+    # Check permissions for edit/delete
+    username = request.headers.get("Username")
+    user = User.objects.filter(username=username).first()
+    if not user or user.role not in ["admin", "teacher"]:
+        return Response({"error": "Unauthorized"}, status=403)
+
+    if request.method == 'PUT':
+        serializer = NeedSerializer(need, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        need.delete()
+        return Response({"message": "Need deleted successfully"})
+

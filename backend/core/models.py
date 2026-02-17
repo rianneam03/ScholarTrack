@@ -168,3 +168,25 @@ class User(models.Model):
 
     def __str__(self):
         return self.username or f"User {self.userid}"
+
+
+# ----------------------------
+# Need Model
+# ----------------------------
+class Need(models.Model):
+    needid = models.AutoField(db_column='needid', primary_key=True)
+    title = models.CharField(db_column='title', max_length=100)
+    description = models.TextField(db_column='description', blank=True, null=True)
+    amount_needed = models.DecimalField(db_column='amount_needed', max_digits=10, decimal_places=2)
+    current_amount = models.DecimalField(db_column='current_amount', max_digits=10, decimal_places=2, default=0)
+    created_at = models.DateTimeField(db_column='created_at', auto_now_add=True)
+    urgency = models.CharField(db_column='urgency', max_length=20, default='Medium')
+
+    class Meta:
+        managed = True
+        db_table = 'needs'
+        verbose_name = "Need"
+        verbose_name_plural = "Needs"
+
+    def __str__(self):
+        return self.title

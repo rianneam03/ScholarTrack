@@ -25,4 +25,6 @@ urlpatterns = [
     path("api/activate/", views.activate_account, name="activate-account"),
     path('api/login/', views.login_user, name='login_user'),   # ← NOW no conflict
     path("api/csrf/", csrf),
+    path('api/needs/', views.needs_list, name='needs_list'),
+    path('api/needs/<int:need_id>/', views.need_detail, name='need_detail'),
 ]
