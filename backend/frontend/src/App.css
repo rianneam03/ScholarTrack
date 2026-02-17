@@ -463,6 +463,15 @@ progress::-webkit-progress-value {
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   border: 1px solid var(--card-border);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.chart-wrapper>div {
+  width: 100%;
+  /* Ensure ResponsiveContainer div fills width */
 }
 
 .chart-wrapper.full-width {
