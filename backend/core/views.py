@@ -500,20 +500,35 @@ def export_students_excel(request):
 # --- Schools list API --- 
 @api_view(["GET", "POST"]) 
 def schools_list(request): 
-    if request.method == "GET": 
-        schools = School.objects.annotate(
-            student_count=Count('student', distinct=True),
-            session_count=Count('session', distinct=True)
-        ).order_by('school')
-        data = [ 
-          { 
-            "SchoolID": s.schoolid, 
-            "SchoolName": s.school,
-            "StudentCount": s.student_count,
-            "SessionCount": s.session_count,
-          } 
-          for s in schools 
-        ] 
+    if request.method == "GET":
+        try:
+            schools = School.objects.annotate(
+                student_count=Count('student', distinct=True),
+                session_count=Count('session', distinct=True)
+            ).order_by('school')
+            data = [ 
+              { 
+                "SchoolID": s.schoolid, 
+                "SchoolName": s.school,
+                "StudentCount": s.student_count,
+                "SessionCount": s.session_count,
+              } 
+              for s in schools 
+            ] 
+        except Exception:
+            # Fallback: return schools without counts if annotate fails
+            import traceback
+            traceback.print_exc()
+            schools = School.objects.all().order_by('school')
+            data = [
+              {
+                "SchoolID": s.schoolid,
+                "SchoolName": s.school,
+                "StudentCount": Student.objects.filter(school=s).count(),
+                "SessionCount": Session.objects.filter(school=s).count(),
+              }
+              for s in schools
+            ]
         return Response(data) 
     if request.method == "POST": 
         school_name = request.data.get("SchoolName") 
