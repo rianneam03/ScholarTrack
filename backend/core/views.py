@@ -501,11 +501,16 @@ def export_students_excel(request):
 @api_view(["GET", "POST"]) 
 def schools_list(request): 
     if request.method == "GET": 
-        schools = School.objects.all() 
+        schools = School.objects.annotate(
+            student_count=Count('student', distinct=True),
+            session_count=Count('session', distinct=True)
+        ).order_by('school')
         data = [ 
           { 
             "SchoolID": s.schoolid, 
-            "SchoolName": s.school 
+            "SchoolName": s.school,
+            "StudentCount": s.student_count,
+            "SessionCount": s.session_count,
           } 
           for s in schools 
         ] 

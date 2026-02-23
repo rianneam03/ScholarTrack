@@ -523,3 +523,112 @@ progress::-webkit-progress-value {
   font-weight: 700;
   color: var(--app-blue);
 }
+
+/* =====================================================
+   🌿 SCHOOLS / SITES SECTION
+===================================================== */
+.add-school-card {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  background: white;
+  padding: 16px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--card-border);
+  margin-bottom: 24px;
+}
+
+.add-school-card input {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 14px;
+}
+
+.school-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.school-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--card-border);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.school-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+.school-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.school-card-header h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--app-blue);
+}
+
+.school-id {
+  font-size: 0.75rem;
+  color: #94A3B8;
+  background: #F1F5F9;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.school-card-stats {
+  display: flex;
+  gap: 16px;
+}
+
+.school-card-stat {
+  flex: 1;
+  text-align: center;
+  background: #F8FAFC;
+  padding: 12px 8px;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+}
+
+.school-stat-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--app-blue);
+}
+
+.school-stat-label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748B;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  background: white;
+  border-radius: 12px;
+  border: 1px dashed var(--card-border);
+  color: #94A3B8;
+  font-size: 1rem;
+}
+
+.empty-state p {
+  margin: 4px 0;
+}
