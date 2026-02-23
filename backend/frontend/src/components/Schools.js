@@ -113,7 +113,6 @@ function Schools() {
             <div className="school-card" key={s.SchoolID}>
               <div className="school-card-header">
                 <h4>{s.SchoolName}</h4>
-                <span className="school-id">ID: {s.SchoolID}</span>
               </div>
               <div className="school-card-stats">
                 <div className="school-card-stat">
