@@ -26,7 +26,10 @@ function Navbar() {
 
   return (
     <nav className="navbar">
-      <div className="navbar-brand">ScholarTrack</div>
+      <div className="navbar-brand">
+        <img src="/logo.png" alt="Education for Scholars" className="navbar-logo" />
+        ScholarTrack
+      </div>
 
       <div className="navbar-links">
         {user ? (

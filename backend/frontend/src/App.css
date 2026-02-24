@@ -4,6 +4,7 @@
 :root {
   --app-blue: #1E3A5F;
   --accent-teal: #4FA3B8;
+  --accent-gold: #E8A817;
   --app-bg: #F4F7FB;
 
   --card-bg: #FFFFFF;
@@ -78,13 +79,26 @@ body {
   font-size: 1.4rem;
   font-weight: 700;
   color: white;
+  display: flex;
   align-items: center;
+  gap: 10px;
   margin-right: auto;
   letter-spacing: 0.03em;
 }
 
+.navbar-logo {
+  height: 36px;
+  width: 36px;
+  object-fit: contain;
+  border-radius: 4px;
+  background: white;
+  padding: 2px;
+}
+
 .navbar-user {
   font-style: italic;
+  font-size: 0.85rem;
+  opacity: 0.9;
 }
 
 .navbar-logout {
@@ -102,6 +116,11 @@ body {
 .navbar-logout:hover {
   background-color: var(--accent-teal);
   color: white;
+}
+
+.navbar a.active {
+  color: var(--accent-gold);
+  font-weight: 600;
 }
 
 /* =====================================================
