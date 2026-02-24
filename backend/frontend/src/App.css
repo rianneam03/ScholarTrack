@@ -152,9 +152,10 @@ body {
 }
 
 .navbar-logo {
-  height: 32px;
-  width: 32px;
+  height: 42px;
+  width: 42px;
   object-fit: contain;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.35));
 }
 
 .navbar-user {
