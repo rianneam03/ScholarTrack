@@ -1,223 +1,281 @@
 /* =====================================================
-   🌿 GLOBAL THEME VARIABLES
+   SCHOLARTRACK DESIGN SYSTEM
+   Nonprofit Impact Management Platform
 ===================================================== */
+
+/* --- Design Tokens --- */
 :root {
+  /* Primary palette */
+  --navy: #1E3A5F;
+  --navy-dark: #152C48;
+  --navy-light: #2A4F7A;
+
+  /* Accent */
+  --teal: #0EA5A4;
+  --teal-soft: #E6F7F7;
+
+  /* Neutral backgrounds */
+  --bg-page: #F8FAFC;
+  --bg-card: #FFFFFF;
+  --bg-muted: #F1F5F9;
+  --bg-hover: #F7FAFD;
+
+  /* Borders */
+  --border: #E2E8F0;
+  --border-light: #EEF2F6;
+
+  /* Text */
+  --text-primary: #1E293B;
+  --text-secondary: #64748B;
+  --text-muted: #94A3B8;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+  /* Status */
+  --danger: #DC2626;
+  --danger-hover: #B91C1C;
+  --success: #059669;
+  --warning: #D97706;
+
+  /* Spacing (8px grid) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  /* Keep legacy vars for any components still using them */
   --app-blue: #1E3A5F;
-  --accent-teal: #4FA3B8;
-  --accent-gold: #E8A817;
-  --accent-light: #8BB8D0;
-  --app-bg: #F4F7FB;
-
+  --accent-teal: #0EA5A4;
+  --card-border: #E2E8F0;
   --card-bg: #FFFFFF;
-  --card-border: #E3E8EF;
-  --shadow-color: rgba(0, 0, 0, 0.06);
-
-  --text-dark: #2E2E2E;
-
-  --secondary-bg: #E9EFF5;
-
-  --danger-red: #C0392B;
-  --danger-hover: #A93226;
-
-  --table-header-bg: #F0F4F8;
-  --table-row-hover: #F7FAFC;
 }
 
 /* =====================================================
-   🌿 BASE / GLOBAL
+   BASE
 ===================================================== */
 body {
-  font-family: 'Inter', 'Source Sans 3', 'IBM Plex Sans', sans-serif;
-  background-color: var(--app-bg);
-  color: var(--text-dark);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
-  font-size: 15px;
+  font-size: 14px;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 /* =====================================================
-   🌿 PAGE LAYOUT
+   PAGE LAYOUT
 ===================================================== */
 .page-container {
-  padding: 28px 32px;
+  padding: var(--space-8) var(--space-8);
   max-width: 1200px;
   margin: 0 auto;
 }
 
 /* =====================================================
-   🌿 NAVBAR
+   NAVBAR
 ===================================================== */
 .navbar {
-  background-color: var(--app-blue);
+  background-color: var(--navy);
   color: white;
-  padding: 14px 28px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+  padding: var(--space-3) var(--space-8);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), var(--shadow-md);
+  display: flex;
+  align-items: center;
 }
 
 .navbar-links {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 20px;
+  gap: var(--space-5);
 }
 
 .navbar a {
-  color: white;
+  color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
   font-weight: 500;
-  font-size: 0.95rem;
-  letter-spacing: 0.02em;
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
   transition: color 0.2s ease;
+  padding: var(--space-2) 0;
 }
 
 .navbar a:hover {
-  color: var(--accent-teal);
+  color: white;
+}
+
+.navbar a.active {
+  color: white;
+  font-weight: 600;
+  position: relative;
+}
+
+.navbar a.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--teal);
+  border-radius: 1px;
 }
 
 .navbar-brand {
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: white;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-3);
   margin-right: auto;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .navbar-logo {
-  height: 34px;
-  width: 34px;
+  height: 32px;
+  width: 32px;
   object-fit: contain;
 }
 
 .navbar-user {
-  font-style: italic;
-  font-size: 0.85rem;
-  opacity: 0.9;
+  font-style: normal;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 400;
 }
 
 .navbar-logout {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  padding: 6px 14px;
-  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  color: white;
-  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.8rem;
   font-weight: 500;
   transition: all 0.2s ease;
 }
 
 .navbar-logout:hover {
-  background-color: var(--accent-teal);
+  background: rgba(255, 255, 255, 0.15);
   color: white;
-}
-
-.navbar a.active {
-  color: var(--accent-light);
-  font-weight: 600;
+  border-color: rgba(255, 255, 255, 0.35);
 }
 
 /* =====================================================
-   🌿 HEADINGS
+   HEADINGS
 ===================================================== */
 h2,
 h3 {
-  color: var(--app-blue);
-  margin-bottom: 14px;
-  border-left: 4px solid var(--accent-teal);
-  padding-left: 12px;
+  color: var(--navy);
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-4);
+  border-left: 3px solid var(--teal);
+  padding-left: var(--space-3);
 }
 
 h2 {
-  font-size: 1.6rem;
-  margin-top: 8px;
+  font-size: 1.35rem;
+  margin-top: var(--space-2);
 }
 
 h3 {
-  font-size: 1.15rem;
+  font-size: 1.05rem;
 }
 
 /* =====================================================
-   🌿 CARDS / FORMS
+   CARDS / FORMS
 ===================================================== */
 form,
 .card {
-  background-color: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 8px 24px var(--shadow-color);
-  margin-bottom: 20px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-5);
 }
 
 /* =====================================================
-   🌿 INPUTS
+   INPUTS
 ===================================================== */
 input,
 select,
 textarea {
-  padding: 10px 14px;
-  font-size: 0.9rem;
-  border-radius: 8px;
-  border: 1px solid var(--card-border);
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.875rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
   font-family: inherit;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  color: var(--text-dark);
+  color: var(--text-primary);
+  background: var(--bg-card);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 input:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: var(--app-blue);
-  box-shadow: 0 0 4px rgba(30, 58, 95, 0.3);
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px var(--teal-soft);
 }
 
 /* =====================================================
-   🌿 BUTTON SYSTEM
+   BUTTONS
 ===================================================== */
 button {
   font-family: inherit;
-  padding: 10px 20px;
-  border-radius: 8px;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   border: none;
-  transition: all 0.2s ease;
-  letter-spacing: 0.02em;
+  transition: all 0.15s ease;
+  letter-spacing: 0.01em;
 }
 
-/* Primary */
 button.primary {
-  background-color: var(--app-blue);
+  background-color: var(--navy);
   color: white;
 }
 
 button.primary:hover {
-  background-color: #162E4A;
+  background-color: var(--navy-dark);
 }
 
-/* Secondary */
 button.secondary {
-  background-color: var(--secondary-bg);
-  color: var(--app-blue);
+  background-color: var(--bg-muted);
+  color: var(--navy);
 }
 
 button.secondary:hover {
-  background-color: #DCE6F0;
+  background-color: #E2E8F0;
 }
 
-/* Danger */
 button.delete {
-  background-color: var(--danger-red);
+  background-color: var(--danger);
   color: white;
 }
 
@@ -226,65 +284,69 @@ button.delete:hover {
 }
 
 /* =====================================================
-   🌿 TABLES
+   TABLES
 ===================================================== */
 table {
   width: 100%;
   border-collapse: collapse;
-  background-color: var(--card-bg);
-  border-radius: 16px;
+  background-color: var(--bg-card);
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 8px 24px var(--shadow-color);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
 }
 
 th {
-  background-color: var(--table-header-bg);
-  padding: 14px 16px;
+  background-color: var(--bg-muted);
+  padding: var(--space-3) var(--space-4);
   font-weight: 600;
   text-align: left;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #64748B;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
 }
 
 td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #EEF2F6;
-  font-size: 0.9rem;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-light);
+  font-size: 0.875rem;
+  color: var(--text-primary);
 }
 
 tr:hover {
-  background-color: var(--table-row-hover);
+  background-color: var(--bg-hover);
 }
 
 tbody tr {
-  transition: background-color 0.15s ease;
+  transition: background-color 0.1s ease;
 }
 
 /* =====================================================
-   🌿 FILTER / ACTION BARS
+   FILTER / ACTION BARS
 ===================================================== */
 .filter-bar,
 .action-bar {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-  padding-left: 15px;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  padding-left: var(--space-3);
 }
 
 .helper-text {
-  opacity: 0.75;
-  padding-left: 15px;
+  color: var(--text-muted);
+  padding-left: var(--space-3);
   font-style: italic;
+  font-size: 0.8125rem;
 }
 
 /* =====================================================
-   🌿 LOGIN PAGE
+   LOGIN PAGE
 ===================================================== */
 .login-page {
-  padding: 40px;
+  padding: var(--space-10);
   text-align: center;
 }
 
@@ -292,226 +354,246 @@ tbody tr {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1px;
+  gap: var(--space-3);
 }
 
 .login-message {
-  margin-top: 20px;
-  font-weight: bold;
+  margin-top: var(--space-5);
+  font-weight: 600;
+  font-size: 0.875rem;
 }
 
 .login-message.success {
-  color: green;
+  color: var(--success);
 }
 
 .login-message.error {
-  color: red;
+  color: var(--danger);
 }
 
 /* =====================================================
-   🌿 RESPONSIVE
+   RESPONSIVE
 ===================================================== */
 @media (max-width: 768px) {
   .navbar-links {
     flex-wrap: wrap;
     justify-content: center;
   }
+
+  .page-container {
+    padding: var(--space-4);
+  }
+
+  .charts-container {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 /* =====================================================
-   🌿 FORM SPACING
+   FORM SPACING
 ===================================================== */
 .form-container {
   display: flex;
-  /* puts fields in a row */
   flex-wrap: wrap;
-  /* wraps to next line if too wide */
-  gap: 12px;
-  /* spacing between fields */
-  margin-bottom: 16px;
-  /* optional spacing below form */
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
 }
 
-
 /* =====================================================
-   🌿 DASHBOARD STATS
+   DASHBOARD STATS
 ===================================================== */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  margin-bottom: 40px;
+  gap: var(--space-5);
+  margin-bottom: var(--space-8);
 }
 
 .stat-card {
-  background: white;
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background: var(--bg-card);
+  padding: var(--space-6);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
   text-align: center;
-  border: 1px solid var(--card-border);
+  border: 1px solid var(--border);
+  transition: box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  box-shadow: var(--shadow-md);
 }
 
 .stat-card h3 {
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #64748B;
-  margin: 0 0 8px 0;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-2) 0;
   border: none;
   padding: 0;
+  font-weight: 600;
 }
 
 .stat-value {
-  font-size: 2.5rem;
+  font-size: 2.25rem;
   font-weight: 700;
-  color: var(--app-blue);
+  color: var(--navy);
   margin: 0;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 /* =====================================================
-   🌿 NEEDS SECTION
+   NEEDS SECTION
 ===================================================== */
 .needs-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: var(--space-5);
 }
 
 .needs-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 24px;
+  gap: var(--space-6);
 }
 
 .need-card {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--card-border);
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .need-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .need-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
 }
 
 .need-header h3 {
   margin: 0;
   border: none;
   padding: 0;
-  font-size: 1.25rem;
-  color: var(--text-dark);
+  font-size: 1.1rem;
+  color: var(--text-primary);
 }
 
 .urgency-tag {
-  font-size: 0.75rem;
-  padding: 4px 8px;
+  font-size: 0.65rem;
+  padding: 3px var(--space-2);
   border-radius: 20px;
   font-weight: 600;
   text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .urgency-high .urgency-tag {
-  background: #FEE2E2;
+  background: #FEF2F2;
   color: #DC2626;
 }
 
 .urgency-medium .urgency-tag {
-  background: #FEF3C7;
+  background: #FFFBEB;
   color: #D97706;
 }
 
 .urgency-low .urgency-tag {
-  background: #D1FAE5;
+  background: #ECFDF5;
   color: #059669;
 }
 
 .need-desc {
-  color: #64748B;
+  color: var(--text-secondary);
   flex-grow: 1;
-  margin-bottom: 20px;
-  line-height: 1.5;
+  margin-bottom: var(--space-5);
+  line-height: 1.6;
+  font-size: 0.875rem;
 }
 
 .progress-container {
-  margin-bottom: 20px;
+  margin-bottom: var(--space-5);
 }
 
 .progress-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 0.875rem;
-  margin-bottom: 8px;
+  font-size: 0.8rem;
+  margin-bottom: var(--space-2);
   font-weight: 500;
+  color: var(--text-secondary);
 }
 
 progress {
   width: 100%;
-  height: 12px;
-  border-radius: 6px;
+  height: 8px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
 progress::-webkit-progress-bar {
-  background-color: #E2E8F0;
+  background-color: var(--bg-muted);
 }
 
 progress::-webkit-progress-value {
-  background-color: var(--accent-teal);
+  background-color: var(--teal);
+  border-radius: 4px;
 }
 
 .donate-btn {
   width: 100%;
-  background-color: var(--app-blue);
+  background-color: var(--navy);
   color: white;
-  padding: 12px;
-  border-radius: 8px;
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
   font-weight: 600;
+  font-size: 0.8125rem;
   border: none;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.15s ease;
 }
 
 .donate-btn:hover {
-  background-color: #162E4A;
+  background-color: var(--navy-dark);
 }
 
 .need-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 /* =====================================================
-/* =====================================================
-   🌿 CHARTS SECTION
+   CHARTS SECTION
 ===================================================== */
 .charts-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 20px;
-  margin-top: 20px;
+  gap: var(--space-5);
+  margin-top: var(--space-5);
 }
 
 .chart-wrapper {
-  background: white;
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--card-border);
+  background: var(--bg-card);
+  padding: var(--space-6);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -520,7 +602,6 @@ progress::-webkit-progress-value {
 
 .chart-wrapper>div {
   width: 100%;
-  /* Ensure ResponsiveContainer div fills width */
 }
 
 .chart-wrapper.full-width {
@@ -529,39 +610,35 @@ progress::-webkit-progress-value {
 
 .chart-wrapper h3 {
   margin-top: 0;
+  margin-bottom: var(--space-3);
   text-align: center;
-  color: var(--app-blue);
-  /* Use h4 style inside charts if h3 is now section title? 
-     Actually keeping h3 is fine, but maybe reduce margin/size if needed. 
-     Let's keep it consistent. */
-  font-size: 1.1rem;
+  color: var(--navy);
+  font-size: 0.95rem;
   border: none;
-  /* Remove left border for chart titles */
   padding-left: 0;
+  font-weight: 600;
 }
 
-/* Stat Card specific updates */
+/* Stat Card h4 */
 .stat-card h4 {
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #64748B;
-  margin: 0 0 8px 0;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-2) 0;
   font-weight: 600;
 }
 
 .stat-sub {
-  display: flex;
+  display: inline-flex;
   justify-content: center;
-  gap: 6px;
-  font-size: 0.85rem;
-  color: #64748B;
-  margin-top: 8px;
-  background-color: #F8FAFC;
-  padding: 4px 8px;
-  border-radius: 4px;
-  display: inline-block;
-  /* distinct block */
+  gap: var(--space-1);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: var(--space-2);
+  background-color: var(--bg-muted);
+  padding: 3px var(--space-2);
+  border-radius: var(--radius-sm);
 }
 
 .stat-sub .label {
@@ -570,114 +647,115 @@ progress::-webkit-progress-value {
 
 .stat-sub .value {
   font-weight: 700;
-  color: var(--app-blue);
+  color: var(--navy);
 }
 
 /* =====================================================
-   🌿 SCHOOLS / SITES SECTION
+   SCHOOLS / SITES SECTION
 ===================================================== */
 .add-school-card {
   display: flex;
-  gap: 12px;
+  gap: var(--space-3);
   align-items: center;
-  background: white;
-  padding: 16px 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--card-border);
-  margin-bottom: 24px;
+  background: var(--bg-card);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  margin-bottom: var(--space-6);
 }
 
 .add-school-card input {
   flex: 1;
-  padding: 12px 16px;
-  font-size: 14px;
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.875rem;
 }
 
 .school-cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+  gap: var(--space-5);
 }
 
 .school-card {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--card-border);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .school-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .school-card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 16px;
+  margin-bottom: var(--space-4);
 }
 
 .school-card-header h4 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 700;
-  color: var(--app-blue);
+  color: var(--navy);
 }
 
 .school-id {
-  font-size: 0.75rem;
-  color: #94A3B8;
-  background: #F1F5F9;
-  padding: 2px 8px;
-  border-radius: 4px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  background: var(--bg-muted);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
   font-weight: 500;
 }
 
 .school-card-stats {
   display: flex;
-  gap: 16px;
+  gap: var(--space-3);
 }
 
 .school-card-stat {
   flex: 1;
   text-align: center;
-  background: #F8FAFC;
-  padding: 12px 8px;
-  border-radius: 8px;
-  border: 1px solid #E2E8F0;
+  background: var(--bg-muted);
+  padding: var(--space-3) var(--space-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
 }
 
 .school-stat-value {
   display: block;
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-weight: 700;
-  color: var(--app-blue);
+  color: var(--navy);
+  letter-spacing: -0.02em;
 }
 
 .school-stat-label {
   display: block;
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #64748B;
-  margin-top: 4px;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  margin-top: 2px;
   font-weight: 600;
 }
 
 .empty-state {
   text-align: center;
-  padding: 40px 20px;
-  background: white;
-  border-radius: 12px;
-  border: 1px dashed var(--card-border);
-  color: #94A3B8;
-  font-size: 1rem;
+  padding: var(--space-10) var(--space-5);
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 2px dashed var(--border);
+  color: var(--text-muted);
+  font-size: 0.875rem;
 }
 
 .empty-state p {
-  margin: 4px 0;
+  margin: var(--space-1) 0;
 }
