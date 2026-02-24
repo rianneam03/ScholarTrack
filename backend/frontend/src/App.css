@@ -29,13 +29,17 @@ body {
   background-color: var(--app-bg);
   color: var(--text-dark);
   margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+  font-size: 15px;
 }
 
 /* =====================================================
    🌿 PAGE LAYOUT
 ===================================================== */
 .page-container {
-  padding: 20px;
+  padding: 28px 32px;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -46,8 +50,8 @@ body {
 .navbar {
   background-color: var(--app-blue);
   color: white;
-  padding: 10px 20px;
-  box-shadow: 0 2px 6px var(--shadow-color);
+  padding: 14px 28px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
 }
 
 .navbar-links {
@@ -61,6 +65,9 @@ body {
   color: white;
   text-decoration: none;
   font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  transition: color 0.2s ease;
 }
 
 .navbar a:hover {
@@ -68,15 +75,12 @@ body {
 }
 
 .navbar-brand {
-  font-size: 1.5rem;
-  /* bigger text for logo */
+  font-size: 1.4rem;
   font-weight: 700;
-  /* bold */
   color: white;
-  /* logo color */
   align-items: center;
   margin-right: auto;
-  /* pushes links to the right */
+  letter-spacing: 0.03em;
 }
 
 .navbar-user {
@@ -85,11 +89,14 @@ body {
 
 .navbar-logout {
   background: transparent;
-  border: 1px solid white;
-  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  padding: 6px 14px;
   border-radius: 6px;
   cursor: pointer;
   color: white;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
 .navbar-logout:hover {
@@ -103,9 +110,20 @@ body {
 h2,
 h3 {
   color: var(--app-blue);
-  margin-bottom: 12px;
-  border-left: 5px solid var(--accent-teal);
-  padding-left: 10px;
+  margin-bottom: 14px;
+  border-left: 4px solid var(--accent-teal);
+  padding-left: 12px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  font-size: 1.6rem;
+  margin-top: 8px;
+}
+
+h3 {
+  font-size: 1.15rem;
 }
 
 /* =====================================================
@@ -127,11 +145,13 @@ form,
 input,
 select,
 textarea {
-  padding: 10px;
-  font-size: 14px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--card-border);
   font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  color: var(--text-dark);
 }
 
 input:focus,
@@ -147,12 +167,14 @@ textarea:focus {
 ===================================================== */
 button {
   font-family: inherit;
-  padding: 8px 16px;
+  padding: 10px 20px;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 0.875rem;
   border: none;
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
+  letter-spacing: 0.02em;
 }
 
 /* Primary */
@@ -199,18 +221,27 @@ table {
 
 th {
   background-color: var(--table-header-bg);
-  padding: 12px;
-  font-weight: 500;
+  padding: 14px 16px;
+  font-weight: 600;
   text-align: left;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748B;
 }
 
 td {
-  padding: 12px;
-  border-bottom: 1px solid #ddd;
+  padding: 12px 16px;
+  border-bottom: 1px solid #EEF2F6;
+  font-size: 0.9rem;
 }
 
 tr:hover {
   background-color: var(--table-row-hover);
+}
+
+tbody tr {
+  transition: background-color 0.15s ease;
 }
 
 /* =====================================================
