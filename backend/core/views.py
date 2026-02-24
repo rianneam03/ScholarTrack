@@ -244,10 +244,10 @@ def export_attendance(request):
         return Response({"error": "session_id is required"}, status=400)
 
     attendance = Attendance.objects.select_related(
-        "studentid",
-        "sessionid",
-        "sessionid__schoolid"
-    ).filter(sessionid__sessionid=session_id)
+        "student",
+        "session",
+        "session__school"
+    ).filter(session__sessionid=session_id)
 
     wb = openpyxl.Workbook()
     ws = wb.active
@@ -268,12 +268,12 @@ def export_attendance(request):
     # Rows
     for a in attendance:
         ws.append([
-            a.studentid.studentid if a.studentid else "",
-            a.studentid.firstname if a.studentid else "",
-            a.studentid.lastname if a.studentid else "",
-            a.sessionid.schoolid.school if a.sessionid and a.sessionid.schoolid else "",
-            a.sessionid.title if a.sessionid else "",
-            a.sessionid.sessiondate.strftime("%Y-%m-%d") if a.sessionid and a.sessionid.sessiondate else "",
+            a.student.studentid if a.student else "",
+            a.student.firstname if a.student else "",
+            a.student.lastname if a.student else "",
+            a.session.school.school if a.session and a.session.school else "",
+            a.session.title if a.session else "",
+            a.session.sessiondate.strftime("%Y-%m-%d") if a.session and a.session.sessiondate else "",
             a.status,
         ])
 
