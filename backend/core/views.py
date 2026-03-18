@@ -126,15 +126,16 @@ def session_detail(request, session_id):
 def attendance_list(request):
     if request.method == 'GET':
         session_id = request.GET.get('session_id')
-        attendance_records = Attendance.objects.select_related('student', 'session').all()
+        attendance_records = Attendance.objects.select_related('enrollment__student', 'session').all()
         if session_id:
             attendance_records = attendance_records.filter(session__sessionid=session_id)
         data = []
         for a in attendance_records:
+            student = a.enrollment.student if a.enrollment and a.enrollment.student else None
             data.append({
                 "AttendanceID": a.attendanceid,
-                "StudentID": a.student.studentid if a.student else None,
-                "StudentName": f"{a.student.firstname} {a.student.lastname}" if a.student else None,
+                "StudentID": student.studentid if student else None,
+                "StudentName": f"{student.firstname} {student.lastname}" if student else None,
                 "SessionID": a.session.sessionid if a.session else None,
                 "SessionTitle": a.session.title if a.session else None,
                 "Status": a.status,
@@ -146,18 +147,21 @@ def attendance_list(request):
         if not data.get('StudentID') or not data.get('SessionID') or not data.get('Status'):
             return Response({"error": "StudentID, SessionID, and Status are required."}, status=400)
 
-        student_obj = Student.objects.filter(studentid=data.get('StudentID')).first()
-        session_obj = Session.objects.filter(sessionid=data.get('SessionID')).first()
-        if not student_obj or not session_obj:
-            return Response({"error": "Invalid StudentID or SessionID"}, status=400)
+        session_obj = Session.objects.select_related('program_year').filter(sessionid=data.get('SessionID')).first()
+        if not session_obj:
+            return Response({"error": "Invalid SessionID"}, status=400)
 
-        attendance = Attendance.objects.filter(student=student_obj, session=session_obj).first()
+        enrollment = Enrollment.objects.filter(student_id=data.get('StudentID'), program_year=session_obj.program_year).first()
+        if not enrollment:
+            return Response({"error": "Student is not enrolled in this session's program year"}, status=400)
+
+        attendance = Attendance.objects.filter(enrollment=enrollment, session=session_obj).first()
         if attendance:
             attendance.status = data.get('Status')
             attendance.save()
             return Response({"message": "Attendance updated"})
         else:
-            Attendance.objects.create(student=student_obj, session=session_obj, status=data.get('Status'))
+            Attendance.objects.create(enrollment=enrollment, session=session_obj, status=data.get('Status'))
             return Response({"message": "Attendance created"})
 
 @api_view(["GET"])
@@ -170,18 +174,19 @@ def export_attendance(request):
     if not session_id:
         return Response({"error": "session_id is required"}, status=400)
 
-    attendance = Attendance.objects.select_related("student", "session", "session__program_year__program").filter(session__sessionid=session_id)
+    attendance = Attendance.objects.select_related("enrollment__student", "session", "session__program_year__program").filter(session__sessionid=session_id)
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Attendance"
     headers = ["Student ID", "First Name", "Last Name", "Program", "Session Title", "Session Date", "Status"]
     ws.append(headers)
     for a in attendance:
+        student = a.enrollment.student if a.enrollment and a.enrollment.student else None
         program_name = a.session.program_year.program.name if a.session and a.session.program_year and hasattr(a.session.program_year, 'program') else ""
         ws.append([
-            a.student.studentid if a.student else "",
-            a.student.firstname if a.student else "",
-            a.student.lastname if a.student else "",
+            student.studentid if student else "",
+            student.firstname if student else "",
+            student.lastname if student else "",
             program_name,
             a.session.title if a.session else "",
             a.session.sessiondate.strftime("%Y-%m-%d") if a.session and a.session.sessiondate else "",

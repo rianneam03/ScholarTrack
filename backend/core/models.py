@@ -26,8 +26,6 @@ class Student(models.Model):
     lastname = models.CharField(db_column='lastname', max_length=50)
     grade = models.CharField(db_column='grade', max_length=20, blank=True, null=True)
 
-    # Django field name = school
-    # DB column = schoolid (FK)
     school = models.ForeignKey(
         School,
         models.DO_NOTHING,
@@ -63,8 +61,6 @@ class Session(models.Model):
     sessiondate = models.DateField(db_column='sessiondate')
     description = models.CharField(db_column='description', max_length=255, blank=True, null=True)
 
-    # Django field name = program_year
-    # DB column = program_year_id
     program_year = models.ForeignKey(
         'ProgramYear',
         models.DO_NOTHING,
@@ -89,14 +85,6 @@ class Session(models.Model):
 class Attendance(models.Model):
     attendanceid = models.AutoField(db_column='attendanceid', primary_key=True)
 
-    student = models.ForeignKey(
-        Student,
-        models.DO_NOTHING,
-        db_column='studentid',
-        blank=True,
-        null=False
-    )
-
     session = models.ForeignKey(
         Session,
         models.DO_NOTHING,
@@ -116,7 +104,7 @@ class Attendance(models.Model):
         verbose_name_plural = "Attendance Records"
 
     def __str__(self):
-        return f"{self.student} - {self.session}: {self.status}"
+        return f"{self.enrollment} - {self.session}: {self.status}"
 
 
 # ----------------------------
