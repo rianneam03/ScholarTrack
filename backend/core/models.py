@@ -1,4 +1,4 @@
-﻿from django.db import models
+from django.db import models
 
 # ----------------------------
 # School Model
@@ -62,12 +62,12 @@ class Session(models.Model):
     sessiondate = models.DateField(db_column='sessiondate')
     description = models.CharField(db_column='description', max_length=255, blank=True, null=True)
 
-    # Django field name = school
-    # DB column = schoolid
-    school = models.ForeignKey(
-        School,
+    # Django field name = program_year
+    # DB column = programyearid
+    program_year = models.ForeignKey(
+        'ProgramYear',
         models.DO_NOTHING,
-        db_column='schoolid',
+        db_column='programyearid',
         blank=True,
         null=False
     )
@@ -156,7 +156,13 @@ class User(models.Model):
     fullname = models.CharField(db_column='fullname', max_length=100, blank=True, null=True)
     email = models.CharField(db_column='email', max_length=100, blank=True, null=True)
     createdat = models.DateTimeField(db_column='createdat', blank=True, null=True)
-    role = models.CharField(db_column='role', max_length=20, default='teacher')
+    ROLE_CHOICES = [
+        ('admin', 'Admin'),
+        ('staff', 'Staff'),
+        ('parent', 'Parent/Guardian'),
+        ('student', 'Student'),
+    ]
+    role = models.CharField(db_column='role', max_length=20, choices=ROLE_CHOICES, default='staff')
     is_active = models.BooleanField(default=True)
     activation_token = models.CharField(max_length=64, blank=True, null=True)
 
@@ -190,3 +196,81 @@ class Need(models.Model):
 
     def __str__(self):
         return self.title
+
+
+# ----------------------------
+# Program Model
+# ----------------------------
+class Program(models.Model):
+    programid = models.AutoField(db_column='programid', primary_key=True)
+    name = models.CharField(db_column='name', max_length=150)
+    description = models.TextField(db_column='description', blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'programs'
+        verbose_name = "Program"
+        verbose_name_plural = "Programs"
+
+    def __str__(self):
+        return self.name
+
+
+# ----------------------------
+# ProgramYear Model
+# ----------------------------
+class ProgramYear(models.Model):
+    programyearid = models.AutoField(db_column='programyearid', primary_key=True)
+    program = models.ForeignKey(Program, models.CASCADE, db_column='programid')
+    year = models.CharField(db_column='year', max_length=20)  # e.g., '2023-2024'
+    start_date = models.DateField(db_column='start_date', blank=True, null=True)
+    end_date = models.DateField(db_column='end_date', blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'program_years'
+        verbose_name = "Program Year"
+        verbose_name_plural = "Program Years"
+
+    def __str__(self):
+        return f"{self.program.name} - {self.year}"
+
+
+# ----------------------------
+# ProgramStaff Model
+# ----------------------------
+class ProgramStaff(models.Model):
+    assignmentid = models.AutoField(db_column='assignmentid', primary_key=True)
+    program_year = models.ForeignKey(ProgramYear, models.CASCADE, db_column='programyearid')
+    user = models.ForeignKey(User, models.CASCADE, db_column='userid')
+
+    class Meta:
+        managed = True
+        db_table = 'program_staff'
+        verbose_name = "Program Staff Assignment"
+        verbose_name_plural = "Program Staff Assignments"
+        unique_together = (('program_year', 'user'),)
+
+    def __str__(self):
+        return f"{self.user.username} -> {self.program_year}"
+
+
+# ----------------------------
+# Enrollment Model
+# ----------------------------
+class Enrollment(models.Model):
+    enrollmentid = models.AutoField(db_column='enrollmentid', primary_key=True)
+    student = models.ForeignKey(Student, models.CASCADE, db_column='studentid')
+    program_year = models.ForeignKey(ProgramYear, models.CASCADE, db_column='programyearid')
+    enrolled_date = models.DateField(db_column='enrolled_date', auto_now_add=True)
+    status = models.CharField(db_column='status', max_length=20, default='Active')
+
+    class Meta:
+        managed = True
+        db_table = 'enrollments'
+        verbose_name = "Enrollment"
+        verbose_name_plural = "Enrollments"
+        unique_together = (('student', 'program_year'),)
+
+    def __str__(self):
+        return f"{self.student} - {self.program_year} ({self.status})"
