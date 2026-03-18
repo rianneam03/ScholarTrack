@@ -83,7 +83,7 @@ def sessions_list(request):
                 "Title": s.title,
                 "SessionDate": s.sessiondate,
                 "Description": s.description,
-                "ProgramYearID": s.program_year.programyearid if s.program_year else None,
+                "ProgramYearID": s.program_year.program_year_id if s.program_year else None,
                 "ProgramName": s.program_year.program.name if s.program_year and s.program_year.program else None,
             })
         return Response(data)
@@ -93,7 +93,7 @@ def sessions_list(request):
             data = request.data
             program_year_obj = None
             if data.get('ProgramYearID'):
-                program_year_obj = ProgramYear.objects.filter(programyearid=int(data.get('ProgramYearID'))).first()
+                program_year_obj = ProgramYear.objects.filter(pk=int(data.get('ProgramYearID'))).first()
                 if not program_year_obj:
                     return Response({"error": "Invalid ProgramYearID"}, status=400)
             session = Session.objects.create(
@@ -290,13 +290,13 @@ def export_students_excel(request):
 def schools_list(request): 
     if request.method == "GET":
         try:
-            schools = School.objects.annotate(student_count=Count('student', distinct=True), session_count=Count('session', distinct=True)).order_by('school')
-            data = [{"SchoolID": s.schoolid, "SchoolName": s.school,"StudentCount": s.student_count,"SessionCount": s.session_count} for s in schools]
+            schools = School.objects.annotate(student_count=Count('student', distinct=True)).order_by('school')
+            data = [{"SchoolID": s.schoolid, "SchoolName": s.school,"StudentCount": s.student_count,"SessionCount": 0} for s in schools]
         except Exception:
             import traceback
             traceback.print_exc()
             schools = School.objects.all().order_by('school')
-            data = [{"SchoolID": s.schoolid,"SchoolName": s.school,"StudentCount": Student.objects.filter(school=s).count(),"SessionCount": Session.objects.filter(school=s).count()} for s in schools]
+            data = [{"SchoolID": s.schoolid,"SchoolName": s.school,"StudentCount": Student.objects.filter(school=s).count(),"SessionCount": 0} for s in schools]
         return Response(data) 
     if request.method == "POST": 
         school_name = request.data.get("SchoolName") 
@@ -492,7 +492,7 @@ def program_years_list(request):
         
         data = request.data
         try:
-            program = Program.objects.get(pk=data.get('programid'))
+            program = Program.objects.get(pk=data.get('program_id'))
             year = ProgramYear.objects.create(
                 program=program,
                 year=data.get('year'),
@@ -501,7 +501,7 @@ def program_years_list(request):
             )
             return Response(ProgramYearSerializer(year).data, status=201)
         except Program.DoesNotExist:
-            return Response({"error": "Invalid programid"}, status=400)
+            return Response({"error": "Invalid program_id"}, status=400)
         except Exception as e:
             return Response({"error": str(e)}, status=500)
 
@@ -521,11 +521,11 @@ def program_year_detail(request, year_id):
         
     if request.method == 'PUT':
         data = request.data
-        if 'programid' in data:
+        if 'program_id' in data:
             try:
-                year.program = Program.objects.get(pk=data['programid'])
+                year.program = Program.objects.get(pk=data['program_id'])
             except Program.DoesNotExist:
-                return Response({"error": "Invalid programid"}, status=400)
+                return Response({"error": "Invalid program_id"}, status=400)
         
         year.year = data.get('year', year.year)
         year.start_date = data.get('start_date', year.start_date)
@@ -552,7 +552,7 @@ def enrollments_list(request):
         data = request.data
         try:
             student = Student.objects.get(pk=data.get('studentid'))
-            program_year = ProgramYear.objects.get(pk=data.get('programyearid'))
+            program_year = ProgramYear.objects.get(pk=data.get('program_year_id'))
             
             if Enrollment.objects.filter(student=student, program_year=program_year).exists():
                 return Response({"error": "Student already enrolled in this program year"}, status=400)
@@ -564,7 +564,7 @@ def enrollments_list(request):
             )
             return Response(EnrollmentSerializer(enrollment).data, status=201)
         except (Student.DoesNotExist, ProgramYear.DoesNotExist):
-            return Response({"error": "Invalid studentid or programyearid"}, status=400)
+            return Response({"error": "Invalid studentid or program_year_id"}, status=400)
         except Exception as e:
             return Response({"error": str(e)}, status=500)
 

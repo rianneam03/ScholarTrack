@@ -41,7 +41,8 @@ class Student(models.Model):
     guardianphone = models.CharField(db_column='guardianphone', max_length=20, blank=True, null=True)
     email = models.CharField(db_column='email', max_length=100, blank=True, null=True)
     steminterest = models.CharField(db_column='steminterest', max_length=20, blank=True, null=True)
-    enrollmentdate = models.DateField(db_column='enrollmentdate', blank=True, null=True)
+    enrollmentdate = models.DateField(db_column='enrollementdate', blank=True, null=True)
+    guardian = models.ForeignKey('Guardian', models.DO_NOTHING, db_column='guardian_id', blank=True, null=True)
 
     class Meta:
         managed = False
@@ -63,11 +64,11 @@ class Session(models.Model):
     description = models.CharField(db_column='description', max_length=255, blank=True, null=True)
 
     # Django field name = program_year
-    # DB column = programyearid
+    # DB column = program_year_id
     program_year = models.ForeignKey(
         'ProgramYear',
         models.DO_NOTHING,
-        db_column='programyearid',
+        db_column='program_year_id',
         blank=True,
         null=False
     )
@@ -105,6 +106,8 @@ class Attendance(models.Model):
     )
 
     status = models.CharField(db_column='status', max_length=20, blank=True, null=True)
+    notes = models.TextField(db_column='notes', blank=True, null=True)
+    enrollment = models.ForeignKey('Enrollment', models.DO_NOTHING, db_column='enrollment_id', blank=True, null=True)
 
     class Meta:
         managed = False
@@ -121,20 +124,21 @@ class Attendance(models.Model):
 # ----------------------------
 class Outcome(models.Model):
     outcomeid = models.AutoField(db_column='outcomeid', primary_key=True)
-
-    student = models.ForeignKey(
-        Student,
-        models.DO_NOTHING,
-        db_column='studentid',
-        blank=True,
-        null=True
-    )
-
-    graduationyear = models.IntegerField(db_column='graduationyear', blank=True, null=True)
+    gradewhenenrolled = models.CharField(db_column='gradewhenenrolled', max_length=20, blank=True, null=True)
+    dateenrolled = models.DateField(db_column='dateenrolled', blank=True, null=True)
+    dateexited = models.DateField(db_column='dateexited', blank=True, null=True)
+    graduationdate = models.DateField(db_column='graduationdate', blank=True, null=True)
+    acceptedcollege = models.CharField(db_column='acceptedcollege', max_length=100, blank=True, null=True)
+    attendedcollege = models.CharField(db_column='attendedcollege', max_length=100, blank=True, null=True)
     collegename = models.CharField(db_column='collegename', max_length=100, blank=True, null=True)
-    major = models.CharField(db_column='major', max_length=100, blank=True, null=True)
-    careerpath = models.CharField(db_column='careerpath', max_length=100, blank=True, null=True)
-    isstem = models.BooleanField(db_column='isstem', blank=True, null=True)
+    majorminor = models.CharField(db_column='majorminor', max_length=100, blank=True, null=True)
+    scholarship = models.CharField(db_column='scholarship', max_length=100, blank=True, null=True)
+    stemcareer = models.CharField(db_column='stemcareer', max_length=100, blank=True, null=True)
+    careerfield = models.CharField(db_column='careerfield', max_length=100, blank=True, null=True)
+    totaldayspresent = models.IntegerField(db_column='totaldayspresent', blank=True, null=True)
+    totaldaysabsent = models.IntegerField(db_column='totaldaysabsent', blank=True, null=True)
+    totaldaysunknown = models.IntegerField(db_column='totaldaysunknown', blank=True, null=True)
+    enrollement = models.ForeignKey('Enrollment', models.DO_NOTHING, db_column='enrollement_id', blank=True, null=True)
 
     class Meta:
         managed = False
@@ -202,12 +206,13 @@ class Need(models.Model):
 # Program Model
 # ----------------------------
 class Program(models.Model):
-    programid = models.AutoField(db_column='programid', primary_key=True)
+    program_id = models.AutoField(db_column='program_id', primary_key=True)
     name = models.CharField(db_column='name', max_length=150)
     description = models.TextField(db_column='description', blank=True, null=True)
+    created_at = models.DateTimeField(db_column='created_at', auto_now_add=True, null=True)
 
     class Meta:
-        managed = True
+        managed = False
         db_table = 'programs'
         verbose_name = "Program"
         verbose_name_plural = "Programs"
@@ -220,14 +225,14 @@ class Program(models.Model):
 # ProgramYear Model
 # ----------------------------
 class ProgramYear(models.Model):
-    programyearid = models.AutoField(db_column='programyearid', primary_key=True)
-    program = models.ForeignKey(Program, models.CASCADE, db_column='programid')
+    program_year_id = models.AutoField(db_column='program_year_id', primary_key=True)
+    program = models.ForeignKey(Program, models.DO_NOTHING, db_column='program_id')
     year = models.CharField(db_column='year', max_length=20)  # e.g., '2023-2024'
     start_date = models.DateField(db_column='start_date', blank=True, null=True)
     end_date = models.DateField(db_column='end_date', blank=True, null=True)
 
     class Meta:
-        managed = True
+        managed = False
         db_table = 'program_years'
         verbose_name = "Program Year"
         verbose_name_plural = "Program Years"
@@ -241,11 +246,11 @@ class ProgramYear(models.Model):
 # ----------------------------
 class ProgramStaff(models.Model):
     assignmentid = models.AutoField(db_column='assignmentid', primary_key=True)
-    program_year = models.ForeignKey(ProgramYear, models.CASCADE, db_column='programyearid')
-    user = models.ForeignKey(User, models.CASCADE, db_column='userid')
+    program_year = models.ForeignKey(ProgramYear, models.DO_NOTHING, db_column='program_year_id')
+    user = models.ForeignKey(User, models.DO_NOTHING, db_column='userid')
 
     class Meta:
-        managed = True
+        managed = False
         db_table = 'program_staff'
         verbose_name = "Program Staff Assignment"
         verbose_name_plural = "Program Staff Assignments"
@@ -259,18 +264,37 @@ class ProgramStaff(models.Model):
 # Enrollment Model
 # ----------------------------
 class Enrollment(models.Model):
-    enrollmentid = models.AutoField(db_column='enrollmentid', primary_key=True)
-    student = models.ForeignKey(Student, models.CASCADE, db_column='studentid')
-    program_year = models.ForeignKey(ProgramYear, models.CASCADE, db_column='programyearid')
-    enrolled_date = models.DateField(db_column='enrolled_date', auto_now_add=True)
+    enrollment_id = models.AutoField(db_column='enrollment_id', primary_key=True)
+    student = models.ForeignKey(Student, models.DO_NOTHING, db_column='studentid')
+    program_year = models.ForeignKey(ProgramYear, models.DO_NOTHING, db_column='program_year_id')
+    enrollment_date = models.DateField(db_column='enrollment_date', auto_now_add=True)
     status = models.CharField(db_column='status', max_length=20, default='Active')
 
     class Meta:
-        managed = True
-        db_table = 'enrollments'
+        managed = False
+        db_table = 'enrollements'
         verbose_name = "Enrollment"
         verbose_name_plural = "Enrollments"
         unique_together = (('student', 'program_year'),)
 
     def __str__(self):
         return f"{self.student} - {self.program_year} ({self.status})"
+
+
+# ----------------------------
+# Guardian Model
+# ----------------------------
+class Guardian(models.Model):
+    guardian_id = models.AutoField(db_column='guardian_id', primary_key=True)
+    name = models.CharField(db_column='name', max_length=150)
+    phone = models.CharField(db_column='phone', max_length=20, blank=True, null=True)
+    email = models.CharField(db_column='email', max_length=100, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'guardians'
+        verbose_name = "Guardian"
+        verbose_name_plural = "Guardians"
+
+    def __str__(self):
+        return self.name
