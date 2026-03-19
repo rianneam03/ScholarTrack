@@ -60,7 +60,7 @@ def dashboard_data(request):
 
     # Students by School
     schools_qs = School.objects.all()
-    students_by_school = [{"name": item.school, "value": students_qs.filter(school=item).count()} for item in schools_qs if students_qs.filter(school=item).exists()]
+    students_by_school = [{"name": item.school or "Unknown", "value": students_qs.filter(school=item).count()} for item in schools_qs if students_qs.filter(school=item).exists()]
     students_by_school.sort(key=lambda x: x['value'], reverse=True)
 
     # Student growth over time
@@ -69,7 +69,15 @@ def dashboard_data(request):
         .values('month')\
         .annotate(count=Count('studentid'))\
         .order_by('month')
-    student_growth = [{"name": item['month'].strftime("%Y-%m"), "value": item['count']} for item in growth_qs]
+    
+    student_growth = []
+    for item in growth_qs:
+        month_val = item['month']
+        if isinstance(month_val, str):
+            name_val = month_val[:7]  # 'YYYY-MM-DD' -> 'YYYY-MM'
+        else:
+            name_val = month_val.strftime("%Y-%m") if month_val else "Unknown"
+        student_growth.append({"name": name_val, "value": item['count']})
 
     stem_no_count = total_students - stem_yes
     stem_data = [{"name": "STEM Interest", "value": stem_yes}, {"name": "Other", "value": stem_no_count}]
