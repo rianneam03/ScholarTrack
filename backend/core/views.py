@@ -11,8 +11,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password, check_password
 
-from .models import Student, School, Session, Attendance, User, Need, Program, ProgramYear, ProgramStaff, Enrollment
-from .serializers import SchoolSerializer, NeedSerializer, ProgramSerializer, ProgramYearSerializer, ProgramStaffSerializer, EnrollmentSerializer
+from .models import Student, School, Session, Attendance, User, Need, Program, ProgramYear, ProgramStaff, Enrollment, Outcome, Survey, SurveyResponse
+from .serializers import SchoolSerializer, NeedSerializer, ProgramSerializer, ProgramYearSerializer, ProgramStaffSerializer, EnrollmentSerializer, OutcomeSerializer, SurveySerializer, SurveyResponseSerializer
 from .utils import send_activation_email
 
 # --- CSRF token endpoint ---
@@ -22,31 +22,49 @@ def csrf(request):
 # --- Dashboard data ---
 @api_view(['GET'])
 def dashboard_data(request):
-    total_students = Student.objects.count()
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+
+    students_qs = Student.objects.all()
+    sessions_qs = Session.objects.all()
+
+    if start_date_str:
+        sessions_qs = sessions_qs.filter(sessiondate__gte=start_date_str)
+        students_qs = students_qs.filter(enrollmentdate__gte=start_date_str)
+    if end_date_str:
+        sessions_qs = sessions_qs.filter(sessiondate__lte=end_date_str)
+        students_qs = students_qs.filter(enrollmentdate__lte=end_date_str)
+
+    total_students = students_qs.count()
     total_schools = School.objects.count()
-    stem_yes = Student.objects.filter(steminterest='Yes').count()
+    stem_yes = students_qs.filter(steminterest='Yes').count()
     stem_percent = round((stem_yes / total_students) * 100, 2) if total_students else 0
 
     today = timezone.now().date()
     
-    total_sessions_conducted = Session.objects.filter(sessiondate__lt=today).count()
-    total_sessions_upcoming = Session.objects.filter(sessiondate__gte=today).count()
+    total_sessions_conducted = sessions_qs.filter(sessiondate__lt=today).count()
+    total_sessions_upcoming = sessions_qs.filter(sessiondate__gte=today).count()
 
-    total_attendance_records = Attendance.objects.count()
-    total_present = Attendance.objects.filter(status__iexact='Present').count()
+    attendance_qs = Attendance.objects.filter(session__in=sessions_qs)
+    total_attendance_records = attendance_qs.count()
+    total_present = attendance_qs.filter(status__iexact='Present').count()
     attendance_rate = round((total_present / total_attendance_records) * 100, 1) if total_attendance_records else 0
     avg_attendance = round(total_present / total_sessions_conducted, 1) if total_sessions_conducted else 0
 
+    # Calculate Total Service Hours (assume 2 hours per session for now)
+    total_service_hours = total_present * 2
+
     # Students by Grade
-    grades_qs = Student.objects.values('grade').annotate(count=Count('grade')).order_by('grade')
+    grades_qs = students_qs.values('grade').annotate(count=Count('grade')).order_by('grade')
     students_by_grade = [{"name": item['grade'] or "Unknown", "value": item['count']} for item in grades_qs]
 
     # Students by School
-    schools_qs = School.objects.annotate(count=Count('student')).order_by('-count')
-    students_by_school = [{"name": item.school, "value": item.count} for item in schools_qs]
+    schools_qs = School.objects.all()
+    students_by_school = [{"name": item.school, "value": students_qs.filter(school=item).count()} for item in schools_qs if students_qs.filter(school=item).exists()]
+    students_by_school.sort(key=lambda x: x['value'], reverse=True)
 
     # Student growth over time
-    growth_qs = Student.objects.filter(enrollmentdate__isnull=False)\
+    growth_qs = students_qs.filter(enrollmentdate__isnull=False)\
         .annotate(month=TruncMonth('enrollmentdate'))\
         .values('month')\
         .annotate(count=Count('studentid'))\
@@ -64,6 +82,7 @@ def dashboard_data(request):
         "sessions_conducted": total_sessions_conducted,
         "attendance_rate": attendance_rate,
         "avg_attendance": avg_attendance,
+        "total_service_hours": total_service_hours,
         "students_by_grade": students_by_grade,
         "students_by_school": students_by_school,
         "student_growth": student_growth,
@@ -595,3 +614,91 @@ def enrollment_detail(request, enrollment_id):
     elif request.method == 'DELETE':
         enrollment.delete()
         return Response({"message": "Enrollment deleted successfully"})
+
+# --- Outcomes ---
+@api_view(['GET', 'POST'])
+def outcomes_list(request):
+    if request.method == 'GET':
+        outcomes = Outcome.objects.select_related('enrollement__student', 'enrollement__program_year__program').all()
+        serializer = OutcomeSerializer(outcomes, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        user = User.objects.filter(username=request.headers.get("Username")).first()
+        if not user or user.role not in ["admin", "staff"]:
+            return Response({"error": "Unauthorized"}, status=403)
+        
+        serializer = OutcomeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def outcome_detail(request, pk):
+    try:
+        outcome = Outcome.objects.get(pk=pk)
+    except Outcome.DoesNotExist:
+        return Response({"error": "Outcome not found"}, status=404)
+
+    if request.method == 'GET':
+        return Response(OutcomeSerializer(outcome).data)
+
+    user = User.objects.filter(username=request.headers.get("Username")).first()
+    if not user or user.role not in ["admin", "staff"]:
+        return Response({"error": "Unauthorized"}, status=403)
+
+    if request.method == 'PUT':
+        serializer = OutcomeSerializer(outcome, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        outcome.delete()
+        return Response({"message": "Outcome deleted successfully"})
+
+
+# --- Surveys ---
+@api_view(['GET', 'POST'])
+def surveys_list(request):
+    if request.method == 'GET':
+        program_year_id = request.GET.get('program_year_id')
+        surveys = Survey.objects.all()
+        if program_year_id:
+            surveys = surveys.filter(program_year_id=program_year_id)
+        serializer = SurveySerializer(surveys, many=True)
+        return Response(serializer.data)
+        
+    elif request.method == 'POST':
+        user = User.objects.filter(username=request.headers.get("Username")).first()
+        if not user or user.role not in ["admin", "staff"]:
+            return Response({"error": "Unauthorized"}, status=403)
+            
+        serializer = SurveySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+@api_view(['GET', 'POST'])
+def survey_responses_list(request, survey_id):
+    try:
+        survey = Survey.objects.get(pk=survey_id)
+    except Survey.DoesNotExist:
+        return Response({"error": "Survey not found"}, status=404)
+
+    if request.method == 'GET':
+        responses = SurveyResponse.objects.filter(survey=survey)
+        serializer = SurveyResponseSerializer(responses, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        user = User.objects.filter(username=request.headers.get("Username")).first()
+        
+        serializer = SurveyResponseSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(responder_user=user)
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)

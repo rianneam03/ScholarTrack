@@ -53,4 +53,12 @@ urlpatterns = [
     # Enrollments
     path('api/enrollments/', views.enrollments_list, name='enrollments_list'),
     path('api/enrollments/<int:enrollment_id>/', views.enrollment_detail, name='enrollment_detail'),
+
+    # Outcomes
+    path('api/outcomes/', views.outcomes_list, name='outcomes_list'),
+    path('api/outcomes/<int:pk>/', views.outcome_detail, name='outcome_detail'),
+
+    # Surveys
+    path('api/surveys/', views.surveys_list, name='surveys_list'),
+    path('api/surveys/<int:survey_id>/responses/', views.survey_responses_list, name='survey_responses_list'),
 ]

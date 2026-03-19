@@ -286,3 +286,39 @@ class Guardian(models.Model):
 
     def __str__(self):
         return self.name
+
+# ----------------------------
+# Survey Model
+# ----------------------------
+class Survey(models.Model):
+    survey_id = models.AutoField(primary_key=True)
+    program_year = models.ForeignKey(ProgramYear, on_delete=models.CASCADE, related_name='surveys', db_constraint=False)
+    title = models.CharField(max_length=255)
+    target_audience = models.CharField(max_length=50, choices=[('Parent', 'Parent'), ('Staff', 'Staff'), ('Student', 'Student')])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'surveys'
+        verbose_name = "Survey"
+        verbose_name_plural = "Surveys"
+
+    def __str__(self):
+        return self.title
+
+# ----------------------------
+# Survey Response Model
+# ----------------------------
+class SurveyResponse(models.Model):
+    response_id = models.AutoField(primary_key=True)
+    survey = models.ForeignKey(Survey, on_delete=models.CASCADE, related_name='responses')
+    responder_user = models.ForeignKey(User, on_delete=models.DO_NOTHING, blank=True, null=True, db_constraint=False)
+    response_data = models.JSONField(default=dict)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'survey_responses'
+        verbose_name = "Survey Response"
+        verbose_name_plural = "Survey Responses"
+
+    def __str__(self):
+        return f"Response to {self.survey.title}"

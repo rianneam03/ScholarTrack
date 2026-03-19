@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import School, Need, Program, ProgramYear, ProgramStaff, Enrollment
+from .models import School, Need, Program, ProgramYear, ProgramStaff, Enrollment, Outcome, Survey, SurveyResponse
 
 class SchoolSerializer(serializers.ModelSerializer):
     class Meta:
@@ -38,4 +38,23 @@ class EnrollmentSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Enrollment
+        fields = '__all__'
+
+class OutcomeSerializer(serializers.ModelSerializer):
+    student_firstname = serializers.CharField(source='enrollement.student.firstname', read_only=True)
+    student_lastname = serializers.CharField(source='enrollement.student.lastname', read_only=True)
+    program_name = serializers.CharField(source='enrollement.program_year.program.name', read_only=True)
+    
+    class Meta:
+        model = Outcome
+        fields = '__all__'
+
+class SurveySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Survey
+        fields = '__all__'
+
+class SurveyResponseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SurveyResponse
         fields = '__all__'
