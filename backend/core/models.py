@@ -66,7 +66,7 @@ class Session(models.Model):
         models.DO_NOTHING,
         db_column='program_year_id',
         blank=True,
-        null=False
+        null=True
     )
 
     class Meta:

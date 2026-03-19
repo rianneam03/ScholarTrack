@@ -1,0 +1,3 @@
+---- USERS ----
+User: admin | PWD: pbkdf2_sha256$1... | Active: True | Role: admin
+---- END ----
