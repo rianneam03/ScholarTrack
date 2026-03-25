@@ -1,0 +1,125 @@
+STDOUT:
+Operations to perform:
+  Apply all migrations: admin, auth, contenttypes, core, sessions
+Running migrations:
+  Applying core.0002_alter_attendance_options_alter_enrollment_options_and_more...
+STDERR:
+Traceback (most recent call last):
+  File "C:\Users\Owner\AppData\Roaming\Python\Python314\site-packages\django\db\backends\utils.py", line 103, in _execute
+    return self.cursor.execute(sql)
+           ~~~~~~~~~~~~~~~~~~~^^^^^
+psycopg2.errors.UndefinedTable: relation "survey_responses" does not exist
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\EducationForScholars\ScholarTrack\manage.py", line 25, in <module>
+    main()
+    ~~~~^^
+  File "D:\EducationForScholars\ScholarTrack\manage.py", line 20, in main
+    execute_from_command_line(sys.argv)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\Owner\AppData\Roaming\Python\Python314\site-packages\django\core\management\__init__.py", line 442, in execute_from_command_line
+    utility.execute()
+    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\Owner\AppData\Roaming\Python\Python314\site-packages\django\core\management\__init__.py", line 436, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\Owner\AppData\Roaming\Python\Python314\site-packages\django\core\management\base.py", line 416, in run_from_argv
+    self.execute(*args, **cmd_options)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Owner\AppData\Roaming\Python\Python314\site-packages\django\core\management\base.py", line 460, in execute
+    output = self.handle(*args, **options)
+  File "C:\Users\Owner\AppData\Roaming\Python\Python314\site-packages\django\core\management\base.py", line 107, in wrapper
+    res = handle_func(*args, **kwargs)
+  File "C:\Users\Owner\AppData\Roaming\Python\Python314\site-packages\django\core\management\commands\migrate.py", line 353, in handle
+    post_migrate_state = executor.migrate(
+        targets,
+    ...<3 lines>...
+        fake_initial=fake_initial,
+    )
+  File "C:\Users\Owner\AppData\Roaming\Python\Python314\site-packages\django\db\migrations\executor.py", line 135, in migrate
+    state = self._migrate_all_forwards(
+        state, plan, full_plan, fake=fake, fake_initial=fake_initial
+    )
+  File "C:\Users\Owner\AppData\Roaming\Python\Python314\site-packages\django\db\migrations\executor.py", line 167, in _migrate_all_forwards
+    state = self.apply_migration(
+        state, migration, fake=fake, fake_initial=fake_initial
+    )
+  File "C:\Users\Owner\AppData\Roaming\Python\Python314\site-packages\django\db\migrations\executor.py", line 255, in apply_migration
+    state = migration.apply(state, schema_editor)
+  File "C:\Users\Owner\AppData\Roaming\Python\Python314\site-packages\django\db\migrations\migration.py", line 132, in apply
+    operation.database_forwards(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.app_label, schema_editor, old_state, project_state
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Owner\AppData\Roaming\Python\Python314\site-packages\django\db\migrations\operations\fields.py", line 311, in database_forwards
+    schema_editor.alter_field(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        from_model,
+        ^^^^^^^^^^^
+        from_model._meta.get_field(self.old_name),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        to_model._meta.get_field(self.new_name),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Owner\AppData\Roaming\Python\Python314\site-packages\django\db\backends\base\schema.py", line 912, in alter_field
+    self._alter_field(
+    ~~~~~~~~~~~~~~~~~^
+        model,
+        ^^^^^^
+    ...<6 lines>...
+        strict,
+        ^^^^^^^
+    )
+    ^
+  File "C:\Users\Owner\AppData\Roaming\Python\Python314\site-packages\django\db\backends\postgresql\schema.py", line 274, in _alter_field
+    super()._alter_field(
+    ~~~~~~~~~~~~~~~~~~~~^
+        model,
+        ^^^^^^
+    ...<6 lines>...
+        strict,
+        ^^^^^^^
+    )
+    ^
+  File "C:\Users\Owner\AppData\Roaming\Python\Python314\site-packages\django\db\backends\base\schema.py", line 1077, in _alter_field
+    self.execute(
+    ~~~~~~~~~~~~^
+        self._rename_field_sql(
+        ^^^^^^^^^^^^^^^^^^^^^^^
+            model._meta.db_table, old_field, new_field, new_type
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        )
+        ^
+    )
+    ^
+  File "C:\Users\Owner\AppData\Roaming\Python\Python314\site-packages\django\db\backends\postgresql\schema.py", line 48, in execute
+    return super().execute(sql, None)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\Owner\AppData\Roaming\Python\Python314\site-packages\django\db\backends\base\schema.py", line 204, in execute
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\Owner\AppData\Roaming\Python\Python314\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Owner\AppData\Roaming\Python\Python314\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\Owner\AppData\Roaming\Python\Python314\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Owner\AppData\Roaming\Python\Python314\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\Owner\AppData\Roaming\Python\Python314\site-packages\django\db\backends\utils.py", line 103, in _execute
+    return self.cursor.execute(sql)
+           ~~~~~~~~~~~~~~~~~~~^^^^^
+django.db.utils.ProgrammingError: relation "survey_responses" does not exist
+

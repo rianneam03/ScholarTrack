@@ -61,4 +61,10 @@ urlpatterns = [
     # Surveys
     path('api/surveys/', views.surveys_list, name='surveys_list'),
     path('api/surveys/<int:survey_id>/responses/', views.survey_responses_list, name='survey_responses_list'),
+
+    # Parent Portal
+    path('api/parents/my-students/', views.parent_my_students, name='parent_my_students'),
+    path('api/parents/guardians/<int:guardian_id>/students/', views.students_by_guardian, name='students_by_guardian'),
+    path('api/parents/students/<str:student_id>/summary/', views.student_academic_summary, name='student_academic_summary'),
+    path('api/parents/students/<str:student_id>/enroll/', views.parent_enroll_student, name='parent_enroll_student'),
 ]

@@ -1,0 +1,126 @@
+.parent-dashboard {
+  padding: 20px;
+}
+
+.parent-grid {
+  display: flex;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.students-list-panel {
+  flex: 1;
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.student-cards {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.student-card {
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.student-card:hover {
+  background: #f8f9fa;
+  border-color: #ddd;
+}
+
+.student-card.active {
+  background: #e3f2fd;
+  border-color: #90caf9;
+}
+
+.student-card h4 {
+  margin: 0 0 5px 0;
+  color: #333;
+}
+
+.student-card p {
+  margin: 3px 0;
+  color: #666;
+  font-size: 0.9em;
+}
+
+.student-details-panel {
+  flex: 2;
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.select-prompt, .loading-prompt {
+  text-align: center;
+  padding: 40px;
+  color: #888;
+  font-style: italic;
+}
+
+.summary-section {
+  margin-top: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.summary-section:last-child {
+  border-bottom: none;
+}
+
+.parent-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.parent-table th, .parent-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.85em;
+  font-weight: bold;
+}
+.status-badge.present { background: #e8f5e9; color: #2e7d32; }
+.status-badge.absent { background: #ffebee; color: #c62828; }
+
+.enrollment-section {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 6px;
+}
+
+.enrollment-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.enrollment-actions select {
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  flex: 1;
+}
+
+.enrollment-status {
+  padding: 10px;
+  margin-top: 10px;
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-radius: 4px;
+}

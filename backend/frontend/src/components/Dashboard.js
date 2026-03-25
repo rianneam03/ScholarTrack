@@ -15,6 +15,7 @@ import {
   LineChart,
   Line,
 } from "recharts";
+import API_BASE from "../apiConfig";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8", "#82ca9d"];
 
@@ -24,7 +25,7 @@ function Dashboard() {
   useEffect(() => {
     async function fetchDashboard() {
       try {
-        const res = await fetch("https://scholartrack-backend-bgas.onrender.com/api/dashboard_data/");
+        const res = await fetch(`${API_BASE}/dashboard_data/`);
         const json = await res.json();
         setData(json);
       } catch (err) {

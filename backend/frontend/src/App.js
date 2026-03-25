@@ -12,6 +12,7 @@ import Attendance from "./components/Attendance";
 import Login from "./components/Login";
 import AdminUsers from "./components/AdminUsers";
 import ActivateAccount from "./components/ActivateAccount";
+import ParentDashboard from "./components/ParentDashboard";
 
 // --- Private Route Wrapper ---
 function PrivateRoute({ children, allowedRoles }) {
@@ -29,79 +30,93 @@ function PrivateRoute({ children, allowedRoles }) {
 function App() {
   return (
     <Router>
-      <Navbar />
+      <div className="app-container">
+        <Navbar />
 
-      <Routes>
-        {/* ----------------- Public Routes ----------------- */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/activate" element={<ActivateAccount />} />
+        <div className="main-content">
+          <Routes>
+            {/* ----------------- Public Routes ----------------- */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/activate" element={<ActivateAccount />} />
 
-        {/* ----------------- Dashboard ----------------- */}
-        <Route
-          path="/"
-          element={
-            <PrivateRoute allowedRoles={["admin", "teacher", "donor"]}>
-              <Dashboard />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute allowedRoles={["admin", "teacher", "donor"]}>
-              <Dashboard />
-            </PrivateRoute>
-          }
-        />
+            {/* ----------------- Dashboard ----------------- */}
+            <Route
+              path="/"
+              element={
+                <PrivateRoute allowedRoles={["admin", "teacher", "donor"]}>
+                  <Dashboard />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute allowedRoles={["admin", "teacher", "donor"]}>
+                  <Dashboard />
+                </PrivateRoute>
+              }
+            />
 
-        {/* ----------------- Admin Routes ----------------- */}
-        <Route
-          path="/schools"
-          element={
-            <PrivateRoute allowedRoles={["admin"]}>
-              <Schools />
-            </PrivateRoute>
-          }
-        />
+            {/* ----------------- Admin Routes ----------------- */}
+            <Route
+              path="/schools"
+              element={
+                <PrivateRoute allowedRoles={["admin"]}>
+                  <Schools />
+                </PrivateRoute>
+              }
+            />
 
-        <Route
-          path="/admin/users"
-          element={
-            <PrivateRoute allowedRoles={["admin"]}>
-              <AdminUsers />
-            </PrivateRoute>
-          }
-        />
+            <Route
+              path="/admin/users"
+              element={
+                <PrivateRoute allowedRoles={["admin"]}>
+                  <AdminUsers />
+                </PrivateRoute>
+              }
+            />
 
-        {/* ----------------- Teacher/Admin Routes ----------------- */}
-        <Route
-          path="/students"
-          element={
-            <PrivateRoute allowedRoles={["admin", "teacher"]}>
-              <Students />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/sessions"
-          element={
-            <PrivateRoute allowedRoles={["admin", "teacher"]}>
-              <Sessions />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/attendance"
-          element={
-            <PrivateRoute allowedRoles={["admin", "teacher"]}>
-              <Attendance />
-            </PrivateRoute>
-          }
-        />
+            {/* ----------------- Parent Routes ----------------- */}
+            <Route
+              path="/parent-dashboard"
+              element={
+                <PrivateRoute allowedRoles={["admin", "parent"]}>
+                  <ParentDashboard />
+                </PrivateRoute>
+              }
+            />
 
-        {/* ----------------- Catch-all for unknown routes ----------------- */}
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+            {/* ----------------- Teacher/Admin Routes ----------------- */}
+            <Route
+              path="/students"
+              element={
+                <PrivateRoute allowedRoles={["admin", "teacher"]}>
+                  <Students />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/sessions"
+              element={
+                <PrivateRoute allowedRoles={["admin", "teacher"]}>
+                  <Sessions />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/attendance"
+              element={
+                <PrivateRoute allowedRoles={["admin", "teacher"]}>
+                  <Attendance />
+                </PrivateRoute>
+              }
+            />
+
+            {/* ----------------- Catch-all for unknown routes ----------------- */}
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </div>
+      </div>
     </Router>
   );
 }

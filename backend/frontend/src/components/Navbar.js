@@ -31,9 +31,9 @@ function Navbar() {
         ScholarTrack
       </div>
 
-      <div className="navbar-links">
-        {user ? (
-          <>
+      {user ? (
+        <>
+          <div className="navbar-links">
             <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>
               Dashboard
             </NavLink>
@@ -52,7 +52,6 @@ function Navbar() {
               </>
             )}
 
-            {/* Admin-only link */}
             {role === "admin" && (
               <>
                 <NavLink to="/schools" className={({ isActive }) => (isActive ? "active" : "")}>
@@ -64,17 +63,29 @@ function Navbar() {
               </>
             )}
 
+            {role === "parent" && (
+              <>
+                <NavLink to="/parent-dashboard" className={({ isActive }) => (isActive ? "active" : "")}>
+                  Parent Portal
+                </NavLink>
+              </>
+            )}
+          </div>
+
+          <div className="navbar-user-section">
             <span className="navbar-user">
               Hi, {user.fullname || user.username} ({role})
             </span>
             <button className="navbar-logout" onClick={handleLogout}>
               Logout
             </button>
-          </>
-        ) : (
+          </div>
+        </>
+      ) : (
+        <div className="navbar-links">
           <NavLink to="/login">Login</NavLink>
-        )}
-      </div>
+        </div>
+      )}
     </nav>
   );
 }

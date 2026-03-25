@@ -11,7 +11,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password, check_password
 
-from .models import Student, School, Session, Attendance, User, Need, Program, ProgramYear, ProgramStaff, Enrollment, Outcome, Survey, SurveyResponse
+from .models import Student, School, Session, Attendance, User, Need, Program, ProgramYear, ProgramStaff, Enrollment, Outcome, Survey, SurveyResponse, Guardian
 from .serializers import SchoolSerializer, NeedSerializer, ProgramSerializer, ProgramYearSerializer, ProgramStaffSerializer, EnrollmentSerializer, OutcomeSerializer, SurveySerializer, SurveyResponseSerializer
 from .utils import send_activation_email
 
@@ -710,3 +710,107 @@ def survey_responses_list(request, survey_id):
             serializer.save(responder_user=user)
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
+
+# --- Parent Portal APIs ---
+@api_view(['GET'])
+def students_by_guardian(request, guardian_id):
+    """List students associated with a given guardian_id."""
+    students = Student.objects.filter(guardian_id=guardian_id).select_related('school')
+    data = [{
+        "StudentID": s.studentid, 
+        "FirstName": s.firstname, 
+        "LastName": s.lastname, 
+        "Grade": s.grade, 
+        "SchoolName": s.school.school if s.school else None
+    } for s in students]
+    return Response(data)
+
+@api_view(['GET'])
+def parent_my_students(request):
+    """List students associated with the logged-in parent."""
+    user = User.objects.filter(username=request.headers.get("Username")).first()
+    if not user or user.role != "parent":
+        return Response({"error": "Unauthorized"}, status=403)
+        
+    guardian = Guardian.objects.filter(email=user.email).first()
+    if not guardian:
+        return Response([], status=200) # No students yet
+        
+    students = Student.objects.filter(guardian=guardian).select_related('school')
+    data = [{
+        "StudentID": s.studentid, 
+        "FirstName": s.firstname, 
+        "LastName": s.lastname, 
+        "Grade": s.grade, 
+        "SchoolName": s.school.school if s.school else None
+    } for s in students]
+    return Response(data)
+
+@api_view(['POST'])
+def parent_enroll_student(request, student_id):
+    """Parent enrolls their child in a program year."""
+    user = User.objects.filter(username=request.headers.get("Username")).first()
+    if not user or user.role != "parent":
+        return Response({"error": "Unauthorized"}, status=403)
+        
+    guardian = Guardian.objects.filter(email=user.email).first()
+    if not guardian:
+        return Response({"error": "Guardian profile not found"}, status=404)
+        
+    student = Student.objects.filter(studentid=student_id, guardian=guardian).first()
+    if not student:
+        return Response({"error": "Student not found or not associated with you"}, status=403)
+        
+    program_year_id = request.data.get('program_year_id')
+    try:
+        program_year = ProgramYear.objects.get(pk=program_year_id)
+    except ProgramYear.DoesNotExist:
+        return Response({"error": "Invalid program_year_id"}, status=400)
+        
+    if Enrollment.objects.filter(student=student, program_year=program_year).exists():
+        return Response({"error": "Student already enrolled in this program"}, status=400)
+        
+    enrollment = Enrollment.objects.create(
+        student=student,
+        program_year=program_year,
+        status='Active'
+    )
+    return Response(EnrollmentSerializer(enrollment).data, status=201)
+
+@api_view(['GET'])
+def student_academic_summary(request, student_id):
+    """Show student academic summary (outcomes, attendance, enrollments) for the parent."""
+    user = User.objects.filter(username=request.headers.get("Username")).first()
+    if user and user.role == "parent":
+        guardian = Guardian.objects.filter(email=user.email).first()
+        student = Student.objects.filter(studentid=student_id, guardian=guardian).first()
+        if not student:
+            return Response({"error": "Unauthorized"}, status=403)
+
+    # Enrollments
+    enrollments = Enrollment.objects.filter(student_id=student_id).select_related('program_year__program')
+    enrollment_data = [{
+        "ProgramName": e.program_year.program.name if (e.program_year and e.program_year.program) else "Unknown", 
+        "Year": e.program_year.year if e.program_year else None, 
+        "Status": e.status,
+        "EnrollmentDate": e.enrollment_date
+    } for e in enrollments]
+    
+    # Attendance
+    attendance = Attendance.objects.filter(enrollment__student_id=student_id).select_related('session')
+    attendance_data = [{
+        "SessionTitle": a.session.title if a.session else "Unknown", 
+        "Date": a.session.sessiondate if a.session else None, 
+        "Status": a.status
+    } for a in attendance]
+    
+    # Outcomes
+    outcomes = Outcome.objects.filter(enrollment__student_id=student_id).select_related('enrollment__program_year__program')
+    outcome_data = OutcomeSerializer(outcomes, many=True).data
+
+    return Response({
+        "StudentID": student_id,
+        "enrollments": enrollment_data,
+        "attendance": attendance_data,
+        "outcomes": outcome_data
+    })

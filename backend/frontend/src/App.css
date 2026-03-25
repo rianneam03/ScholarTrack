@@ -81,8 +81,27 @@ body {
 }
 
 /* =====================================================
-   PAGE LAYOUT
+   PAGE LAYOUT & SIDEBAR
 ===================================================== */
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-container {
+  display: flex;
+  flex: 1;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  background-color: var(--bg-page);
+}
+
 .page-container {
   padding: var(--space-8) var(--space-8);
   max-width: 1200px;
@@ -90,96 +109,112 @@ body {
 }
 
 /* =====================================================
-   NAVBAR
+   SIDEBAR (NAVBAR)
 ===================================================== */
 .navbar {
   background-color: var(--navy);
   color: white;
-  padding: var(--space-3) var(--space-8);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), var(--shadow-md);
+  width: 250px;
+  height: 100%;
+  padding: var(--space-6) var(--space-4);
   display: flex;
-  align-items: center;
-}
-
-.navbar-links {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: var(--space-5);
-}
-
-.navbar a {
-  color: rgba(255, 255, 255, 0.8);
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 0.85rem;
-  letter-spacing: 0.01em;
-  transition: color 0.2s ease;
-  padding: var(--space-2) 0;
-}
-
-.navbar a:hover {
-  color: white;
-}
-
-.navbar a.active {
-  color: white;
-  font-weight: 600;
-  position: relative;
-}
-
-.navbar a.active::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--teal);
-  border-radius: 1px;
+  flex-direction: column;
+  box-shadow: var(--shadow-md);
+  flex-shrink: 0;
+  z-index: 10;
 }
 
 .navbar-brand {
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 1.1rem;
+  font-weight: 700;
   color: white;
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  margin-right: auto;
+  margin-bottom: var(--space-8);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .navbar-logo {
-  height: 42px;
-  width: 42px;
+  height: 48px;
+  width: 48px;
   object-fit: contain;
+  background: white;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.navbar-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1;
+}
+
+.navbar a {
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  transition: all 0.2s ease;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.navbar a:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar a.active {
+  color: white;
+  font-weight: 600;
+  background-color: var(--teal);
+}
+
+.navbar-user-section {
+  margin-top: auto;
+  padding-top: var(--space-5);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
 }
 
 .navbar-user {
-  font-style: normal;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
-  font-weight: 400;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+  background: rgba(0, 0, 0, 0.2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  word-break: break-word;
 }
 
 .navbar-logout {
-  background: rgba(255, 255, 255, 0.08);
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: var(--space-1) var(--space-3);
+  padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-sm);
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.8rem;
-  font-weight: 500;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
   transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .navbar-logout:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
-  border-color: rgba(255, 255, 255, 0.35);
+  background: var(--danger);
+  border-color: var(--danger);
 }
 
 /* =====================================================

@@ -1,0 +1,10 @@
+--- USERS TABLE COLUMNS ---
+- createdat (timestamp without time zone)
+- is_active (boolean)
+- userid (integer)
+- fullname (character varying)
+- email (character varying)
+- role (character varying)
+- activation_token (character varying)
+- username (character varying)
+- password (character varying)
