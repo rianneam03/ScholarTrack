@@ -102,7 +102,14 @@ def dashboard_data(request):
 @api_view(['GET', 'POST'])
 def sessions_list(request):
     if request.method == 'GET':
+        username = request.headers.get("Username")
+        user = User.objects.filter(username=username).first()
         sessions = Session.objects.select_related('program_year__program').all()
+        
+        if user and user.role == "teacher":
+            assigned_py_ids = ProgramStaff.objects.filter(user=user).values_list('program_year_id', flat=True)
+            sessions = sessions.filter(program_year_id__in=assigned_py_ids)
+            
         data = []
         for s in sessions:
             data.append({
@@ -568,6 +575,50 @@ def program_year_detail(request, year_id):
     elif request.method == 'DELETE':
         year.delete()
         return Response({"message": "Program Year deleted successfully"})
+
+# --- Program Staff ---
+@api_view(['GET', 'POST'])
+def program_staff_list(request):
+    if request.method == 'GET':
+        staff = ProgramStaff.objects.select_related('program_year__program', 'user').all()
+        serializer = ProgramStaffSerializer(staff, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        username = request.headers.get("Username")
+        user = User.objects.filter(username=username).first()
+        if not user or user.role != "admin":
+            return Response({"error": "Admin access required"}, status=403)
+        
+        data = request.data
+        try:
+            program_year = ProgramYear.objects.get(pk=data.get('program_year_id'))
+            staff_user = User.objects.get(pk=data.get('userid'))
+            if ProgramStaff.objects.filter(program_year=program_year, user=staff_user).exists():
+                return Response({"error": "Staff already assigned to this program year"}, status=400)
+                
+            staff_assignment = ProgramStaff.objects.create(
+                program_year=program_year,
+                user=staff_user
+            )
+            return Response(ProgramStaffSerializer(staff_assignment).data, status=201)
+        except (ProgramYear.DoesNotExist, User.DoesNotExist):
+            return Response({"error": "Invalid program_year_id or userid"}, status=400)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
+
+@api_view(['DELETE'])
+def program_staff_detail(request, assignment_id):
+    username = request.headers.get("Username")
+    user = User.objects.filter(username=username).first()
+    if not user or user.role != "admin":
+        return Response({"error": "Admin access required"}, status=403)
+        
+    try:
+        assignment = ProgramStaff.objects.get(pk=assignment_id)
+        assignment.delete()
+        return Response({"message": "Staff assignment deleted successfully"})
+    except ProgramStaff.DoesNotExist:
+        return Response({"error": "Assignment not found"}, status=404)
 
 # --- Enrollments ---
 @api_view(['GET', 'POST'])

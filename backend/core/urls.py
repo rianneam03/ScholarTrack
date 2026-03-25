@@ -50,6 +50,10 @@ urlpatterns = [
     path('api/program_years/', views.program_years_list, name='program_years_list'),
     path('api/program_years/<int:year_id>/', views.program_year_detail, name='program_year_detail'),
 
+    # Program Staff
+    path('api/program-staff/', views.program_staff_list, name='program_staff_list'),
+    path('api/program-staff/<int:assignment_id>/', views.program_staff_detail, name='program_staff_detail'),
+
     # Enrollments
     path('api/enrollments/', views.enrollments_list, name='enrollments_list'),
     path('api/enrollments/<int:enrollment_id>/', views.enrollment_detail, name='enrollment_detail'),
