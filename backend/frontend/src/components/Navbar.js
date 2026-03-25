@@ -4,6 +4,7 @@ import "../App.css";
 
 function Navbar() {
   const [user, setUser] = useState(null);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,29 +26,32 @@ function Navbar() {
   };
 
   return (
-    <nav className="navbar">
+    <nav className={`navbar ${isCollapsed ? "collapsed" : ""}`}>
+      <button className="navbar-toggle" onClick={() => setIsCollapsed(!isCollapsed)}>
+        {isCollapsed ? "☰" : "⨉"}
+      </button>
       <div className="navbar-brand">
         <img src="/logo.png" alt="Education for Scholars" className="navbar-logo" />
-        ScholarTrack
+        <span className="navbar-brand-text">ScholarTrack</span>
       </div>
 
       {user ? (
         <>
           <div className="navbar-links">
             <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>
-              Dashboard
+              <span className="nav-icon">📊</span> <span className="nav-text">Dashboard</span>
             </NavLink>
 
             {(role === "admin" || role === "teacher") && (
               <>
                 <NavLink to="/students" className={({ isActive }) => (isActive ? "active" : "")}>
-                  Students
+                  <span className="nav-icon">👨‍🎓</span> <span className="nav-text">Students</span>
                 </NavLink>
                 <NavLink to="/sessions" className={({ isActive }) => (isActive ? "active" : "")}>
-                  Sessions
+                  <span className="nav-icon">📅</span> <span className="nav-text">Sessions</span>
                 </NavLink>
                 <NavLink to="/attendance" className={({ isActive }) => (isActive ? "active" : "")}>
-                  Attendance
+                  <span className="nav-icon">✅</span> <span className="nav-text">Attendance</span>
                 </NavLink>
               </>
             )}
@@ -55,18 +59,18 @@ function Navbar() {
             {role === "admin" && (
               <>
                 <NavLink to="/schools" className={({ isActive }) => (isActive ? "active" : "")}>
-                  Schools
+                  <span className="nav-icon">🏫</span> <span className="nav-text">Schools</span>
                 </NavLink>
                 <NavLink to="/admin/users" className={({ isActive }) => (isActive ? "active" : "")}>
-                  Manage Users
+                  <span className="nav-icon">⚙️</span> <span className="nav-text">Manage Users</span>
                 </NavLink>
               </>
             )}
 
-            {role === "parent" && (
+            {(role === "parent" || role === "admin") && (
               <>
                 <NavLink to="/parent-dashboard" className={({ isActive }) => (isActive ? "active" : "")}>
-                  Parent Portal
+                  <span className="nav-icon">👪</span> <span className="nav-text">Parent Portal</span>
                 </NavLink>
               </>
             )}
@@ -74,16 +78,20 @@ function Navbar() {
 
           <div className="navbar-user-section">
             <span className="navbar-user">
-              Hi, {user.fullname || user.username} ({role})
+              <span className="nav-text">Hi, {user.fullname || user.username} ({role})</span>
+              <span className="nav-icon">👤</span>
             </span>
             <button className="navbar-logout" onClick={handleLogout}>
-              Logout
+              <span className="nav-text">Logout</span>
+              <span className="nav-icon" style={{display: "none"}}>🚪</span>
             </button>
           </div>
         </>
       ) : (
         <div className="navbar-links">
-          <NavLink to="/login">Login</NavLink>
+          <NavLink to="/login">
+            <span className="nav-icon">🔑</span> <span className="nav-text">Login</span>
+          </NavLink>
         </div>
       )}
     </nav>

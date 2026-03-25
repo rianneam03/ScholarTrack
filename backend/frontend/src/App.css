@@ -122,6 +122,31 @@ body {
   box-shadow: var(--shadow-md);
   flex-shrink: 0;
   z-index: 10;
+  transition: width 0.3s ease;
+}
+
+.navbar.collapsed {
+  width: 80px;
+  padding: var(--space-6) var(--space-2);
+}
+
+.navbar-toggle {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.75);
+  border: none;
+  font-size: 1.5rem;
+  align-self: flex-end;
+  cursor: pointer;
+  margin-bottom: var(--space-4);
+  padding: 0;
+}
+
+.navbar-toggle:hover {
+  color: white;
+}
+
+.navbar.collapsed .navbar-toggle {
+  align-self: center;
 }
 
 .navbar-brand {
@@ -134,11 +159,21 @@ body {
   margin-bottom: var(--space-8);
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.navbar.collapsed .navbar-brand {
+  justify-content: center;
+  align-items: center;
+}
+
+.navbar.collapsed .navbar-brand-text {
+  display: none;
 }
 
 .navbar-logo {
-  height: 48px;
-  width: 48px;
+  height: 40px;
+  width: 40px;
   object-fit: contain;
   background: white;
   border-radius: 8px;
@@ -164,6 +199,16 @@ body {
   display: flex;
   align-items: center;
   gap: var(--space-3);
+  white-space: nowrap;
+}
+
+.navbar.collapsed a {
+  justify-content: center;
+  padding: var(--space-3) var(--space-2);
+}
+
+.navbar.collapsed .nav-text {
+  display: none;
 }
 
 .navbar a:hover {
@@ -184,6 +229,11 @@ body {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  white-space: nowrap;
+}
+
+.navbar.collapsed .navbar-user-section {
+  align-items: center;
 }
 
 .navbar-user {
@@ -195,6 +245,10 @@ body {
   border-radius: var(--radius-sm);
   text-align: center;
   word-break: break-word;
+}
+
+.navbar.collapsed .navbar-user .nav-text {
+  display: none;
 }
 
 .navbar-logout {
@@ -210,6 +264,16 @@ body {
   transition: all 0.2s ease;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.navbar.collapsed .navbar-logout .nav-text {
+  display: none;
+}
+.navbar.collapsed .navbar-logout .nav-icon {
+  display: inline !important;
 }
 
 .navbar-logout:hover {

@@ -370,9 +370,10 @@ def admin_create_user(request):
         return Response({"error": "Full Name and email are required"}, status=400)
     token = secrets.token_urlsafe(32)
     try:
+        frontend_url = request.data.get("frontend_url", "https://scholartrack-frontend.onrender.com")
         user = User(fullname=data["fullname"],email=data["email"],role=data.get("role","teacher"),is_active=False,activation_token=token,password="",createdat=timezone.now())
         user.save()
-        try: send_activation_email(user.email, token)
+        try: send_activation_email(user.email, token, frontend_url)
         except Exception as e: print("Failed to send email:", e)
         return Response({"message": "User created, activation email sent"})
     except Exception as e:
@@ -572,7 +573,10 @@ def program_year_detail(request, year_id):
 @api_view(['GET', 'POST'])
 def enrollments_list(request):
     if request.method == 'GET':
+        program_year_id = request.GET.get('program_year_id')
         enrollments = Enrollment.objects.select_related('student', 'program_year__program').all()
+        if program_year_id:
+            enrollments = enrollments.filter(program_year_id=program_year_id)
         serializer = EnrollmentSerializer(enrollments, many=True)
         return Response(serializer.data)
     elif request.method == 'POST':
@@ -729,14 +733,17 @@ def students_by_guardian(request, guardian_id):
 def parent_my_students(request):
     """List students associated with the logged-in parent."""
     user = User.objects.filter(username=request.headers.get("Username")).first()
-    if not user or user.role != "parent":
+    if not user or user.role not in ["parent", "admin"]:
         return Response({"error": "Unauthorized"}, status=403)
         
-    guardian = Guardian.objects.filter(email=user.email).first()
-    if not guardian:
-        return Response([], status=200) # No students yet
+    if user.role == "admin":
+        students = Student.objects.all().select_related('school')
+    else:
+        guardian = Guardian.objects.filter(email=user.email).first()
+        if not guardian:
+            return Response([], status=200) # No students yet
+        students = Student.objects.filter(guardian=guardian).select_related('school')
         
-    students = Student.objects.filter(guardian=guardian).select_related('school')
     data = [{
         "StudentID": s.studentid, 
         "FirstName": s.firstname, 
@@ -750,16 +757,17 @@ def parent_my_students(request):
 def parent_enroll_student(request, student_id):
     """Parent enrolls their child in a program year."""
     user = User.objects.filter(username=request.headers.get("Username")).first()
-    if not user or user.role != "parent":
+    if not user or user.role not in ["parent", "admin"]:
         return Response({"error": "Unauthorized"}, status=403)
         
-    guardian = Guardian.objects.filter(email=user.email).first()
-    if not guardian:
-        return Response({"error": "Guardian profile not found"}, status=404)
-        
-    student = Student.objects.filter(studentid=student_id, guardian=guardian).first()
+    student = Student.objects.filter(studentid=student_id).first()
     if not student:
-        return Response({"error": "Student not found or not associated with you"}, status=403)
+        return Response({"error": "Student not found"}, status=404)
+
+    if user.role != "admin":
+        guardian = Guardian.objects.filter(email=user.email).first()
+        if not guardian or student.guardian != guardian:
+            return Response({"error": "Student not found or not associated with you"}, status=403)
         
     program_year_id = request.data.get('program_year_id')
     try:

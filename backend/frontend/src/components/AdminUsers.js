@@ -39,7 +39,7 @@ export default function AdminUsers() {
     try {
       const res = await axios.post(
         "https://scholartrack-backend-bgas.onrender.com/api/admin/create-user/",
-        newUser,
+        { ...newUser, frontend_url: window.location.origin },
         { headers: { Username: username }, withCredentials: true }
       );
 

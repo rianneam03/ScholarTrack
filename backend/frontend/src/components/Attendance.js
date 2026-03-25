@@ -59,7 +59,9 @@ function Attendance() {
     const schoolId = sess?.SchoolID ? String(sess.SchoolID) : "";
     setSelectedSchoolID(schoolId);
 
-    if (!schoolId) {
+    const programYearId = sess?.ProgramYearID ? String(sess.ProgramYearID) : "";
+
+    if (!programYearId) {
       setStudents([]);
       setAttendanceRows([]);
       setOrigMap({});
@@ -69,8 +71,8 @@ function Attendance() {
     setLoading(true);
 
     const pStudents = fetch(
-      `https://scholartrack-backend-bgas.onrender.com/api/students/?school_id=${encodeURIComponent(
-        schoolId
+      `https://scholartrack-backend-bgas.onrender.com/api/enrollments/?program_year_id=${encodeURIComponent(
+        programYearId
       )}`
     ).then((r) => r.json());
 
@@ -93,10 +95,10 @@ function Attendance() {
         setOrigMap(map);
 
         const rows = (stuData || []).map((s) => ({
-          StudentID: s.StudentID,
-          FirstName: s.FirstName,
-          LastName: s.LastName,
-          Status: map[String(s.StudentID)] || "Absent",
+          StudentID: s.student,
+          FirstName: s.student_firstname,
+          LastName: s.student_lastname,
+          Status: map[String(s.student)] || "Absent",
         }));
         setAttendanceRows(rows);
       })
@@ -301,7 +303,7 @@ function Attendance() {
               ) : (
                 <tr>
                   <td colSpan="2">
-                    No students found for this session’s school.
+                    No students enrolled in this session's underlying program.
                   </td>
                 </tr>
               )}

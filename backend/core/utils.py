@@ -4,9 +4,9 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
 
-def send_activation_email(to_email, token):
+def send_activation_email(to_email, token, frontend_url="https://scholartrack-frontend.onrender.com"):
     from_email = os.environ.get("DEFAULT_FROM_EMAIL")  # verified SendGrid sender
-    activation_link = f"https://scholartrack-frontend.onrender.com/activate?token={token}"
+    activation_link = f"{frontend_url}/activate?token={token}"
 
     message = Mail(
         from_email=from_email,
