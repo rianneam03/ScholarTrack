@@ -93,7 +93,7 @@ export default function Programs() {
   };
 
   if (role === "teacher") {
-    const myAssignments = staffAssignments.filter(sa => sa.user && sa.user.username === username);
+    const myAssignments = staffAssignments.filter(sa => sa.username === username);
     return (
       <div className="page-container">
         <h2>My Assigned Programs</h2>
@@ -106,8 +106,8 @@ export default function Programs() {
               ) : (
                 myAssignments.map(sa => (
                   <tr key={sa.assignmentid}>
-                    <td>{sa.program_year ? sa.program_year.program_name : 'N/A'}</td>
-                    <td>{sa.program_year ? sa.program_year.year : 'N/A'}</td>
+                    <td>{sa.program_name || 'N/A'}</td>
+                    <td>{sa.year || 'N/A'}</td>
                   </tr>
                 ))
               )}
@@ -188,8 +188,8 @@ export default function Programs() {
           <tbody>
             {staffAssignments.map(sa => (
               <tr key={sa.assignmentid}>
-                <td>{sa.program_year ? `${sa.program_year.program_name} (${sa.program_year.year})` : 'N/A'}</td>
-                <td>{sa.user ? sa.user.fullname : 'N/A'}</td>
+                <td>{sa.program_name ? `${sa.program_name} (${sa.year})` : 'N/A'}</td>
+                <td>{sa.fullname || 'N/A'}</td>
                 <td>
                   <button className="delete" onClick={() => handleDeleteStaff(sa.assignmentid)}>Revoke</button>
                 </td>

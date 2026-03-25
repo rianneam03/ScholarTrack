@@ -18,7 +18,9 @@ function Attendance() {
   // Load sessions
   // ======================
   useEffect(() => {
-    fetch("https://scholartrack-backend-bgas.onrender.com/api/sessions/")
+    fetch("https://scholartrack-backend-bgas.onrender.com/api/sessions/", {
+      headers: { Username: user?.username }
+    })
       .then((r) => r.json())
       .then((data) => setSessions(data))
       .catch((e) => console.error("Sessions load error:", e));
@@ -73,13 +75,13 @@ function Attendance() {
     const pStudents = fetch(
       `https://scholartrack-backend-bgas.onrender.com/api/enrollments/?program_year_id=${encodeURIComponent(
         programYearId
-      )}`
+      )}`, { headers: { Username: user?.username } }
     ).then((r) => r.json());
 
     const pAttendance = fetch(
       `https://scholartrack-backend-bgas.onrender.com/api/attendance/?session_id=${encodeURIComponent(
         selectedSessionID
-      )}`
+      )}`, { headers: { Username: user?.username } }
     ).then((r) => r.json());
 
     Promise.all([pStudents, pAttendance])
@@ -150,7 +152,7 @@ function Attendance() {
           "https://scholartrack-backend-bgas.onrender.com/api/attendance/",
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", Username: user?.username },
             body: JSON.stringify({
               StudentID: row.StudentID,
               SessionID: selectedSessionID,
@@ -168,7 +170,7 @@ function Attendance() {
       const fresh = await fetch(
         `https://scholartrack-backend-bgas.onrender.com/api/attendance/?session_id=${encodeURIComponent(
           selectedSessionID
-        )}`
+        )}`, { headers: { Username: user?.username } }
       ).then((r) => r.json());
 
       const newMap = {};
@@ -242,7 +244,7 @@ function Attendance() {
           <option value="">-- Select Session --</option>
           {sessions.map((s) => (
             <option key={s.SessionID} value={s.SessionID}>
-              {s.Title} ({s.SessionDate}) {s.SchoolName ? `— ${s.SchoolName}` : ""}
+              {s.Title} ({s.SessionDate}) {s.ProgramName ? `— ${s.ProgramName}` : ""}
             </option>
           ))}
         </select>

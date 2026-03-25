@@ -26,6 +26,8 @@ class ProgramYearSerializer(serializers.ModelSerializer):
 class ProgramStaffSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
     fullname = serializers.CharField(source='user.fullname', read_only=True)
+    program_name = serializers.CharField(source='program_year.program.name', read_only=True)
+    year = serializers.IntegerField(source='program_year.year', read_only=True)
     
     class Meta:
         model = ProgramStaff
