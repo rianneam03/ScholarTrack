@@ -44,6 +44,9 @@ function Navbar() {
 
             {(role === "admin" || role === "teacher") && (
               <>
+                <NavLink to="/programs" className={({ isActive }) => (isActive ? "active" : "")}>
+                  <span className="nav-icon">📚</span> <span className="nav-text">Programs</span>
+                </NavLink>
                 <NavLink to="/students" className={({ isActive }) => (isActive ? "active" : "")}>
                   <span className="nav-icon">👨‍🎓</span> <span className="nav-text">Students</span>
                 </NavLink>
@@ -58,9 +61,6 @@ function Navbar() {
 
             {role === "admin" && (
               <>
-                <NavLink to="/programs" className={({ isActive }) => (isActive ? "active" : "")}>
-                  <span className="nav-icon">📚</span> <span className="nav-text">Programs</span>
-                </NavLink>
                 <NavLink to="/schools" className={({ isActive }) => (isActive ? "active" : "")}>
                   <span className="nav-icon">🏫</span> <span className="nav-text">Schools</span>
                 </NavLink>

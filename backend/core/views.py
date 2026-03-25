@@ -363,7 +363,7 @@ def list_users(request):
     if not admin or admin.role != "admin":
         return Response({"error": "Forbidden"}, status=403)
     users = User.objects.all()
-    data = [{"fullname": u.fullname,"username": u.username,"email": u.email,"role": u.role,"is_active": u.is_active} for u in users]
+    data = [{"userid": u.userid, "fullname": u.fullname,"username": u.username,"email": u.email,"role": u.role,"is_active": u.is_active} for u in users]
     return Response(data)
 
 @api_view(["POST"])

@@ -15,20 +15,24 @@ export default function Programs() {
   const [message, setMessage] = useState({ text: "", type: "" });
   const currentUser = JSON.parse(localStorage.getItem("user"));
   const username = currentUser?.username;
+  const role = currentUser?.role;
 
   const fetchData = async () => {
     try {
       const headers = { Username: username };
-      const [progRes, yearRes, staffRes, userRes] = await Promise.all([
+      const [progRes, yearRes, staffRes] = await Promise.all([
         axios.get("https://scholartrack-backend-bgas.onrender.com/api/programs/", { headers }),
         axios.get("https://scholartrack-backend-bgas.onrender.com/api/program_years/", { headers }),
-        axios.get("https://scholartrack-backend-bgas.onrender.com/api/program-staff/", { headers }),
-        axios.get("https://scholartrack-backend-bgas.onrender.com/api/users/", { headers })
+        axios.get("https://scholartrack-backend-bgas.onrender.com/api/program-staff/", { headers })
       ]);
       setPrograms(progRes.data);
       setProgramYears(yearRes.data);
       setStaffAssignments(staffRes.data);
-      setUsers(userRes.data.filter(u => u.role === "teacher" || u.role === "admin"));
+
+      if (role === "admin") {
+        const userRes = await axios.get("https://scholartrack-backend-bgas.onrender.com/api/users/", { headers });
+        setUsers(userRes.data.filter(u => u.role === "teacher" || u.role === "admin"));
+      }
     } catch (err) {
       console.error("Error loading program data", err);
     }
@@ -88,6 +92,32 @@ export default function Programs() {
     }
   };
 
+  if (role === "teacher") {
+    const myAssignments = staffAssignments.filter(sa => sa.user && sa.user.username === username);
+    return (
+      <div className="page-container">
+        <h2>My Assigned Programs</h2>
+        <div className="card">
+          <table>
+            <thead><tr><th>Program Name</th><th>Year</th></tr></thead>
+            <tbody>
+              {myAssignments.length === 0 ? (
+                <tr><td colSpan="2">No programs assigned.</td></tr>
+              ) : (
+                myAssignments.map(sa => (
+                  <tr key={sa.assignmentid}>
+                    <td>{sa.program_year ? sa.program_year.program_name : 'N/A'}</td>
+                    <td>{sa.program_year ? sa.program_year.year : 'N/A'}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="page-container">
       <h2>Program Management</h2>
@@ -99,7 +129,7 @@ export default function Programs() {
 
       {/* PROGRAMS */}
       <div className="card">
-        <h3>1. Master Programs</h3>
+        <h3>1. Programs (e.g., STEM Afterschool, Summer Camp)</h3>
         <div className="form-container">
           <input placeholder="Program Name" value={newProgram.name} onChange={(e) => setNewProgram({...newProgram, name: e.target.value})} />
           <input placeholder="Description" value={newProgram.description} onChange={(e) => setNewProgram({...newProgram, description: e.target.value})} style={{flex: 2}} />
@@ -120,7 +150,7 @@ export default function Programs() {
         <h3>2. Program Academic Years</h3>
         <div className="form-container">
           <select value={newProgramYear.program_id} onChange={(e) => setNewProgramYear({...newProgramYear, program_id: e.target.value})}>
-            <option value="">-- Select Master Program --</option>
+            <option value="">-- Select Program --</option>
             {programs.map(p => <option key={p.program_id} value={p.program_id}>{p.name}</option>)}
           </select>
           <input type="number" placeholder="Year (e.g. 2026)" value={newProgramYear.year} onChange={(e) => setNewProgramYear({...newProgramYear, year: e.target.value})} />

@@ -107,6 +107,7 @@ export default function AdminUsers() {
             <option value="teacher">Teacher</option>
             <option value="admin">Admin</option>
             <option value="donor">Donor</option>
+            <option value="parent">Parent</option>
           </select>
           <button className="primary" onClick={handleCreate}>
             Create User
