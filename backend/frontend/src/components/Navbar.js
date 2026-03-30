@@ -82,7 +82,7 @@ function Navbar() {
 
           <div className="navbar-footer">
             <button className="navbar-logout" onClick={handleLogout}>
-              <span className="nav-icon">🚪</span>
+              <div className="nav-icon-wrapper" style={{background: '#FFE4E6'}}>🚪</div>
               <span className="nav-text">Logout</span>
             </button>
           </div>
