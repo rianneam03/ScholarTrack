@@ -54,21 +54,21 @@ function ProgramDashboard() {
         </div>
       </div>
 
-      <div className="dashboard-tabs" style={{ display: "flex", gap: "10px", marginBottom: "20px", borderBottom: "1px solid var(--border)", paddingBottom: "10px" }}>
+      <div className="dashboard-tabs">
         <button 
-          className={activeTab === "sessions" ? "primary-btn" : "secondary-btn"} 
+          className={activeTab === "sessions" ? "tab-btn active" : "tab-btn"} 
           onClick={() => setActiveTab("sessions")}
         >
           Sessions
         </button>
         <button 
-          className={activeTab === "enrollments" ? "primary-btn" : "secondary-btn"} 
+          className={activeTab === "enrollments" ? "tab-btn active" : "tab-btn"} 
           onClick={() => setActiveTab("enrollments")}
         >
           Enrolled Students
         </button>
         <button 
-          className={activeTab === "staff" ? "primary-btn" : "secondary-btn"} 
+          className={activeTab === "staff" ? "tab-btn active" : "tab-btn"} 
           onClick={() => setActiveTab("staff")}
         >
           Assigned Staff

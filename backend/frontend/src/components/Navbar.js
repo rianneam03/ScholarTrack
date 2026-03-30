@@ -46,30 +46,36 @@ function Navbar() {
         <>
           <div className="navbar-links">
             <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>
-              <span className="nav-icon">📊</span> <span className="nav-text">Overview</span>
+              <div className="nav-icon-wrapper" style={{background: '#E0F2FE'}}>📊</div>
+              <span className="nav-text">Overview</span>
             </NavLink>
 
             <NavLink to="/programs" className={({ isActive }) => (isActive ? "active" : "")}>
-              <span className="nav-icon">📁</span> <span className="nav-text">Programs</span>
+              <div className="nav-icon-wrapper" style={{background: '#DCFCE7'}}>📁</div>
+              <span className="nav-text">Programs</span>
             </NavLink>
 
             <NavLink to="/students" className={({ isActive }) => (isActive ? "active" : "")}>
-              <span className="nav-icon">🎓</span> <span className="nav-text">Students</span>
+              <div className="nav-icon-wrapper" style={{background: '#F3E8FF'}}>🎓</div>
+              <span className="nav-text">Students</span>
             </NavLink>
 
             <NavLink to="/staff" className={({ isActive }) => (isActive ? "active" : "")}>
-              <span className="nav-icon">👔</span> <span className="nav-text">Staff</span>
+              <div className="nav-icon-wrapper" style={{background: '#FFEDD5'}}>👔</div>
+              <span className="nav-text">Staff</span>
             </NavLink>
 
             {role === "admin" && (
               <NavLink to="/admin/settings" className={({ isActive }) => (isActive ? "active" : "")}>
-                <span className="nav-icon">⚙️</span> <span className="nav-text">Settings</span>
+                <div className="nav-icon-wrapper" style={{background: '#F1F5F9'}}>⚙️</div>
+                <span className="nav-text">Settings</span>
               </NavLink>
             )}
 
             {(role === "parent" || role === "admin") && (
               <NavLink to="/parent-dashboard" className={({ isActive }) => (isActive ? "active" : "")}>
-                <span className="nav-icon">👪</span> <span className="nav-text">Parent Portal</span>
+                <div className="nav-icon-wrapper" style={{background: '#FEF9C3'}}>👪</div>
+                <span className="nav-text">Parent Portal</span>
               </NavLink>
             )}
           </div>
