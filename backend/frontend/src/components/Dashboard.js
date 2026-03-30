@@ -43,41 +43,45 @@ function Dashboard() {
 
       {/* 1. OVERVIEW STATS */}
       <h3>Program Overview</h3>
-      <div className="stats-grid-v2 transition-fade">
+      <div className="stats-grid-v2">
         {/* Total Students */}
-        <div className="stat-card-v2">
-          <div className="stat-icon-circle" style={{ background: "#E0F2FE", color: "#0EA5E9" }}>👥</div>
-          <div className="stat-info">
-            <div className="stat-label-v2">Total Students</div>
-            <div className="stat-value-v2">{data.total_students}</div>
+        <div className="stat-card-v3">
+          <div className="stat-card-header">
+            <div className="stat-icon-box" style={{ background: "#065F46" }}>👥</div>
+            <div className="stat-growth success">+12%</div>
           </div>
+          <div className="stat-value-v3">{data.total_students}</div>
+          <div className="stat-label-v3">Total Students</div>
         </div>
 
         {/* Active Programs */}
-        <div className="stat-card-v2">
-          <div className="stat-icon-circle" style={{ background: "#F0FDF4", color: "#22C55E" }}>📖</div>
-          <div className="stat-info">
-            <div className="stat-label-v2">Active Programs</div>
-            <div className="stat-value-v2">{data.active_programs || 0}</div>
+        <div className="stat-card-v3">
+          <div className="stat-card-header">
+            <div className="stat-icon-box" style={{ background: "#0D9488" }}>📖</div>
+            <div className="stat-growth success">+3</div>
           </div>
+          <div className="stat-value-v3">{data.active_programs || 0}</div>
+          <div className="stat-label-v3">Active Programs</div>
         </div>
 
         {/* Staff Members */}
-        <div className="stat-card-v2">
-          <div className="stat-icon-circle" style={{ background: "#FDF2F8", color: "#EC4899" }}>👩‍🏫</div>
-          <div className="stat-info">
-            <div className="stat-label-v2">Staff Members</div>
-            <div className="stat-value-v2">{data.total_staff || 0}</div>
+        <div className="stat-card-v3">
+          <div className="stat-card-header">
+            <div className="stat-icon-box" style={{ background: "#4F46E5" }}>👩‍🏫</div>
+            <div className="stat-growth success">+5</div>
           </div>
+          <div className="stat-value-v3">{data.total_staff || 0}</div>
+          <div className="stat-label-v3">Staff Members</div>
         </div>
 
         {/* Attendance Rate */}
-        <div className="stat-card-v2">
-          <div className="stat-icon-circle" style={{ background: "#FFFBEB", color: "#F59E0B" }}>📈</div>
-          <div className="stat-info">
-            <div className="stat-label-v2">Attendance Rate</div>
-            <div className="stat-value-v2">{data.attendance_rate}%</div>
+        <div className="stat-card-v3">
+          <div className="stat-card-header">
+            <div className="stat-icon-box" style={{ background: "#D97706" }}>📈</div>
+            <div className="stat-growth success">+2.1%</div>
           </div>
+          <div className="stat-value-v3">{data.attendance_rate}%</div>
+          <div className="stat-label-v3">Attendance Rate</div>
         </div>
       </div>
 

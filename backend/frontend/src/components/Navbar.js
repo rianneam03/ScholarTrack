@@ -51,19 +51,26 @@ function Navbar() {
             </NavLink>
 
             <NavLink to="/programs" className={({ isActive }) => (isActive ? "active" : "")}>
-              <div className="nav-icon-wrapper" style={{background: '#DCFCE7'}}>📁</div>
+              <div className="nav-icon-wrapper" style={{background: '#0D9488'}}>📁</div>
               <span className="nav-text">Programs</span>
             </NavLink>
 
             <NavLink to="/students" className={({ isActive }) => (isActive ? "active" : "")}>
-              <div className="nav-icon-wrapper" style={{background: '#F3E8FF'}}>🎓</div>
+              <div className="nav-icon-wrapper" style={{background: '#065F46'}}>🎓</div>
               <span className="nav-text">Students</span>
             </NavLink>
 
-            <NavLink to="/staff" className={({ isActive }) => (isActive ? "active" : "")}>
-              <div className="nav-icon-wrapper" style={{background: '#FFEDD5'}}>👔</div>
-              <span className="nav-text">Staff</span>
+            <NavLink to="/attendance" className={({ isActive }) => (isActive ? "active" : "")}>
+              <div className="nav-icon-wrapper" style={{background: '#14B8A6'}}>📋</div>
+              <span className="nav-text">Attendance</span>
             </NavLink>
+
+            {(role === "admin" || role === "teacher") && (
+              <NavLink to="/staff" className={({ isActive }) => (isActive ? "active" : "")}>
+                <div className="nav-icon-wrapper" style={{background: '#6366F1'}}>👔</div>
+                <span className="nav-text">Staff</span>
+              </NavLink>
+            )}
 
             {role === "admin" && (
               <NavLink to="/admin/settings" className={({ isActive }) => (isActive ? "active" : "")}>
@@ -80,17 +87,18 @@ function Navbar() {
             )}
           </div>
 
-          <div className="navbar-footer">
-            <button className="navbar-logout" onClick={handleLogout}>
-              <div className="nav-icon-wrapper" style={{background: '#FFE4E6'}}>🚪</div>
-              <span className="nav-text">Logout</span>
+          <div className="navbar-footer" style={{marginTop: 'auto'}}>
+            <button className="navbar-logout" onClick={handleLogout} style={{background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.7)', justifyContent: 'flex-start', padding: '12px 14px'}}>
+              <div className="nav-icon-wrapper" style={{background: 'rgba(255,255,255,0.1)', filter: 'none'}}>↳</div>
+              <span className="nav-text" style={{fontWeight: 600}}>Logout</span>
             </button>
           </div>
         </>
       ) : (
         <div className="navbar-links">
           <NavLink to="/login">
-            <span className="nav-icon">🔑</span> <span className="nav-text">Login</span>
+            <div className="nav-icon-wrapper" style={{background: '#E0F2FE'}}>🔑</div>
+            <span className="nav-text">Login</span>
           </NavLink>
         </div>
       )}

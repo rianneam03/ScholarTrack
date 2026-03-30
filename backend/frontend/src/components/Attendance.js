@@ -13,6 +13,8 @@ function Attendance() {
   // ---- Auth / role ----
   const user = JSON.parse(localStorage.getItem("user"));
   const isAdmin = user?.role === "admin";
+  const searchParams = new URLSearchParams(window.location.search);
+  const urlSessionId = searchParams.get("session_id");
 
   // ======================
   // Load sessions
@@ -22,9 +24,12 @@ function Attendance() {
       headers: { Username: user?.username }
     })
       .then((r) => r.json())
-      .then((data) => setSessions(data))
+      .then((data) => {
+        setSessions(data);
+        if (urlSessionId) setSelectedSessionID(urlSessionId);
+      })
       .catch((e) => console.error("Sessions load error:", e));
-  }, []);
+  }, [urlSessionId, user?.username]);
 
   // ======================
   // Lock attendance if week ended

@@ -192,6 +192,7 @@ function Sessions({ filterProgramYearId, isCompact }) {
             <th>Date</th>
             <th>Description</th>
             <th>Program</th>
+            <th>Attendance</th>
             {isAdmin && <th>Actions</th>}
           </tr>
         </thead>
@@ -203,6 +204,15 @@ function Sessions({ filterProgramYearId, isCompact }) {
                 <td>{s.SessionDate}</td>
                 <td>{s.Description}</td>
                 <td>{s.ProgramName || s.SchoolName || "-"}</td>
+
+                <td style={{ textAlign: "center" }}>
+                  <button
+                    className="primary-sm"
+                    onClick={() => (window.location.href = `/attendance?session_id=${s.SessionID}`)}
+                  >
+                    📝 Mark
+                  </button>
+                </td>
 
                 {isAdmin && (
                   <td>
