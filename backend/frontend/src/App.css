@@ -106,29 +106,38 @@ body {
   padding: var(--space-8) var(--space-8);
   max-width: 1200px;
   margin: 0 auto;
+  animation: fadeIn 0.5s ease-out;
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 
 /* =====================================================
    SIDEBAR (NAVBAR)
 ===================================================== */
 .navbar {
-  background-color: var(--navy);
+  background: linear-gradient(180deg, var(--navy) 0%, var(--navy-dark) 100%);
   color: white;
-  width: 250px;
+  width: 260px;
   height: 100%;
   padding: var(--space-6) var(--space-4);
   display: flex;
   flex-direction: column;
-  box-shadow: var(--shadow-md);
+  box-shadow: 4px 0 15px rgba(0,0,0,0.1);
   flex-shrink: 0;
   z-index: 10;
-  transition: width 0.3s ease;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
 }
 
 .navbar.collapsed {
   width: 80px;
   padding: var(--space-6) var(--space-2);
 }
+
 
 .navbar-toggle {
   background: transparent;
@@ -307,14 +316,25 @@ h3 {
    CARDS / FORMS
 ===================================================== */
 form,
-.card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border);
+.card,
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
   margin-bottom: var(--space-5);
+  transition: all 0.3s ease;
 }
+
+.card:hover,
+.glass-card:hover {
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12);
+  transform: translateY(-2px);
+}
+
 
 /* =====================================================
    INPUTS
@@ -845,6 +865,78 @@ progress::-webkit-progress-value {
   font-weight: 600;
 }
 
+/* =====================================================
+   MODAL OVERLAY
+===================================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  width: 100%;
+  max-width: 500px;
+  padding: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-6);
+}
+
+.primary-btn {
+  background: var(--navy);
+  color: white;
+  border: none;
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.primary-btn:hover {
+  background: var(--navy-dark);
+  box-shadow: 0 4px 12px rgba(30, 58, 95, 0.2);
+}
+
+.secondary-btn {
+  background: var(--bg-muted);
+  color: var(--navy);
+  border: none;
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
 .empty-state {
   text-align: center;
   padding: var(--space-10) var(--space-5);
@@ -858,3 +950,14 @@ progress::-webkit-progress-value {
 .empty-state p {
   margin: var(--space-1) 0;
 }
+
+.dot {
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+}
+.dot.present { background-color: #059669; }
+.dot.absent { background-color: #DC2626; }
+.dot.late { background-color: #D97706; }

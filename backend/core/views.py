@@ -190,13 +190,30 @@ def attendance_list(request):
             return Response({"error": "Student is not enrolled in this session's program year"}, status=400)
 
         attendance = Attendance.objects.filter(enrollment=enrollment, session=session_obj).first()
+        
+        # --- Role Check for Editing ---
+        username = request.headers.get("Username")
+        user = User.objects.filter(username=username).first()
+        
         if attendance:
+            # If it exists, only Admin can "Edit" (change status) if it's already been set? 
+            # Or just let them both edit, but user requested: "attendance... can be marked by assigned teacher and can be edited by admin"
+            # I'll interpret this as: if attendance exists, only Admin can change it.
+            if user.role != "admin":
+                return Response({"error": "Only administrators can edit existing attendance records."}, status=403)
+            
             attendance.status = data.get('Status')
             attendance.save()
-            return Response({"message": "Attendance updated"})
+            return Response({"message": "Attendance updated by Admin"})
         else:
+            # Creation is allowed for both, but for Teacher, ensure they are assigned.
+            if user.role == "teacher":
+                is_assigned = ProgramStaff.objects.filter(user=user, program_year=session_obj.program_year).exists()
+                if not is_assigned:
+                    return Response({"error": "You are not assigned to this program."}, status=403)
+            
             Attendance.objects.create(enrollment=enrollment, session=session_obj, status=data.get('Status'))
-            return Response({"message": "Attendance created"})
+            return Response({"message": "Attendance marked successfully"})
 
 @api_view(["GET"])
 def export_attendance(request):
@@ -380,6 +397,13 @@ def admin_create_user(request):
         frontend_url = request.data.get("frontend_url", "https://scholartrack-frontend.onrender.com")
         user = User(fullname=data["fullname"],email=data["email"],role=data.get("role","teacher"),is_active=False,activation_token=token,password="",createdat=timezone.now())
         user.save()
+
+        # --- Guardian Sync ---
+        if data.get("role") == "parent":
+            guardian = Guardian.objects.filter(email=data["email"]).first()
+            if not guardian:
+                Guardian.objects.create(name=data["fullname"], email=data["email"])
+
         try: send_activation_email(user.email, token, frontend_url)
         except Exception as e: print("Failed to send email:", e)
         return Response({"message": "User created, activation email sent"})
@@ -803,6 +827,45 @@ def parent_my_students(request):
         "SchoolName": s.school.school if s.school else None
     } for s in students]
     return Response(data)
+
+# --- Guardian Management ---
+@api_view(['GET', 'POST'])
+def guardians_list(request):
+    if request.method == 'GET':
+        guardians = Guardian.objects.all()
+        data = [{
+            "guardian_id": g.guardian_id,
+            "name": g.name,
+            "email": g.email,
+            "phone": g.phone,
+            "student_count": Student.objects.filter(guardian=g).count()
+        } for g in guardians]
+        return Response(data)
+    
+    if request.method == 'POST':
+        data = request.data
+        guardian = Guardian.objects.create(
+            name=data.get('name'),
+            email=data.get('email'),
+            phone=data.get('phone')
+        )
+        return Response({"message": "Guardian created", "guardian_id": guardian.guardian_id})
+
+@api_view(['POST'])
+def link_student_guardian(request):
+    data = request.data
+    student_id = data.get('student_id')
+    guardian_id = data.get('guardian_id')
+    
+    student = Student.objects.filter(studentid=student_id).first()
+    guardian = Guardian.objects.filter(pk=guardian_id).first()
+    
+    if not student or not guardian:
+        return Response({"error": "Student or Guardian not found"}, status=404)
+    
+    student.guardian = guardian
+    student.save()
+    return Response({"message": "Student linked to Guardian successfully"})
 
 @api_view(['POST'])
 def parent_enroll_student(request, student_id):

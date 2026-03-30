@@ -7,8 +7,9 @@ function Sessions() {
     Title: "",
     SessionDate: "",
     Description: "",
-    SchoolID: "",
+    ProgramYearID: "",
   });
+  const [programYears, setProgramYears] = useState([]);
 
   // ✅ Auth state
   const user = JSON.parse(localStorage.getItem("user"));
@@ -44,9 +45,20 @@ function Sessions() {
     }
   };
 
+  const fetchProgramYears = async () => {
+    try {
+      const res = await fetch("https://scholartrack-backend-bgas.onrender.com/api/program_years/");
+      const data = await res.json();
+      setProgramYears(data);
+    } catch (err) {
+      console.error("Error fetching program years:", err);
+    }
+  };
+
   useEffect(() => {
     fetchSessions();
     fetchSchools();
+    fetchProgramYears();
   }, []);
 
   // --- Handle form changes ---
@@ -79,7 +91,7 @@ function Sessions() {
         Title: "",
         SessionDate: "",
         Description: "",
-        SchoolID: "",
+        ProgramYearID: "",
       });
       fetchSessions(); // refresh table
     } catch (err) {
@@ -151,21 +163,17 @@ function Sessions() {
           />
 
           <select
-            name="SchoolID"
-            value={formData.SchoolID}
+            name="ProgramYearID"
+            value={formData.ProgramYearID}
             onChange={handleChange}
             required
           >
-            <option value="">-- Select Site --</option>
-            {schools.length > 0 ? (
-              schools.map((s) => (
-                <option key={s.SchoolID} value={s.SchoolID}>
-                  {s.SchoolName}
-                </option>
-              ))
-            ) : (
-              <option value="">(No schools available)</option>
-            )}
+            <option value="">-- Select Program --</option>
+            {programYears.map((py) => (
+              <option key={py.program_year_id} value={py.program_year_id}>
+                {py.program_name} ({py.year})
+              </option>
+            ))}
           </select>
 
           <button className="primary" type="submit">
@@ -181,7 +189,7 @@ function Sessions() {
             <th>Title</th>
             <th>Date</th>
             <th>Description</th>
-            <th>School</th>
+            <th>Program</th>
             {isAdmin && <th>Actions</th>}
           </tr>
         </thead>
@@ -192,7 +200,7 @@ function Sessions() {
                 <td>{s.Title}</td>
                 <td>{s.SessionDate}</td>
                 <td>{s.Description}</td>
-                <td>{s.SchoolName || "-"}</td>
+                <td>{s.ProgramName || s.SchoolName || "-"}</td>
 
                 {isAdmin && (
                   <td>

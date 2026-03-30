@@ -64,6 +64,9 @@ function Navbar() {
                 <NavLink to="/schools" className={({ isActive }) => (isActive ? "active" : "")}>
                   <span className="nav-icon">🏫</span> <span className="nav-text">Schools</span>
                 </NavLink>
+                <NavLink to="/guardians" className={({ isActive }) => (isActive ? "active" : "")}>
+                  <span className="nav-icon">🛡️</span> <span className="nav-text">Guardians</span>
+                </NavLink>
                 <NavLink to="/admin/users" className={({ isActive }) => (isActive ? "active" : "")}>
                   <span className="nav-icon">⚙️</span> <span className="nav-text">Manage Users</span>
                 </NavLink>

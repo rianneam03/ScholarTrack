@@ -253,7 +253,15 @@ function Attendance() {
       {loading && <div>Loading students & attendance…</div>}
 
       {!loading && selectedSessionID && (
-        <>
+        <div className="glass-card">
+          <div className="status-row">
+            <h3>Attendance Checklist</h3>
+            <div className="attendance-legend" style={{display: 'flex', gap: '15px', fontSize: '0.8rem'}}>
+              <span>🟢 Present</span>
+              <span>🔴 Absent</span>
+              <span>🟡 Late</span>
+            </div>
+          </div>
           <div className="action-bar">
             <button
               className="primary"
@@ -290,6 +298,7 @@ function Attendance() {
                     <td>{row.FirstName} {row.LastName}</td>
                     <td>
                       <select
+                        className="attendance-select"
                         value={row.Status}
                         disabled={isLocked}
                         onChange={(e) =>
@@ -298,6 +307,7 @@ function Attendance() {
                       >
                         <option value="Present">Present</option>
                         <option value="Absent">Absent</option>
+                        <option value="Late">Late</option>
                       </select>
                     </td>
                   </tr>
@@ -311,7 +321,7 @@ function Attendance() {
               )}
             </tbody>
           </table>
-        </>
+        </div>
       )}
 
       {!selectedSessionID && (

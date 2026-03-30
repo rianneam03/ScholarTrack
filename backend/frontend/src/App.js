@@ -14,6 +14,7 @@ import AdminUsers from "./components/AdminUsers";
 import ActivateAccount from "./components/ActivateAccount";
 import ParentDashboard from "./components/ParentDashboard";
 import Programs from "./components/Programs";
+import Guardians from "./components/Guardians";
 
 // --- Private Route Wrapper ---
 function PrivateRoute({ children, allowedRoles }) {
@@ -64,6 +65,22 @@ function App() {
               element={
                 <PrivateRoute allowedRoles={["admin", "teacher"]}>
                   <Programs />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/guardians"
+              element={
+                <PrivateRoute allowedRoles={["admin"]}>
+                  <Guardians />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/guardians"
+              element={
+                <PrivateRoute allowedRoles={["admin"]}>
+                  <Guardians />
                 </PrivateRoute>
               }
             />
