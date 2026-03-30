@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 
-function Sessions() {
+function Sessions({ filterProgramYearId, isCompact }) {
   const [sessions, setSessions] = useState([]);
   const [schools, setSchools] = useState([]);
   const [formData, setFormData] = useState({
     Title: "",
     SessionDate: "",
     Description: "",
-    ProgramYearID: "",
+    ProgramYearID: filterProgramYearId || "",
   });
   const [programYears, setProgramYears] = useState([]);
 
@@ -18,15 +18,17 @@ function Sessions() {
   // --- Fetch sessions from backend safely ---
   const fetchSessions = async () => {
     try {
-      const res = await fetch(
-        "https://scholartrack-backend-bgas.onrender.com/api/sessions/"
-      );
+      let url = "https://scholartrack-backend-bgas.onrender.com/api/sessions/";
+      if (filterProgramYearId) {
+        url += `?program_year_id=${filterProgramYearId}`;
+      }
+      const res = await fetch(url);
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       const data = await res.json();
       setSessions(data);
     } catch (err) {
       console.error("Error fetching sessions:", err);
-      setSessions([]); // fallback to empty array
+      setSessions([]);
     }
   };
 
@@ -91,7 +93,7 @@ function Sessions() {
         Title: "",
         SessionDate: "",
         Description: "",
-        ProgramYearID: "",
+        ProgramYearID: filterProgramYearId || "",
       });
       fetchSessions(); // refresh table
     } catch (err) {
@@ -131,8 +133,8 @@ function Sessions() {
   };
 
   return (
-    <div className="page-container">
-      <h2>Sessions</h2>
+    <div className={isCompact ? "" : "page-container"}>
+      {!isCompact && <h2>Sessions</h2>}
 
       {/* --- Add Session Form (Admins only) --- */}
       {isAdmin && (

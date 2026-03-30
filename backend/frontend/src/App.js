@@ -14,6 +14,7 @@ import AdminUsers from "./components/AdminUsers";
 import ActivateAccount from "./components/ActivateAccount";
 import ParentDashboard from "./components/ParentDashboard";
 import Programs from "./components/Programs";
+import ProgramDashboard from "./components/ProgramDashboard";
 import Guardians from "./components/Guardians";
 
 // --- Private Route Wrapper ---
@@ -113,6 +114,14 @@ function App() {
             />
 
             {/* ----------------- Teacher/Admin Routes ----------------- */}
+            <Route
+              path="/programs/:programYearId"
+              element={
+                <PrivateRoute allowedRoles={["admin", "teacher"]}>
+                  <ProgramDashboard />
+                </PrivateRoute>
+              }
+            />
             <Route
               path="/students"
               element={

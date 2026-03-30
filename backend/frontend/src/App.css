@@ -234,27 +234,32 @@ body {
 .navbar-user-section {
   margin-top: auto;
   padding-top: var(--space-5);
+  padding-bottom: var(--space-4);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
   white-space: nowrap;
+  flex-shrink: 0;
 }
+
 
 .navbar.collapsed .navbar-user-section {
   align-items: center;
 }
 
 .navbar-user {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: 500;
-  background: rgba(0, 0, 0, 0.2);
+  font-size: 0.85rem;
+  color: #FFFFFF;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.15);
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-sm);
   text-align: center;
   word-break: break-word;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
 
 .navbar.collapsed .navbar-user .nav-text {
   display: none;
@@ -262,14 +267,14 @@ body {
 
 .navbar-logout {
   width: 100%;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-sm);
   cursor: pointer;
-  color: white;
+  color: #FFFFFF;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   transition: all 0.2s ease;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -277,6 +282,7 @@ body {
   justify-content: center;
   align-items: center;
 }
+
 
 .navbar.collapsed .navbar-logout .nav-text {
   display: none;
@@ -961,3 +967,24 @@ progress::-webkit-progress-value {
 .dot.present { background-color: #059669; }
 .dot.absent { background-color: #DC2626; }
 .dot.late { background-color: #D97706; }
+
+/* UTILITIES */
+.shadow-lg {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+.hover-scale {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+.transition-all {
+  transition: all 0.2s ease;
+}
+.transition-fade {
+  animation: fadeIn 0.4s ease-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

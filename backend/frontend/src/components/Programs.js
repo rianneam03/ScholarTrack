@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function Programs() {
+  const navigate = useNavigate();
   const [programs, setPrograms] = useState([]);
   const [programYears, setProgramYears] = useState([]);
   const [staffAssignments, setStaffAssignments] = useState([]);
@@ -158,14 +160,31 @@ export default function Programs() {
           <input type="date" title="End Date" value={newProgramYear.end_date} onChange={(e) => setNewProgramYear({...newProgramYear, end_date: e.target.value})} />
           <button className="primary" onClick={handleCreateProgramYear}>Create Year</button>
         </div>
-        <table>
-          <thead><tr><th>Program Name</th><th>Year</th><th>Start Date</th><th>End Date</th></tr></thead>
-          <tbody>
-            {programYears.map(py => (
-              <tr key={py.program_year_id}><td>{py.program_name}</td><td>{py.year}</td><td>{py.start_date}</td><td>{py.end_date}</td></tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="program-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "20px", marginTop: "20px" }}>
+          {programYears.map(py => (
+            <div key={py.program_year_id} className="card glass-card shadow-lg hover-scale transition-all" style={{ padding: "20px", position: "relative" }}>
+              <div style={{ position: "absolute", top: "15px", right: "15px", background: "var(--bg-muted)", padding: "4px 8px", borderRadius: "5px", fontSize: "0.7rem", fontWeight: "700", color: "var(--navy)" }}>
+                ID: {py.program_year_id}
+              </div>
+              <h3 style={{ margin: "0 0 10px 0", color: "var(--navy)" }}>{py.program_name}</h3>
+              <div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
+                <span style={{ fontSize: "0.8rem", background: "var(--teal-soft)", color: "var(--teal)", padding: "2px 8px", borderRadius: "4px", fontWeight: "600" }}>
+                  Year: {py.year}
+                </span>
+                <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+                  {py.start_date} → {py.end_date}
+                </span>
+              </div>
+              <button 
+                className="primary-btn" 
+                style={{ width: "100%", padding: "12px", borderRadius: "8px", fontWeight: "700", letterSpacing: "1px" }}
+                onClick={() => navigate(`/programs/${py.program_year_id}`)}
+              >
+                ENTER PROGRAM DASHBOARD
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* STAFF ASSIGNMENTS */}

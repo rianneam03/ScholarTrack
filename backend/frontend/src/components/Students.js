@@ -4,7 +4,7 @@
 
   import React, { useEffect, useState } from "react";
 
-function Students() {
+function Students({ filterProgramYearId, isCompact }) {
   const [students, setStudents] = useState([]);
   const [schools, setSchools] = useState([]);
   const [formData, setFormData] = useState({
@@ -35,8 +35,26 @@ function Students() {
   }, []);
 
   const fetchStudents = async () => {
-    const res = await fetch("https://scholartrack-backend-bgas.onrender.com/api/students/");
-    setStudents(await res.json());
+    let url = "https://scholartrack-backend-bgas.onrender.com/api/students/";
+    if (filterProgramYearId) {
+      // Use enrollments endpoint to get students for this specific program
+      url = `https://scholartrack-backend-bgas.onrender.com/api/enrollments/?program_year_id=${filterProgramYearId}`;
+    }
+    const res = await fetch(url);
+    const data = await res.json();
+    
+    if (filterProgramYearId) {
+      // Map enrollment data to student shape
+      setStudents(data.map(e => ({
+        ...e.student,
+        StudentID: e.student.studentid, // normalize case
+        FirstName: e.student.firstname,
+        LastName: e.student.lastname,
+        SchoolName: e.program_name // or school if preferred
+      })));
+    } else {
+      setStudents(data);
+    }
   };
 
   const fetchSchools = async () => {
@@ -178,8 +196,8 @@ function Students() {
   };
 
   return (
-    <div className="page-container">
-      <h2>Students</h2>
+    <div className={isCompact ? "" : "page-container"}>
+      {!isCompact && <h2>Students</h2>}
 
       <div className="form-container">
         <input name="StudentID" placeholder="Student ID" onChange={handleChange} />
