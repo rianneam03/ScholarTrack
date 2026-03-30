@@ -43,30 +43,45 @@ function Dashboard() {
 
       {/* 1. OVERVIEW STATS */}
       <h3>Program Overview</h3>
-      <div className="stats-grid">
-        <div className="stat-card">
-          <h4>Total Students</h4>
-          <p className="stat-value">{data.total_students}</p>
-        </div>
-        <div className="stat-card">
-          <h4>Total Schools</h4>
-          <p className="stat-value">{data.total_schools}</p>
-        </div>
-        <div className="stat-card">
-          <h4>Sessions Conducted</h4>
-          <p className="stat-value">{data.sessions_conducted}</p>
-          <div className="stat-sub">
-            <span className="label">Upcoming:</span>
-            <span className="value">{data.upcoming_sessions}</span>
+      <div className="stats-grid-v2 transition-fade">
+        {/* Total Students */}
+        <div className="stat-card-v2">
+          <div className="stat-icon-circle" style={{ background: "#E0F2FE", color: "#0EA5E9" }}>👥</div>
+          <div className="stat-info">
+            <div className="stat-label-v2">Total Students</div>
+            <div className="stat-value-v2">{data.total_students}</div>
           </div>
+          <div className="stat-growth positive">↑ 12%</div>
         </div>
-        <div className="stat-card">
-          <h4>Avg Attendance</h4>
-          <p className="stat-value">{data.avg_attendance}</p>
-          <div className="stat-sub">
-            <span className="label">Rate:</span>
-            <span className="value">{data.attendance_rate}%</span>
+
+        {/* Active Programs */}
+        <div className="stat-card-v2">
+          <div className="stat-icon-circle" style={{ background: "#F0FDF4", color: "#22C55E" }}>📖</div>
+          <div className="stat-info">
+            <div className="stat-label-v2">Active Programs</div>
+            <div className="stat-value-v2">{data.active_programs || 0}</div>
           </div>
+          <div className="stat-growth positive">+ {data.active_programs || 3}</div>
+        </div>
+
+        {/* Staff Members */}
+        <div className="stat-card-v2">
+          <div className="stat-icon-circle" style={{ background: "#FDF2F8", color: "#EC4899" }}>👩‍🏫</div>
+          <div className="stat-info">
+            <div className="stat-label-v2">Staff Members</div>
+            <div className="stat-value-v2">{data.total_staff || 0}</div>
+          </div>
+          <div className="stat-growth positive">+ 5</div>
+        </div>
+
+        {/* Attendance Rate */}
+        <div className="stat-card-v2">
+          <div className="stat-icon-circle" style={{ background: "#FFFBEB", color: "#F59E0B" }}>📈</div>
+          <div className="stat-info">
+            <div className="stat-label-v2">Attendance Rate</div>
+            <div className="stat-value-v2">{data.attendance_rate}%</div>
+          </div>
+          <div className="stat-growth positive">↑ 2.1%</div>
         </div>
       </div>
 
@@ -99,7 +114,7 @@ function Dashboard() {
         </div>
 
         {/* Growth Over Time */}
-        <div className="chart-wrapper">
+        <div className="chart-wrapper chart-card">
           <h3>Program Growth (New Enrollments)</h3>
           <div style={{ width: "100%", height: 300 }}>
             <ResponsiveContainer>
@@ -115,7 +130,7 @@ function Dashboard() {
         </div>
 
         {/* Existing Charts */}
-        <div className="chart-wrapper">
+        <div className="chart-wrapper chart-card">
           <h3>Students by Grade</h3>
           <div style={{ width: "100%", height: 300 }}>
             <ResponsiveContainer>
@@ -130,7 +145,7 @@ function Dashboard() {
           </div>
         </div>
 
-        <div className="chart-wrapper">
+        <div className="chart-wrapper chart-card">
           <h3>STEM Interest Distribution</h3>
           <div style={{ width: "100%", height: 300 }}>
             <ResponsiveContainer>

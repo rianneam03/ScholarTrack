@@ -35,61 +35,49 @@ function Navbar() {
         <span className="navbar-brand-text">ScholarTrack</span>
       </div>
 
+      {user && (
+        <div className="navbar-user-top">
+          <span className="navbar-user-name">Hi, {user.fullname || user.username}</span>
+          <span className="navbar-user-role">{role}</span>
+        </div>
+      )}
+
       {user ? (
         <>
           <div className="navbar-links">
             <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>
-              <span className="nav-icon">📊</span> <span className="nav-text">Dashboard</span>
+              <span className="nav-icon">📊</span> <span className="nav-text">Overview</span>
             </NavLink>
 
-            {(role === "admin" || role === "teacher") && (
-              <>
-                <NavLink to="/programs" className={({ isActive }) => (isActive ? "active" : "")}>
-                  <span className="nav-icon">📚</span> <span className="nav-text">Programs</span>
-                </NavLink>
-                <NavLink to="/students" className={({ isActive }) => (isActive ? "active" : "")}>
-                  <span className="nav-icon">👨‍🎓</span> <span className="nav-text">Students</span>
-                </NavLink>
-                <NavLink to="/sessions" className={({ isActive }) => (isActive ? "active" : "")}>
-                  <span className="nav-icon">📅</span> <span className="nav-text">Sessions</span>
-                </NavLink>
-                <NavLink to="/attendance" className={({ isActive }) => (isActive ? "active" : "")}>
-                  <span className="nav-icon">✅</span> <span className="nav-text">Attendance</span>
-                </NavLink>
-              </>
-            )}
+            <NavLink to="/programs" className={({ isActive }) => (isActive ? "active" : "")}>
+              <span className="nav-icon">📚</span> <span className="nav-text">Programs</span>
+            </NavLink>
+
+            <NavLink to="/students" className={({ isActive }) => (isActive ? "active" : "")}>
+              <span className="nav-icon">👨‍🎓</span> <span className="nav-text">Students</span>
+            </NavLink>
+
+            <NavLink to="/staff" className={({ isActive }) => (isActive ? "active" : "")}>
+              <span className="nav-icon">🧑‍🏫</span> <span className="nav-text">Staff</span>
+            </NavLink>
 
             {role === "admin" && (
-              <>
-                <NavLink to="/schools" className={({ isActive }) => (isActive ? "active" : "")}>
-                  <span className="nav-icon">🏫</span> <span className="nav-text">Schools</span>
-                </NavLink>
-                <NavLink to="/guardians" className={({ isActive }) => (isActive ? "active" : "")}>
-                  <span className="nav-icon">🛡️</span> <span className="nav-text">Guardians</span>
-                </NavLink>
-                <NavLink to="/admin/users" className={({ isActive }) => (isActive ? "active" : "")}>
-                  <span className="nav-icon">⚙️</span> <span className="nav-text">Manage Users</span>
-                </NavLink>
-              </>
+              <NavLink to="/admin/settings" className={({ isActive }) => (isActive ? "active" : "")}>
+                <span className="nav-icon">⚙️</span> <span className="nav-text">Settings</span>
+              </NavLink>
             )}
 
             {(role === "parent" || role === "admin") && (
-              <>
-                <NavLink to="/parent-dashboard" className={({ isActive }) => (isActive ? "active" : "")}>
-                  <span className="nav-icon">👪</span> <span className="nav-text">Parent Portal</span>
-                </NavLink>
-              </>
+              <NavLink to="/parent-dashboard" className={({ isActive }) => (isActive ? "active" : "")}>
+                <span className="nav-icon">👪</span> <span className="nav-text">Parent Portal</span>
+              </NavLink>
             )}
           </div>
 
-          <div className="navbar-user-section">
-            <span className="navbar-user">
-              <span className="nav-text">Hi, {user.fullname || user.username} ({role})</span>
-              <span className="nav-icon">👤</span>
-            </span>
+          <div className="navbar-footer">
             <button className="navbar-logout" onClick={handleLogout}>
+              <span className="nav-icon">🚪</span>
               <span className="nav-text">Logout</span>
-              <span className="nav-icon" style={{display: "none"}}>🚪</span>
             </button>
           </div>
         </>

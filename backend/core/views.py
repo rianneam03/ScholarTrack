@@ -82,9 +82,14 @@ def dashboard_data(request):
     stem_no_count = total_students - stem_yes
     stem_data = [{"name": "STEM Interest", "value": stem_yes}, {"name": "Other", "value": stem_no_count}]
 
+    total_staff = User.objects.filter(role__in=['admin', 'teacher']).count()
+    active_programs = ProgramYear.objects.count()
+
     data = {
         "total_students": total_students,
         "total_schools": total_schools,
+        "total_staff": total_staff,
+        "active_programs": active_programs,
         "stem_percent": stem_percent,
         "upcoming_sessions": total_sessions_upcoming,
         "sessions_conducted": total_sessions_conducted,
