@@ -145,6 +145,7 @@ function ParentDashboard() {
                             <th>Session</th>
                             <th>Date</th>
                             <th>Status</th>
+                            <th>Activity/Notes</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -153,6 +154,7 @@ function ParentDashboard() {
                               <td>{att.SessionTitle}</td>
                               <td>{att.Date}</td>
                               <td><span className={`status-badge ${att.Status.toLowerCase()}`}>{att.Status}</span></td>
+                              <td style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>{att.Notes || "—"}</td>
                             </tr>
                           ))}
                         </tbody>

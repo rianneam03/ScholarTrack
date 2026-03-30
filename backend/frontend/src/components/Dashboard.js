@@ -51,7 +51,6 @@ function Dashboard() {
             <div className="stat-label-v2">Total Students</div>
             <div className="stat-value-v2">{data.total_students}</div>
           </div>
-          <div className="stat-growth positive">↑ 12%</div>
         </div>
 
         {/* Active Programs */}
@@ -61,7 +60,6 @@ function Dashboard() {
             <div className="stat-label-v2">Active Programs</div>
             <div className="stat-value-v2">{data.active_programs || 0}</div>
           </div>
-          <div className="stat-growth positive">+ {data.active_programs || 3}</div>
         </div>
 
         {/* Staff Members */}
@@ -71,7 +69,6 @@ function Dashboard() {
             <div className="stat-label-v2">Staff Members</div>
             <div className="stat-value-v2">{data.total_staff || 0}</div>
           </div>
-          <div className="stat-growth positive">+ 5</div>
         </div>
 
         {/* Attendance Rate */}
@@ -81,7 +78,6 @@ function Dashboard() {
             <div className="stat-label-v2">Attendance Rate</div>
             <div className="stat-value-v2">{data.attendance_rate}%</div>
           </div>
-          <div className="stat-growth positive">↑ 2.1%</div>
         </div>
       </div>
 

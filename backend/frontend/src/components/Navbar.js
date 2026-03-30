@@ -50,15 +50,15 @@ function Navbar() {
             </NavLink>
 
             <NavLink to="/programs" className={({ isActive }) => (isActive ? "active" : "")}>
-              <span className="nav-icon">📚</span> <span className="nav-text">Programs</span>
+              <span className="nav-icon">📁</span> <span className="nav-text">Programs</span>
             </NavLink>
 
             <NavLink to="/students" className={({ isActive }) => (isActive ? "active" : "")}>
-              <span className="nav-icon">👨‍🎓</span> <span className="nav-text">Students</span>
+              <span className="nav-icon">🎓</span> <span className="nav-text">Students</span>
             </NavLink>
 
             <NavLink to="/staff" className={({ isActive }) => (isActive ? "active" : "")}>
-              <span className="nav-icon">🧑‍🏫</span> <span className="nav-text">Staff</span>
+              <span className="nav-icon">👔</span> <span className="nav-text">Staff</span>
             </NavLink>
 
             {role === "admin" && (

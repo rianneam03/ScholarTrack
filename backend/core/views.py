@@ -201,15 +201,16 @@ def attendance_list(request):
         user = User.objects.filter(username=username).first()
         
         if attendance:
-            # If it exists, only Admin can "Edit" (change status) if it's already been set? 
-            # Or just let them both edit, but user requested: "attendance... can be marked by assigned teacher and can be edited by admin"
-            # I'll interpret this as: if attendance exists, only Admin can change it.
-            if user.role != "admin":
-                return Response({"error": "Only administrators can edit existing attendance records."}, status=403)
+            # Creation vs Update logic: 
+            # Both Admin and assigned Teacher can update.
+            if user.role == "teacher":
+                is_assigned = ProgramStaff.objects.filter(user=user, program_year=session_obj.program_year).exists()
+                if not is_assigned:
+                    return Response({"error": "You are not assigned to this program and cannot edit records."}, status=403)
             
             attendance.status = data.get('Status')
             attendance.save()
-            return Response({"message": "Attendance updated by Admin"})
+            return Response({"message": "Attendance updated"})
         else:
             # Creation is allowed for both, but for Teacher, ensure they are assigned.
             if user.role == "teacher":
@@ -928,7 +929,8 @@ def student_academic_summary(request, student_id):
     attendance_data = [{
         "SessionTitle": a.session.title if a.session else "Unknown", 
         "Date": a.session.sessiondate if a.session else None, 
-        "Status": a.status
+        "Status": a.status,
+        "Notes": a.session.description if a.session else ""
     } for a in attendance]
     
     # Outcomes
