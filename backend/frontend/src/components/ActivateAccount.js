@@ -1,6 +1,7 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import API_BASE from "../apiConfig";
 
 export default function ActivateAccount() {
   const [searchParams] = useSearchParams();
@@ -23,7 +24,7 @@ export default function ActivateAccount() {
     try {
       // POST token, username, password to backend
       const res = await axios.post(
-        "https://scholartrack-backend-bgas.onrender.com/api/activate/",
+        `${API_BASE}/activate/`,
         {
           token,
           username,   // <- send username

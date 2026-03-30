@@ -270,16 +270,12 @@ body {
   border-radius: 10px;
   font-size: 1.2rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background: rgba(255, 255, 255, 0.1); 
   border: none;
-  color: white; /* Monochromatic white icons */
 }
 
-/* Ensure emojis/icons are monochromatic white if needed, 
-   but for the Figma look, we want white symbols. 
-   If using emojis, we'll use filter. */
+/* Ensure emojis/icons are monochromatic white */
 .nav-icon-wrapper span, .nav-icon-wrapper {
-  filter: grayscale(1) brightness(2);
+  filter: grayscale(1) brightness(10);
 }
 
 .navbar a.active .nav-icon-wrapper {

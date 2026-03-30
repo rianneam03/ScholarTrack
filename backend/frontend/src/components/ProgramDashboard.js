@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import API_BASE from "../apiConfig";
 import Sessions from "./Sessions";
 import Students from "./Students";
 
@@ -17,8 +18,8 @@ function ProgramDashboard() {
       try {
         const headers = { Username: JSON.parse(localStorage.getItem("user"))?.username };
         const [pyRes, staffRes] = await Promise.all([
-          axios.get(`https://scholartrack-backend-bgas.onrender.com/api/program_years/${programYearId}/`, { headers }),
-          axios.get(`https://scholartrack-backend-bgas.onrender.com/api/program-staff/`, { headers })
+          axios.get(`${API_BASE}/program_years/${programYearId}/`, { headers }),
+          axios.get(`${API_BASE}/program-staff/`, { headers })
         ]);
         setProgramYear(pyRes.data);
         setStaff(staffRes.data.filter(s => String(s.program_year_id) === String(programYearId)));

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
+import API_BASE from "../apiConfig";
 
 function Attendance() {
   const [sessions, setSessions] = useState([]);
@@ -20,7 +21,7 @@ function Attendance() {
   // Load sessions
   // ======================
   useEffect(() => {
-    fetch("https://scholartrack-backend-bgas.onrender.com/api/sessions/", {
+    fetch(`${API_BASE}/sessions/`, {
       headers: { Username: user?.username }
     })
       .then((r) => r.json())
@@ -78,13 +79,13 @@ function Attendance() {
     setLoading(true);
 
     const pStudents = fetch(
-      `https://scholartrack-backend-bgas.onrender.com/api/enrollments/?program_year_id=${encodeURIComponent(
+      `${API_BASE}/enrollments/?program_year_id=${encodeURIComponent(
         programYearId
       )}`, { headers: { Username: user?.username } }
     ).then((r) => r.json());
 
     const pAttendance = fetch(
-      `https://scholartrack-backend-bgas.onrender.com/api/attendance/?session_id=${encodeURIComponent(
+      `${API_BASE}/attendance/?session_id=${encodeURIComponent(
         selectedSessionID
       )}`, { headers: { Username: user?.username } }
     ).then((r) => r.json());
@@ -154,7 +155,7 @@ function Attendance() {
     try {
       for (const row of diffs) {
         const res = await fetch(
-          "https://scholartrack-backend-bgas.onrender.com/api/attendance/",
+          `${API_BASE}/attendance/`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json", Username: user?.username },
@@ -173,7 +174,7 @@ function Attendance() {
       }
 
       const fresh = await fetch(
-        `https://scholartrack-backend-bgas.onrender.com/api/attendance/?session_id=${encodeURIComponent(
+        `${API_BASE}/attendance/?session_id=${encodeURIComponent(
           selectedSessionID
         )}`, { headers: { Username: user?.username } }
       ).then((r) => r.json());
@@ -205,7 +206,7 @@ function Attendance() {
 
     try {
       const res = await fetch(
-        `https://scholartrack-backend-bgas.onrender.com/api/attendance/export/?session_id=${selectedSessionID}`,
+        `${API_BASE}/attendance/export/?session_id=${selectedSessionID}`,
         {
           headers: {
             Username: user.username,

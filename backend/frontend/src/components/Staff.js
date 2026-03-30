@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import API_BASE from "../apiConfig";
 
 export default function Staff() {
   const [users, setUsers] = useState([]);
@@ -10,7 +11,7 @@ export default function Staff() {
     const fetchUsers = async () => {
       try {
         const headers = { Username: currentUser?.username };
-        const res = await axios.get("https://scholartrack-backend-bgas.onrender.com/api/users/", { headers });
+        const res = await axios.get(`${API_BASE}/users/`, { headers });
         // Filter for staff roles
         setUsers(res.data.filter(u => u.role === "admin" || u.role === "teacher"));
       } catch (err) {

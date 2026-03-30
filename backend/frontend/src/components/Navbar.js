@@ -46,7 +46,7 @@ function Navbar() {
         <>
           <div className="navbar-links">
             <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>
-              <div className="nav-icon-wrapper" style={{background: '#E0F2FE'}}>📊</div>
+              <div className="nav-icon-wrapper" style={{background: '#14B8A6'}}>📊</div>
               <span className="nav-text">Overview</span>
             </NavLink>
 
@@ -61,7 +61,7 @@ function Navbar() {
             </NavLink>
 
             <NavLink to="/attendance" className={({ isActive }) => (isActive ? "active" : "")}>
-              <div className="nav-icon-wrapper" style={{background: '#14B8A6'}}>📋</div>
+              <div className="nav-icon-wrapper" style={{background: '#D97706'}}>📋</div>
               <span className="nav-text">Attendance</span>
             </NavLink>
 
@@ -74,14 +74,14 @@ function Navbar() {
 
             {role === "admin" && (
               <NavLink to="/admin/settings" className={({ isActive }) => (isActive ? "active" : "")}>
-                <div className="nav-icon-wrapper" style={{background: '#F1F5F9'}}>⚙️</div>
+                <div className="nav-icon-wrapper" style={{background: '#64748B'}}>⚙️</div>
                 <span className="nav-text">Settings</span>
               </NavLink>
             )}
 
             {(role === "parent" || role === "admin") && (
               <NavLink to="/parent-dashboard" className={({ isActive }) => (isActive ? "active" : "")}>
-                <div className="nav-icon-wrapper" style={{background: '#FEF9C3'}}>👪</div>
+                <div className="nav-icon-wrapper" style={{background: '#F59E0B'}}>👪</div>
                 <span className="nav-text">Parent Portal</span>
               </NavLink>
             )}

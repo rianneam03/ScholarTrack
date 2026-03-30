@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import API_BASE from "../apiConfig";
 
 function Sessions({ filterProgramYearId, isCompact }) {
   const [sessions, setSessions] = useState([]);
@@ -18,7 +18,7 @@ function Sessions({ filterProgramYearId, isCompact }) {
   // --- Fetch sessions from backend safely ---
   const fetchSessions = async () => {
     try {
-      let url = "https://scholartrack-backend-bgas.onrender.com/api/sessions/";
+      let url = `${API_BASE}/sessions/`;
       if (filterProgramYearId) {
         url += `?program_year_id=${filterProgramYearId}`;
       }
@@ -36,7 +36,7 @@ function Sessions({ filterProgramYearId, isCompact }) {
   const fetchSchools = async () => {
     try {
       const res = await fetch(
-        "https://scholartrack-backend-bgas.onrender.com/api/schools/"
+        `${API_BASE}/schools/`
       );
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       const data = await res.json();
@@ -49,7 +49,7 @@ function Sessions({ filterProgramYearId, isCompact }) {
 
   const fetchProgramYears = async () => {
     try {
-      const res = await fetch("https://scholartrack-backend-bgas.onrender.com/api/program_years/");
+      const res = await fetch(`${API_BASE}/program_years/`);
       const data = await res.json();
       setProgramYears(data);
     } catch (err) {
@@ -74,7 +74,7 @@ function Sessions({ filterProgramYearId, isCompact }) {
 
     try {
       const res = await fetch(
-        "https://scholartrack-backend-bgas.onrender.com/api/sessions/",
+        `${API_BASE}/sessions/`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -108,7 +108,7 @@ function Sessions({ filterProgramYearId, isCompact }) {
 
     try {
       const res = await fetch(
-        `https://scholartrack-backend-bgas.onrender.com/api/sessions/${sessionId}/`,
+        `${API_BASE}/sessions/${sessionId}/`,
         {
           method: "DELETE",
           headers: {

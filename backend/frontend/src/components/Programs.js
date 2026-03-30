@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import API_BASE from "../apiConfig";
 
 export default function Programs() {
   const navigate = useNavigate();
@@ -23,16 +24,16 @@ export default function Programs() {
     try {
       const headers = { Username: username };
       const [progRes, yearRes, staffRes] = await Promise.all([
-        axios.get("https://scholartrack-backend-bgas.onrender.com/api/programs/", { headers }),
-        axios.get("https://scholartrack-backend-bgas.onrender.com/api/program_years/", { headers }),
-        axios.get("https://scholartrack-backend-bgas.onrender.com/api/program-staff/", { headers })
+        axios.get(`${API_BASE}/programs/`, { headers }),
+        axios.get(`${API_BASE}/program_years/`, { headers }),
+        axios.get(`${API_BASE}/program-staff/`, { headers })
       ]);
       setPrograms(progRes.data);
       setProgramYears(yearRes.data);
       setStaffAssignments(staffRes.data);
 
       if (role === "admin") {
-        const userRes = await axios.get("https://scholartrack-backend-bgas.onrender.com/api/users/", { headers });
+        const userRes = await axios.get(`${API_BASE}/users/`, { headers });
         setUsers(userRes.data.filter(u => u.role === "teacher" || u.role === "admin"));
       }
     } catch (err) {
@@ -52,7 +53,7 @@ export default function Programs() {
   const handleCreateProgram = async () => {
     if (!newProgram.name) return showMessage("Program name required", "error");
     try {
-      await axios.post("https://scholartrack-backend-bgas.onrender.com/api/programs/", newProgram, { headers: { Username: username }});
+      await axios.post(`${API_BASE}/programs/`, newProgram, { headers: { Username: username }});
       showMessage("Program created successfully!");
       setNewProgram({ name: "", description: "" });
       fetchData();
@@ -64,7 +65,7 @@ export default function Programs() {
   const handleCreateProgramYear = async () => {
     if (!newProgramYear.program_id || !newProgramYear.year) return showMessage("Program and Year required", "error");
     try {
-      await axios.post("https://scholartrack-backend-bgas.onrender.com/api/program_years/", newProgramYear, { headers: { Username: username }});
+      await axios.post(`${API_BASE}/program_years/`, newProgramYear, { headers: { Username: username }});
       showMessage("Program Year created successfully!");
       setNewProgramYear({ ...newProgramYear, start_date: "", end_date: "" });
       fetchData();
@@ -76,7 +77,7 @@ export default function Programs() {
   const handleAssignStaff = async () => {
     if (!newAssignment.program_year_id || !newAssignment.userid) return showMessage("Program Year and User required", "error");
     try {
-      await axios.post("https://scholartrack-backend-bgas.onrender.com/api/program-staff/", newAssignment, { headers: { Username: username }});
+      await axios.post(`${API_BASE}/program-staff/`, newAssignment, { headers: { Username: username }});
       showMessage("Staff assigned successfully!");
       setNewAssignment({ program_year_id: "", userid: "" });
       fetchData();
@@ -87,7 +88,7 @@ export default function Programs() {
 
   const handleDeleteStaff = async (id) => {
     try {
-      await axios.delete(`https://scholartrack-backend-bgas.onrender.com/api/program-staff/${id}/`, { headers: { Username: username }});
+      await axios.delete(`${API_BASE}/program-staff/${id}/`, { headers: { Username: username }});
       fetchData();
     } catch (err) {
       showMessage("Error removing staff", "error");

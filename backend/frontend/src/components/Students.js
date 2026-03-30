@@ -1,8 +1,8 @@
+import React, { useEffect, useState } from "react";
+import API_BASE from "../apiConfig";
 
-  //const user = JSON.parse(localStorage.getItem("user"));
-  //const isAdmin = user?.role === "admin";
-
-  import React, { useEffect, useState } from "react";
+const user = JSON.parse(localStorage.getItem("user"));
+//const isAdmin = user?.role === "admin";
 
 function Students({ filterProgramYearId, isCompact }) {
   const [students, setStudents] = useState([]);
@@ -35,10 +35,10 @@ function Students({ filterProgramYearId, isCompact }) {
   }, []);
 
   const fetchStudents = async () => {
-    let url = "https://scholartrack-backend-bgas.onrender.com/api/students/";
+    let url = `${API_BASE}/students/`;
     if (filterProgramYearId) {
       // Use enrollments endpoint to get students for this specific program
-      url = `https://scholartrack-backend-bgas.onrender.com/api/enrollments/?program_year_id=${filterProgramYearId}`;
+      url = `${API_BASE}/enrollments/?program_year_id=${filterProgramYearId}`;
     }
     const res = await fetch(url);
     const data = await res.json();
@@ -58,7 +58,7 @@ function Students({ filterProgramYearId, isCompact }) {
   };
 
   const fetchSchools = async () => {
-    const res = await fetch("https://scholartrack-backend-bgas.onrender.com/api/schools/");
+    const res = await fetch(`${API_BASE}/schools/`);
     setSchools(await res.json());
   };
 
@@ -69,7 +69,7 @@ function Students({ filterProgramYearId, isCompact }) {
   // ➕ ADD STUDENT
   // =======================
   const handleAdd = async () => {
-    const res = await fetch("https://scholartrack-backend-bgas.onrender.com/api/students/", {
+    const res = await fetch(`${API_BASE}/students/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -91,7 +91,7 @@ function Students({ filterProgramYearId, isCompact }) {
   const handleUpdate = async () => {
     if (!formData.StudentID) return alert("Student ID required");
 
-    const res = await fetch("https://scholartrack-backend-bgas.onrender.com/api/students/", {
+    const res = await fetch(`${API_BASE}/students/`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -116,7 +116,7 @@ function Students({ filterProgramYearId, isCompact }) {
     if (!window.confirm("Delete this student?")) return;
 
     const res = await fetch(
-      `https://scholartrack-backend-bgas.onrender.com/api/students/?StudentID=${formData.StudentID}`,
+      `${API_BASE}/students/?StudentID=${formData.StudentID}`,
       {
         method: "DELETE",
         headers: { Username: user.username },
@@ -159,7 +159,7 @@ function Students({ filterProgramYearId, isCompact }) {
   const handleExport = async () => {
     try {
       const res = await fetch(
-        "https://scholartrack-backend-bgas.onrender.com/api/students/export/",
+        `${API_BASE}/students/export/`,
         {
           headers: {
             Username: user.username,

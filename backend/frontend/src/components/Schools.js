@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import API_BASE from "../apiConfig";
 
 function Schools() {
   const [schools, setSchools] = useState([]);
@@ -10,7 +11,7 @@ function Schools() {
 
   // --- Load existing schools ---
   const loadSchools = () => {
-    fetch("https://scholartrack-backend-bgas.onrender.com/api/schools/")
+    fetch(`${API_BASE}/schools/`)
       .then((res) => res.json())
       .then((data) => setSchools(data))
       .catch((err) => console.error(err));
@@ -30,7 +31,7 @@ function Schools() {
     setLoading(true);
     try {
       const res = await fetch(
-        "https://scholartrack-backend-bgas.onrender.com/api/schools/",
+        `${API_BASE}/schools/`,
         {
           method: "POST",
           headers: {

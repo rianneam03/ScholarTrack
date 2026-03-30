@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE from "../apiConfig";
 
 function Guardians() {
   const [guardians, setGuardians] = useState([]);
@@ -12,8 +13,8 @@ function Guardians() {
   const fetchData = async () => {
     try {
       const [gRes, sRes] = await Promise.all([
-        axios.get("https://scholartrack-backend-bgas.onrender.com/api/parents/guardians/"),
-        axios.get("https://scholartrack-backend-bgas.onrender.com/api/students/")
+        axios.get(`${API_BASE}/parents/guardians/`),
+        axios.get(`${API_BASE}/students/`)
       ]);
       setGuardians(gRes.data);
       setStudents(sRes.data);
@@ -31,7 +32,7 @@ function Guardians() {
   const handleLink = async () => {
     if (!selectedStudent || !selectedGuardian) return;
     try {
-      await axios.post("https://scholartrack-backend-bgas.onrender.com/api/admin/link-student-guardian/", {
+      await axios.post(`${API_BASE}/admin/link-student-guardian/`, {
         student_id: selectedStudent,
         guardian_id: selectedGuardian.guardian_id
       });
