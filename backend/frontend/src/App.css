@@ -108,6 +108,13 @@ body {
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =====================================================
+   SIDEBAR (NAVBAR) - LIGHT DESIGN
+===================================================== */
+
 /* =====================================================
    DASHBOARD TABS & MODERN UI PILLS
 ===================================================== */
