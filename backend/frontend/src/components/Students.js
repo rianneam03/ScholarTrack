@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API_BASE from "../apiConfig";
 
-const user = JSON.parse(localStorage.getItem("user"));
-//const isAdmin = user?.role === "admin";
-
 function Students({ filterProgramYearId, isCompact }) {
   const [students, setStudents] = useState([]);
   const [schools, setSchools] = useState([]);
