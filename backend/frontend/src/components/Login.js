@@ -29,7 +29,13 @@ function Login() {
         localStorage.setItem("user", JSON.stringify(data));
         setMessage("SUCCESS! Redirecting...");
         setTimeout(() => {
-          window.location.href = "/dashboard";
+          if (data.role === "parent") {
+            window.location.href = "/parent-dashboard";
+          } else if (data.role === "teacher") {
+            window.location.href = "/teacher-dashboard";
+          } else {
+            window.location.href = "/dashboard";
+          }
         }, 800);
       } else {
         setMessage(data.error || "Wrong username/password");

@@ -97,9 +97,11 @@ function ParentDashboard() {
       <div className="parent-grid">
         {/* Left Column: My Students */}
         <div className="students-list-panel">
-          <h3>My Children</h3>
+          <h3>Your Registered Children</h3>
           {students.length === 0 ? (
-             <p>No students associated with your profile found.</p>
+             <div className="no-students-box" style={{background: 'rgba(79, 163, 184, 0.05)', padding: '20px', borderRadius: '15px', border: '1px dashed var(--teal)'}}>
+               <p style={{margin: 0, color: 'var(--text-secondary)'}}>No children registered yet.</p>
+             </div>
           ) : (
              <ul className="student-cards">
                {students.map(s => (
@@ -109,12 +111,46 @@ function ParentDashboard() {
                    onClick={() => handleSelectStudent(s.StudentID)}
                  >
                    <h4>{s.FirstName} {s.LastName}</h4>
-                   <p>Grade: {s.Grade}</p>
-                   <p>School: {s.SchoolName}</p>
+                   <p>Grade: {s.Grade}th Grade</p>
                  </li>
                ))}
              </ul>
           )}
+
+          <div className="register-child-form" style={{marginTop: '30px', padding: '20px', background: 'white', borderRadius: '15px', border: '1px solid var(--border)'}}>
+            <h4 style={{margin: '0 0 15px 0', color: 'var(--navy)'}}>Register a New Student</h4>
+            <div style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
+              <input id="regFirst" placeholder="First Name" style={{padding: '10px', borderRadius: '8px', border: '1px solid var(--border)'}} />
+              <input id="regLast" placeholder="Last Name" style={{padding: '10px', borderRadius: '8px', border: '1px solid var(--border)'}} />
+              <select id="regGrade" style={{padding: '10px', borderRadius: '8px', border: '1px solid var(--border)'}}>
+                <option value="">Select Grade...</option>
+                {[1,2,3,4,5,6,7,8,9,10,11,12].map(g => <option key={g} value={g}>{g}th Grade</option>)}
+              </select>
+              <button 
+                onClick={async () => {
+                  const first = document.getElementById("regFirst").value;
+                  const last = document.getElementById("regLast").value;
+                  const grade = document.getElementById("regGrade").value;
+                  if(!first || !last || !grade) return alert("Please fill all fields");
+                  
+                  try {
+                    const res = await fetchWithAuth("/parents/students/register/", {
+                      method: "POST",
+                      body: JSON.stringify({ FirstName: first, LastName: last, Grade: grade })
+                    });
+                    if(res.ok) {
+                      alert("Student registered!");
+                      window.location.reload();
+                    }
+                  } catch(e) { console.error(e); }
+                }}
+                className="btn-primary" 
+                style={{marginTop: '10px'}}
+              >
+                Register Student
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Right Column: Student Details */}

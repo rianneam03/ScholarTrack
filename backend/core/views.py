@@ -933,13 +933,82 @@ def student_academic_summary(request, student_id):
         "Notes": a.session.description if a.session else ""
     } for a in attendance]
     
+    total_att = attendance.count()
+    present_att = attendance.filter(status='Present').count()
+    attendance_rate = round((present_att / total_att * 100), 1) if total_att > 0 else 0
+
     # Outcomes
     outcomes = Outcome.objects.filter(enrollment__student_id=student_id).select_related('enrollment__program_year__program')
     outcome_data = OutcomeSerializer(outcomes, many=True).data
 
     return Response({
         "StudentID": student_id,
+        "student": {
+            "FirstName": student.firstname,
+            "LastName": student.lastname,
+            "Grade": student.grade,
+            "SchoolName": student.school.school if student.school else None
+        },
+        "attendance_rate": attendance_rate,
         "enrollments": enrollment_data,
         "attendance": attendance_data,
         "outcomes": outcome_data
     })
+
+@api_view(['POST'])
+def parent_create_child(request):
+    """Allow a parent to register a new child and link them immediately."""
+    user = User.objects.filter(username=request.headers.get("Username")).first()
+    if not user or user.role != "parent":
+        return Response({"error": "Only parents can register children here."}, status=403)
+    
+    guardian = Guardian.objects.filter(email=user.email).first()
+    if not guardian:
+        # Auto-create guardian if missing (should've been created at user birth)
+        guardian = Guardian.objects.create(name=user.fullname, email=user.email)
+
+    data = request.data
+    student_id = str(secrets.randbelow(1000000)).zfill(6) # Generate random ID for simplicity
+    
+    try:
+        school_obj = School.objects.filter(schoolid=data.get("SchoolID")).first()
+        student = Student.objects.create(
+            studentid=student_id,
+            firstname=data.get('FirstName'),
+            lastname=data.get('LastName'),
+            grade=data.get('Grade'),
+            school=school_obj,
+            guardian=guardian,
+            enrollmentdate=date.today()
+        )
+        return Response({"message": "Child registered successfully!", "StudentID": student.studentid}, status=201)
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+
+@api_view(['GET'])
+def teacher_dashboard_data(request):
+    """Fetch assigned programs and sessions for the teacher."""
+    user = User.objects.filter(username=request.headers.get("Username")).first()
+    if not user or user.role != "teacher":
+        return Response({"error": "Unauthorized"}, status=403)
+    
+    assigned_py_ids = ProgramStaff.objects.filter(user=user).values_list('program_year_id', flat=True)
+    programs = ProgramYear.objects.filter(program_year_id__in=assigned_py_ids).select_related('program')
+    
+    sessions = Session.objects.filter(program_year_id__in=assigned_py_ids).order_by('-sessiondate')[:5]
+    
+    data = {
+        "assigned_programs": [{
+            "id": p.program_year_id,
+            "name": p.program.name,
+            "year": p.year,
+            "student_count": Enrollment.objects.filter(program_year=p).count()
+        } for p in programs],
+        "recent_sessions": [{
+            "id": s.sessionid,
+            "title": s.title,
+            "date": s.sessiondate,
+            "program": s.program_year.program.name if s.program_year else "N/A"
+        } for s in sessions]
+    }
+    return Response(data)

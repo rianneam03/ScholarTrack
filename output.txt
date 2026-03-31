@@ -1,3 +1,5 @@
 ---- USERS ----
 User: admin | PWD: pbkdf2_sha256$1... | Active: True | Role: admin
+User: rianneam03 | PWD: pbkdf2_sha256$8... | Active: True | Role: teacher
+User: parent | PWD: pbkdf2_sha256$8... | Active: True | Role: parent
 ---- END ----

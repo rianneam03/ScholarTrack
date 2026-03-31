@@ -72,5 +72,7 @@ urlpatterns = [
     path('api/parents/guardians/<int:guardian_id>/students/', views.students_by_guardian, name='students_by_guardian'),
     path('api/parents/students/<str:student_id>/summary/', views.student_academic_summary, name='student_academic_summary'),
     path('api/parents/students/<str:student_id>/enroll/', views.parent_enroll_student, name='parent_enroll_student'),
+    path('api/parents/students/register/', views.parent_create_child, name='parent_create_child'),
+    path('api/teacher/dashboard/', views.teacher_dashboard_data, name='teacher_dashboard_data'),
     path('api/admin/link-student-guardian/', views.link_student_guardian, name='link_student_guardian'),
 ]

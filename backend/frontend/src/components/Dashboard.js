@@ -1,19 +1,8 @@
-
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  LineChart,
-  Line,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+  PieChart, Pie, Cell, LineChart, Line,
 } from "recharts";
 import API_BASE from "../apiConfig";
 
@@ -21,98 +10,101 @@ const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8", "#82ca9d"
 
 function Dashboard() {
   const [data, setData] = useState(null);
-
-  useEffect(() => {
-    async function fetchDashboard() {
-      try {
-        const res = await fetch(`${API_BASE}/dashboard_data/`);
-        const json = await res.json();
-        setData(json);
-      } catch (err) {
-        console.error("Dashboard error:", err);
-      }
-    }
-    fetchDashboard();
-  }, []);
-
+  const [teacherData, setTeacherData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const location = useLocation();
   const user = JSON.parse(localStorage.getItem("user"));
   const role = user?.role || "admin";
 
-  if (!data) return <div>Loading dashboard...</div>;
+  const isTeacherDash = location.pathname === "/teacher-dashboard";
 
-  // --- TEACHER VIEW ---
-  if (role === "teacher") {
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      try {
+        // Always fetch overview data as everyone sees it
+        const res = await fetch(`${API_BASE}/dashboard_data/`);
+        const json = await res.json();
+        setData(json);
+
+        // Fetch teacher specific data if on that tab
+        if (isTeacherDash && role === "teacher") {
+          const tRes = await fetch(`${API_BASE}/teacher/dashboard/`, {
+            headers: { "Username": user.username }
+          });
+          const tJson = await tRes.json();
+          setTeacherData(tJson);
+        }
+      } catch (err) {
+        console.error("Dashboard error:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [isTeacherDash, role, user?.username]);
+
+  if (loading) return <div className="page-container">Loading Dashboard...</div>;
+
+  // --- RENDER TEACHER DASHBOARD (Recent Classes) ---
+  if (isTeacherDash && role === "teacher") {
     return (
       <div className="page-container transition-fade">
-        <div className="dashboard-header" style={{marginBottom: '30px'}}>
-          <h2 style={{margin: 0, fontSize: '1.8rem'}}>Teacher Dashboard</h2>
-          <p style={{color: 'var(--text-secondary)', margin: '5px 0 0 0'}}>Welcome back, {user.fullname || "Teacher"}</p>
+        <div className="dashboard-header" style={{ marginBottom: "30px" }}>
+          <h2 style={{ margin: 0, fontSize: "1.8rem" }}>Teacher Dashboard</h2>
+          <p style={{ color: "var(--text-secondary)", margin: "5px 0 0 0" }}>Manage your assigned programs and sessions</p>
         </div>
 
-        <div className="stats-grid-v2">
-          <div className="stat-card-v3">
-            <div className="stat-card-header">
-              <div className="stat-icon-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-            </div>
-            <div className="stat-value-v3">3</div>
-            <div className="stat-label-v3">Sessions Today</div>
-          </div>
-          <div className="stat-card-v3">
-            <div className="stat-card-header">
-              <div className="stat-icon-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
-            </div>
-            <div className="stat-value-v3">24</div>
-            <div className="stat-label-v3">Total Students</div>
-          </div>
-          <div className="stat-card-v3">
-            <div className="stat-card-header">
-              <div className="stat-icon-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-            </div>
-            <div className="stat-value-v3">98%</div>
-            <div className="stat-label-v3">Attendance Avg</div>
-          </div>
+        <div className="section-header" style={{ borderLeft: "4px solid var(--teal)", paddingLeft: "15px", marginBottom: "25px" }}>
+          <h3 style={{ margin: 0, fontSize: "1.1rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--navy)" }}>My Assigned Programs</h3>
         </div>
 
-        <div className="section-header" style={{borderLeft: '4px solid var(--teal)', paddingLeft: '15px', marginTop: '40px', marginBottom: '25px'}}>
-          <h3 style={{margin: 0, fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--navy)'}}>My Recent Classes</h3>
+        <div className="recent-classes-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "25px" }}>
+          {teacherData?.assigned_programs?.map((prog) => (
+            <div key={prog.id} className="class-card-v5" style={{ background: "white", padding: "25px", borderRadius: "15px", border: "1px solid var(--border)", boxShadow: "0 4px 15px rgba(0,0,0,0.05)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "15px" }}>
+                <h4 style={{ margin: 0, color: "var(--navy)", fontSize: "1.2rem" }}>{prog.name}</h4>
+                <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>{prog.year}</span>
+              </div>
+              <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: "20px" }}>{prog.student_count} Students Enrolled</p>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button onClick={() => window.location.href = `/attendance?program_year_id=${prog.id}`} style={{ flex: 1, background: "var(--teal)", color: "white", border: "none", padding: "10px", borderRadius: "8px", cursor: "pointer", fontWeight: 600 }}>Mark Attendance</button>
+                <button onClick={() => window.location.href = "/sessions"} style={{ background: "rgba(79, 163, 184, 0.1)", color: "var(--teal)", border: "none", padding: "10px", borderRadius: "8px", cursor: "pointer", fontWeight: 600 }}>Sessions</button>
+              </div>
+            </div>
+          ))}
+          {teacherData?.assigned_programs?.length === 0 && <p>No programs currently assigned to you.</p>}
         </div>
 
-        <div className="recent-classes-grid" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px'}}>
-          <div className="class-card-v5" style={{background: 'white', padding: '20px', borderRadius: '15px', border: '1px solid var(--border)', boxShadow: '0 4px 15px rgba(0,0,0,0.05)'}}>
-            <h4 style={{margin: '0 0 10px 0', color: 'var(--navy)'}}>Reading Club Spring</h4>
-            <p style={{fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '15px'}}>24 Students Enrolled</p>
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-              <span style={{fontSize: '0.85rem', color: 'var(--teal)', fontWeight: 600}}>Next: Tomorrow, 4PM</span>
-              <button onClick={() => window.location.href='/attendance'} style={{background: 'var(--teal)', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600}}>Mark Attendance</button>
-            </div>
-          </div>
+        <div className="section-header" style={{ borderLeft: "4px solid var(--teal)", paddingLeft: "15px", marginTop: "50px", marginBottom: "25px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h3 style={{ margin: 0, fontSize: "1.1rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--navy)" }}>Recent Sessions</h3>
+          <button onClick={() => window.location.href = "/sessions"} style={{ background: "var(--navy)", color: "white", border: "none", padding: "8px 20px", borderRadius: "30px", cursor: "pointer", fontSize: "0.85rem" }}>+ Create New Session</button>
+        </div>
 
-          <div className="class-card-v5" style={{background: 'white', padding: '20px', borderRadius: '15px', border: '1px solid var(--border)', boxShadow: '0 4px 15px rgba(0,0,0,0.05)'}}>
-            <h4 style={{margin: '0 0 10px 0', color: 'var(--navy)'}}>Writing Workshop</h4>
-            <p style={{fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '15px'}}>18 Students Enrolled</p>
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-              <span style={{fontSize: '0.85rem', color: 'var(--teal)', fontWeight: 600}}>Next: Wednesday, 3:30PM</span>
-              <button onClick={() => window.location.href='/attendance'} style={{background: 'var(--teal)', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600}}>Mark Attendance</button>
+        <div className="sessions-list-v5" style={{ background: "white", border: "1px solid var(--border)", borderRadius: "15px", overflow: "hidden" }}>
+          {teacherData?.recent_sessions?.map((s, idx) => (
+            <div key={s.id} style={{ padding: "15px 25px", borderBottom: idx === teacherData.recent_sessions.length - 1 ? "none" : "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <div style={{ fontWeight: 600, color: "var(--navy)" }}>{s.title}</div>
+                <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>{s.program} • {s.date}</div>
+              </div>
+              <button style={{ color: "var(--teal)", background: "transparent", border: "none", cursor: "pointer", fontWeight: 600 }}>Details</button>
             </div>
-          </div>
+          ))}
         </div>
       </div>
     );
   }
 
-  // --- ADMIN VIEW ---
+  // --- RENDER UNIFIED OVERVIEW (Admin, Teacher, Parent, Donor) ---
   return (
     <div className="page-container transition-fade">
-      <div className="dashboard-header" style={{marginBottom: '30px'}}>
-        <h2 style={{margin: 0, fontSize: '1.8rem'}}>Admin Dashboard</h2>
-        <p style={{color: 'var(--text-secondary)', margin: '5px 0 0 0'}}>Welcome back, {user.fullname || "Admin User"}</p>
+      <div className="dashboard-header" style={{ marginBottom: "30px" }}>
+        <h2 style={{ margin: 0, fontSize: "1.8rem" }}>Program Overview</h2>
+        <p style={{ color: "var(--text-secondary)", margin: "5px 0 0 0" }}>ScholarTrack Impact & Statistics</p>
       </div>
 
-      <div className="section-header" style={{borderLeft: '4px solid var(--teal)', paddingLeft: '15px', marginBottom: '25px'}}>
-        <h3 style={{margin: 0, fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--navy)'}}>Program Overview</h3>
-      </div>
       <div className="stats-grid-v2">
-        {/* Total Students */}
         <div className="stat-card-v3">
           <div className="stat-card-header">
             <div className="stat-icon-box">
@@ -120,11 +112,10 @@ function Dashboard() {
             </div>
             <div className="stat-growth success">+12%</div>
           </div>
-          <div className="stat-value-v3">{data.total_students}</div>
+          <div className="stat-value-v3">{data?.total_students || 0}</div>
           <div className="stat-label-v3">Total Students</div>
         </div>
 
-        {/* Active Programs */}
         <div className="stat-card-v3">
           <div className="stat-card-header">
             <div className="stat-icon-box">
@@ -132,121 +123,61 @@ function Dashboard() {
             </div>
             <div className="stat-growth success">+3</div>
           </div>
-          <div className="stat-value-v3">{data.active_programs || 0}</div>
+          <div className="stat-value-v3">{data?.active_programs || 0}</div>
           <div className="stat-label-v3">Active Programs</div>
         </div>
 
-        {/* Staff Members */}
         <div className="stat-card-v3">
           <div className="stat-card-header">
             <div className="stat-icon-box">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
             </div>
-            <div className="stat-growth success">+5</div>
           </div>
-          <div className="stat-value-v3">{data.total_staff || 0}</div>
-          <div className="stat-label-v3">Staff Members</div>
+          <div className="stat-value-v3">{data?.attendance_rate || 0}%</div>
+          <div className="stat-label-v3">Attendance Rate</div>
         </div>
 
-        {/* Attendance Rate */}
         <div className="stat-card-v3">
           <div className="stat-card-header">
             <div className="stat-icon-box">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </div>
-            <div className="stat-growth success">+2.1%</div>
           </div>
-          <div className="stat-value-v3">{data.attendance_rate}%</div>
-          <div className="stat-label-v3">Attendance Rate</div>
+          <div className="stat-value-v3">{data?.total_staff || 0}</div>
+          <div className="stat-label-v3">Staff Members</div>
         </div>
       </div>
 
-      {/* 2. DEMOGRAPHICS & IMPACT */}
-      <h3>Demographics & Impact</h3>
-      <div className="charts-container">
-
-        {/* Students by Site (High Impact) */}
-        <div className="chart-wrapper">
-          <h3>Students by Site</h3>
-          <div style={{ width: "100%", height: 300, marginTop: "20px" }}>
+      <div className="charts-container" style={{ marginTop: "40px" }}>
+        <div className="chart-wrapper chart-card">
+          <h3 style={{ margin: "0 0 20px 0", fontSize: "1.1rem", color: "var(--navy)" }}>Students by Site</h3>
+          <div style={{ width: "100%", height: 300 }}>
             <ResponsiveContainer>
-              <BarChart data={data.students_by_school} margin={{ bottom: 70 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="name"
-                  interval={0}
-                  angle={-45}
-                  textAnchor="end"
-                  height={80}
-                  tick={{ fontSize: 10 }}
-                  tickFormatter={(val) => val.length > 15 ? val.slice(0, 15) + '...' : val}
-                />
+              <BarChart data={data?.students_by_school || []} margin={{ bottom: 70 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" interval={0} angle={-45} textAnchor="end" height={80} tick={{ fontSize: 10 }} />
                 <YAxis allowDecimals={false} />
                 <Tooltip />
-                <Bar dataKey="value" fill="#4FA3B8" name="Students" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="value" fill="var(--teal)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Growth Over Time */}
         <div className="chart-wrapper chart-card">
-          <h3>Program Growth (New Enrollments)</h3>
+          <h3 style={{ margin: "0 0 20px 0", fontSize: "1.1rem", color: "var(--navy)" }}>Growth (New Enrollments)</h3>
           <div style={{ width: "100%", height: 300 }}>
             <ResponsiveContainer>
-              <LineChart data={data.student_growth}>
-                <CartesianGrid strokeDasharray="3 3" />
+              <LineChart data={data?.student_growth || []}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="name" />
                 <YAxis allowDecimals={false} />
                 <Tooltip />
-                <Line type="monotone" dataKey="value" stroke="#1E3A5F" strokeWidth={3} name="New Students" />
+                <Line type="monotone" dataKey="value" stroke="var(--navy)" strokeWidth={3} dot={{ r: 6, fill: "var(--teal)" }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
-
-        {/* Existing Charts */}
-        <div className="chart-wrapper chart-card">
-          <h3>Students by Grade</h3>
-          <div style={{ width: "100%", height: 300 }}>
-            <ResponsiveContainer>
-              <BarChart data={data.students_by_grade}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
-                <Bar dataKey="value" fill="#1E3A5F" name="Students" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        <div className="chart-wrapper chart-card">
-          <h3>STEM Interest Distribution</h3>
-          <div style={{ width: "100%", height: 300 }}>
-            <ResponsiveContainer>
-              <PieChart>
-                <Pie
-                  data={data.stem_data}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {data.stem_data && data.stem_data.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
       </div>
     </div>
   );

@@ -115,6 +115,16 @@ function App() {
               }
             />
 
+            {/* ----------------- Teacher Routes ----------------- */}
+            <Route
+              path="/teacher-dashboard"
+              element={
+                <PrivateRoute allowedRoles={["admin", "teacher"]}>
+                  <Dashboard />
+                </PrivateRoute>
+              }
+            />
+
             {/* ----------------- Teacher/Admin Routes ----------------- */}
             <Route
               path="/programs/:programYearId"
