@@ -524,9 +524,9 @@ body {
 
 .navbar-user-top {
   margin-bottom: 24px;
-  padding: 16px;
-  background: #F1F5F9;
-  border-radius: 16px;
+  padding: 10px 14px 20px 14px;
+  background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
   gap: 4px;
