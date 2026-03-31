@@ -124,68 +124,69 @@ function ParentDashboard() {
            ) : !studentSummary ? (
               <div className="loading-prompt">Loading summary...</div>
            ) : (
-              <div className="summary-content">
-                 <h3>Academic Summary</h3>
-                                  <div className="summary-section">
-                    <h4>Learning Progress</h4>
-                    <div className="progress-list" style={{display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '10px'}}>
-                      <div className="progress-item">
-                        <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '5px'}}>
-                          <span>STEM Completion</span>
-                          <span>75%</span>
-                        </div>
-                        <div style={{height: '8px', background: 'var(--border)', borderRadius: '4px', overflow: 'hidden'}}>
-                          <div style={{width: '75%', height: '100%', background: 'var(--teal)'}}></div>
-                        </div>
+                  <>
+                  {/* Profile Card & Stats Header */}
+                  <div className="student-profile-card-v5" style={{background: 'var(--navy)', color: 'white', padding: '25px', borderRadius: '20px', marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <div className="profile-info">
+                      <h3 style={{margin: 0, fontSize: '1.5rem'}}>{studentSummary.student.FirstName} {studentSummary.student.LastName}</h3>
+                      <p style={{opacity: 0.8, margin: '5px 0 0 0'}}>{studentSummary.student.Grade}th Grade • {studentSummary.student.SchoolName}</p>
+                    </div>
+                    <div className="profile-stats" style={{display: 'flex', gap: '30px'}}>
+                      <div className="stat-item" style={{textAlign: 'center'}}>
+                        <div style={{fontSize: '1.2rem', fontWeight: 700}}>{studentSummary.enrollments.length}</div>
+                        <div style={{fontSize: '0.75rem', opacity: 0.7, textTransform: 'uppercase'}}>Programs</div>
                       </div>
-                      <div className="progress-item">
-                        <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '5px'}}>
-                          <span>Attendance Requirement</span>
-                          <span>92%</span>
-                        </div>
-                        <div style={{height: '8px', background: 'var(--border)', borderRadius: '4px', overflow: 'hidden'}}>
-                          <div style={{width: '92%', height: '100%', background: 'var(--teal)'}}></div>
-                        </div>
+                      <div className="stat-item" style={{textAlign: 'center'}}>
+                        <div style={{fontSize: '1.2rem', fontWeight: 700}}>{studentSummary.attendance_rate || 0}%</div>
+                        <div style={{fontSize: '0.75rem', opacity: 0.7, textTransform: 'uppercase'}}>Attendance</div>
+                      </div>
+                      <div className="stat-item" style={{textAlign: 'center'}}>
+                        <div style={{fontSize: '1.2rem', fontWeight: 700}}>{studentSummary.attendance.length}</div>
+                        <div style={{fontSize: '0.75rem', opacity: 0.7, textTransform: 'uppercase'}}>Sessions</div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="summary-section">
-                    <h4>Enrollment Status</h4>
-                   {studentSummary.enrollments.length === 0 ? <p>No enrollments.</p> : (
-                      <ul>
-                        {studentSummary.enrollments.map((enr, idx) => (
-                           <li key={idx}><strong>{enr.ProgramName} ({enr.Year})</strong> - Status: {enr.Status}</li>
-                        ))}
-                      </ul>
-                   )}
-                 </div>
+                  <div className="section-header" style={{borderLeft: '4px solid var(--teal)', paddingLeft: '15px', marginBottom: '20px'}}>
+                    <h3 style={{margin: 0, fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--navy)'}}>Continue Learning</h3>
+                  </div>
 
-                 <div className="summary-section">
-                   <h4>Attendance Record</h4>
-                   {studentSummary.attendance.length === 0 ? <p>No attendance records.</p> : (
-                      <table className="parent-table">
-                        <thead>
-                          <tr>
-                            <th>Session</th>
-                            <th>Date</th>
-                            <th>Status</th>
-                            <th>Activity/Notes</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {studentSummary.attendance.map((att, idx) => (
-                            <tr key={idx}>
-                              <td>{att.SessionTitle}</td>
-                              <td>{att.Date}</td>
-                              <td><span className={`status-badge ${att.Status.toLowerCase()}`}>{att.Status}</span></td>
-                              <td style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>{att.Notes || "—"}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                   )}
-                 </div>
+                  <div className="continue-learning-grid" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px', marginBottom: '30px'}}>
+                    {studentSummary.enrollments.map((enr, idx) => (
+                      <div key={idx} className="learning-card-v5" style={{background: 'white', padding: '20px', borderRadius: '15px', border: '1px solid var(--border)', boxShadow: '0 4px 15px rgba(0,0,0,0.05)'}}>
+                        <h4 style={{margin: '0 0 10px 0', color: 'var(--navy)'}}>{enr.ProgramName}</h4>
+                        <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '8px'}}>
+                           <span>Progress</span>
+                           <span>{idx === 0 ? '75%' : '40%'}</span>
+                        </div>
+                        <div style={{height: '6px', background: 'var(--border)', borderRadius: '3px', overflow: 'hidden', marginBottom: '15px'}}>
+                           <div style={{width: idx === 0 ? '75%' : '40%', height: '100%', background: 'var(--teal)'}}></div>
+                        </div>
+                        <button style={{width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid var(--teal)', background: 'transparent', color: 'var(--teal)', fontWeight: 600, cursor: 'pointer'}}>View Details</button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="section-header" style={{borderLeft: '4px solid var(--teal)', paddingLeft: '15px', marginBottom: '20px'}}>
+                    <h3 style={{margin: 0, fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--navy)'}}>Recent Attendance</h3>
+                  </div>
+                  <div className="attendance-list-v5" style={{background: 'white', border: '1px solid var(--border)', borderRadius: '15px', padding: '10px'}}>
+                    {studentSummary.attendance.length === 0 ? <p style={{padding: '20px'}}>No records found.</p> : (
+                       <div className="attendance-rows">
+                         {studentSummary.attendance.slice(0, 5).map((att, idx) => (
+                           <div key={idx} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', borderBottom: idx === studentSummary.attendance.length - 1 ? 'none' : '1px solid var(--border)'}}>
+                             <div>
+                               <div style={{fontWeight: 600, color: 'var(--navy)'}}>{att.SessionTitle}</div>
+                               <div style={{fontSize: '0.8rem', color: 'var(--text-secondary)'}}>{att.Date}</div>
+                             </div>
+                             <span className={`status-badge-v5 ${att.Status.toLowerCase()}`} style={{padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 600, background: att.Status === 'Present' ? '#D1FAE5' : '#FEE2E2', color: att.Status === 'Present' ? '#065F46' : '#991B1B'}}>
+                               {att.Status}
+                             </span>
+                           </div>
+                         ))}
+                       </div>
+                    )}
+                  </div>
 
                  <div className="summary-section enrollment-section">
                    <h4>Enroll in Program</h4>

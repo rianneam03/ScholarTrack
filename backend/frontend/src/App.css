@@ -434,13 +434,35 @@ body {
   white-space: nowrap;
 }
 
-.navbar.collapsed .navbar-brand {
+.navbar.collapsed {
+  width: 80px;
+  padding: 20px 0;
+  overflow-x: hidden;
+}
+
+.navbar.collapsed .navbar-brand-text,
+.navbar.collapsed .nav-text,
+.navbar.collapsed .navbar-logout span {
+  display: none !important;
+}
+
+.navbar.collapsed .navbar-logout {
+  padding: 12px 14px;
   justify-content: center;
+}
+
+.navbar.collapsed .navbar-links {
   align-items: center;
 }
 
-.navbar.collapsed .navbar-brand-text {
-  display: none;
+.navbar.collapsed a {
+  justify-content: center;
+  padding: 12px 0;
+  width: 100%;
+}
+
+.navbar.collapsed .nav-icon-wrapper {
+  margin: 0 auto;
 }
 
 .navbar-logo {

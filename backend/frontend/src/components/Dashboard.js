@@ -73,19 +73,27 @@ function Dashboard() {
           </div>
         </div>
 
-        <div className="charts-container">
-          <div className="chart-wrapper">
-             <h3>My Upcoming Sessions</h3>
-             <p className="helper-text">You have 3 sessions scheduled for this week.</p>
-             {/* Mocking a list for visual fidelity */}
-             <ul style={{listStyle: 'none', padding: 0, marginTop: '15px'}}>
-                <li style={{padding: '12px', background: 'var(--bg-card)', borderRadius: '8px', marginBottom: '10px', border: '1px solid var(--border)'}}>
-                   <strong>Robotics 101</strong> - Tomorrow, 4:00 PM
-                </li>
-                <li style={{padding: '12px', background: 'var(--bg-card)', borderRadius: '8px', marginBottom: '10px', border: '1px solid var(--border)'}}>
-                   <strong>Math Intensive</strong> - Thursday, 3:30 PM
-                </li>
-             </ul>
+        <div className="section-header" style={{borderLeft: '4px solid var(--teal)', paddingLeft: '15px', marginTop: '40px', marginBottom: '25px'}}>
+          <h3 style={{margin: 0, fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--navy)'}}>My Recent Classes</h3>
+        </div>
+
+        <div className="recent-classes-grid" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px'}}>
+          <div className="class-card-v5" style={{background: 'white', padding: '20px', borderRadius: '15px', border: '1px solid var(--border)', boxShadow: '0 4px 15px rgba(0,0,0,0.05)'}}>
+            <h4 style={{margin: '0 0 10px 0', color: 'var(--navy)'}}>Reading Club Spring</h4>
+            <p style={{fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '15px'}}>24 Students Enrolled</p>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+              <span style={{fontSize: '0.85rem', color: 'var(--teal)', fontWeight: 600}}>Next: Tomorrow, 4PM</span>
+              <button onClick={() => window.location.href='/attendance'} style={{background: 'var(--teal)', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600}}>Mark Attendance</button>
+            </div>
+          </div>
+
+          <div className="class-card-v5" style={{background: 'white', padding: '20px', borderRadius: '15px', border: '1px solid var(--border)', boxShadow: '0 4px 15px rgba(0,0,0,0.05)'}}>
+            <h4 style={{margin: '0 0 10px 0', color: 'var(--navy)'}}>Writing Workshop</h4>
+            <p style={{fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '15px'}}>18 Students Enrolled</p>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+              <span style={{fontSize: '0.85rem', color: 'var(--teal)', fontWeight: 600}}>Next: Wednesday, 3:30PM</span>
+              <button onClick={() => window.location.href='/attendance'} style={{background: 'var(--teal)', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600}}>Mark Attendance</button>
+            </div>
           </div>
         </div>
       </div>
