@@ -312,13 +312,15 @@ body {
   letter-spacing: -0.02em;
 }
 
-/* Sidebar Profile & Top Info */
+/* Sidebar Profile & Top Info - Subtle Alignment */
 .navbar-user-top {
   padding: 0 14px;
   margin-bottom: 25px;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  background: transparent; /* Remove white box */
+  border: none;
 }
 
 .navbar-user-name {
@@ -326,6 +328,7 @@ body {
   font-weight: 700;
   font-size: 1.05rem;
   letter-spacing: -0.01em;
+  opacity: 0.9;
 }
 
 .navbar-user-role {
@@ -370,9 +373,14 @@ body {
 }
 
 .navbar a.active {
-  background: var(--active-bg);
+  background: transparent; /* Reset overall link background */
   color: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.navbar a.active .nav-icon-wrapper {
+  background: var(--teal) !important; /* Only icon box is colored */
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
 }
 
 .navbar-brand {
@@ -1247,6 +1255,27 @@ progress::-webkit-progress-value {
 /* UTILITIES */
 .shadow-lg {
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+/* Dashboard Grid Alignment */
+.stats-grid-v2 {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) !important;
+  gap: 24px;
+  grid-auto-rows: 1fr;
+  margin-bottom: 40px;
+}
+
+@media (max-width: 1200px) {
+  .stats-grid-v2 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .stats-grid-v2 {
+    grid-template-columns: 1fr !important;
+  }
 }
 .hover-scale {
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);

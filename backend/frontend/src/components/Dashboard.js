@@ -38,11 +38,15 @@ function Dashboard() {
   if (!data) return <div>Loading dashboard...</div>;
 
   return (
-    <div className="page-container">
-      <h2>Dashboard</h2>
+    <div className="page-container transition-fade">
+      <div className="dashboard-header" style={{marginBottom: '30px'}}>
+        <h2 style={{margin: 0, fontSize: '1.8rem'}}>Admin Dashboard</h2>
+        <p style={{color: 'var(--text-secondary)', margin: '5px 0 0 0'}}>Welcome back, {JSON.parse(localStorage.getItem("user"))?.fullname || "Admin User"}</p>
+      </div>
 
-      {/* 1. OVERVIEW STATS */}
-      <h3>Program Overview</h3>
+      <div className="section-header" style={{borderLeft: '4px solid var(--teal)', paddingLeft: '15px', marginBottom: '25px'}}>
+        <h3 style={{margin: 0, fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--navy)'}}>Program Overview</h3>
+      </div>
       <div className="stats-grid-v2">
         {/* Total Students */}
         <div className="stat-card-v3">
