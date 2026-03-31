@@ -273,9 +273,10 @@ body {
   border: none;
 }
 
-/* Ensure emojis/icons are monochromatic white */
-.nav-icon-wrapper span, .nav-icon-wrapper {
-  filter: grayscale(1) brightness(10);
+/* Sharp SVG Icons - Monochromatic white */
+.nav-icon-wrapper svg {
+  display: block;
+  stroke: white;
 }
 
 .navbar a.active .nav-icon-wrapper {
@@ -287,6 +288,30 @@ body {
 /* =====================================================
    SIDEBAR (NAVBAR)
 ===================================================== */
+/* --- Sidebar Branding --- */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px 20px 14px;
+  margin-bottom: 25px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navbar-logo {
+  height: 38px;
+  width: 38px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.navbar-brand-text {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
 /* Sidebar Profile & Top Info */
 .navbar-user-top {
   padding: 0 14px;
@@ -1104,6 +1129,22 @@ progress::-webkit-progress-value {
   color: var(--text-secondary);
   margin-top: 2px;
   font-weight: 600;
+}
+
+/* High-Fidelity Icons */
+.nav-icon-wrapper svg, .stat-icon-box svg {
+  display: block;
+  stroke: white;
+}
+
+.stat-icon-box {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  flex-shrink: 0;
 }
 
 /* =====================================================

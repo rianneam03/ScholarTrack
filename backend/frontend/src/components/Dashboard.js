@@ -47,7 +47,9 @@ function Dashboard() {
         {/* Total Students */}
         <div className="stat-card-v3">
           <div className="stat-card-header">
-            <div className="stat-icon-box" style={{ background: "#065F46" }}>👥</div>
+            <div className="stat-icon-box" style={{ background: "#065F46" }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
             <div className="stat-growth success">+12%</div>
           </div>
           <div className="stat-value-v3">{data.total_students}</div>
@@ -57,7 +59,9 @@ function Dashboard() {
         {/* Active Programs */}
         <div className="stat-card-v3">
           <div className="stat-card-header">
-            <div className="stat-icon-box" style={{ background: "#0D9488" }}>📖</div>
+            <div className="stat-icon-box" style={{ background: "#0D9488" }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            </div>
             <div className="stat-growth success">+3</div>
           </div>
           <div className="stat-value-v3">{data.active_programs || 0}</div>
@@ -67,7 +71,9 @@ function Dashboard() {
         {/* Staff Members */}
         <div className="stat-card-v3">
           <div className="stat-card-header">
-            <div className="stat-icon-box" style={{ background: "#4F46E5" }}>👩‍🏫</div>
+            <div className="stat-icon-box" style={{ background: "#4F46E5" }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
+            </div>
             <div className="stat-growth success">+5</div>
           </div>
           <div className="stat-value-v3">{data.total_staff || 0}</div>
@@ -77,7 +83,9 @@ function Dashboard() {
         {/* Attendance Rate */}
         <div className="stat-card-v3">
           <div className="stat-card-header">
-            <div className="stat-icon-box" style={{ background: "#D97706" }}>📈</div>
+            <div className="stat-icon-box" style={{ background: "#D97706" }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            </div>
             <div className="stat-growth success">+2.1%</div>
           </div>
           <div className="stat-value-v3">{data.attendance_rate}%</div>
