@@ -124,7 +124,7 @@ function ParentDashboard() {
            ) : !studentSummary ? (
               <div className="loading-prompt">Loading summary...</div>
            ) : (
-                  <>
+              <div className="summary-content">
                   {/* Profile Card & Stats Header */}
                   <div className="student-profile-card-v5" style={{background: 'var(--navy)', color: 'white', padding: '25px', borderRadius: '20px', marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                     <div className="profile-info">
