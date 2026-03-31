@@ -107,6 +107,9 @@ CORS_ALLOWED_ORIGINS = [
     "https://scholartrack-frontend-lpnr.onrender.com",
     "https://scholartrack.educationforscholars.org",
     "http://localhost:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:3001",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -117,11 +120,15 @@ CSRF_TRUSTED_ORIGINS = [
     "https://scholartrack-backend-bgas.onrender.com",
     "https://scholartrack.educationforscholars.org",
     "http://localhost:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:3001",
 ]
 
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-CORS_ALLOW_ALL_ORIGINS = False
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_HTTPONLY = True
+CORS_ALLOW_ALL_ORIGINS = DEBUG # Allow all in dev to avoid port issues
 
 # ----------------------
 # AUTHENTICATION
