@@ -126,9 +126,32 @@ function ParentDashboard() {
            ) : (
               <div className="summary-content">
                  <h3>Academic Summary</h3>
-                 
-                 <div className="summary-section">
-                   <h4>Current Enrollments</h4>
+                                  <div className="summary-section">
+                    <h4>Learning Progress</h4>
+                    <div className="progress-list" style={{display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '10px'}}>
+                      <div className="progress-item">
+                        <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '5px'}}>
+                          <span>STEM Completion</span>
+                          <span>75%</span>
+                        </div>
+                        <div style={{height: '8px', background: 'var(--border)', borderRadius: '4px', overflow: 'hidden'}}>
+                          <div style={{width: '75%', height: '100%', background: 'var(--teal)'}}></div>
+                        </div>
+                      </div>
+                      <div className="progress-item">
+                        <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '5px'}}>
+                          <span>Attendance Requirement</span>
+                          <span>92%</span>
+                        </div>
+                        <div style={{height: '8px', background: 'var(--border)', borderRadius: '4px', overflow: 'hidden'}}>
+                          <div style={{width: '92%', height: '100%', background: 'var(--teal)'}}></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="summary-section">
+                    <h4>Enrollment Status</h4>
                    {studentSummary.enrollments.length === 0 ? <p>No enrollments.</p> : (
                       <ul>
                         {studentSummary.enrollments.map((enr, idx) => (
