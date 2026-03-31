@@ -88,9 +88,11 @@ function ParentDashboard() {
   if (error) return <div className="page-container">Error: {error}</div>;
 
   return (
-    <div className="page-container parent-dashboard">
-      <h2>Welcome to the Parent Portal</h2>
-      <p>View your children's progress, attendance, and enroll them in upcoming programs.</p>
+    <div className="page-container parent-dashboard transition-fade">
+      <div className="dashboard-header" style={{marginBottom: '30px'}}>
+        <h2 style={{margin: 0, fontSize: '1.8rem'}}>Student Dashboard</h2>
+        <p style={{color: 'var(--text-secondary)', margin: '5px 0 0 0'}}>Welcome back, Parent Portal</p>
+      </div>
 
       <div className="parent-grid">
         {/* Left Column: My Students */}

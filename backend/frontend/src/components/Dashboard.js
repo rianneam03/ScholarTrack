@@ -35,13 +35,69 @@ function Dashboard() {
     fetchDashboard();
   }, []);
 
+  const user = JSON.parse(localStorage.getItem("user"));
+  const role = user?.role || "admin";
+
   if (!data) return <div>Loading dashboard...</div>;
 
+  // --- TEACHER VIEW ---
+  if (role === "teacher") {
+    return (
+      <div className="page-container transition-fade">
+        <div className="dashboard-header" style={{marginBottom: '30px'}}>
+          <h2 style={{margin: 0, fontSize: '1.8rem'}}>Teacher Dashboard</h2>
+          <p style={{color: 'var(--text-secondary)', margin: '5px 0 0 0'}}>Welcome back, {user.fullname || "Teacher"}</p>
+        </div>
+
+        <div className="stats-grid-v2">
+          <div className="stat-card-v3">
+            <div className="stat-card-header">
+              <div className="stat-icon-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+            </div>
+            <div className="stat-value-v3">3</div>
+            <div className="stat-label-v3">Sessions Today</div>
+          </div>
+          <div className="stat-card-v3">
+            <div className="stat-card-header">
+              <div className="stat-icon-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+            </div>
+            <div className="stat-value-v3">24</div>
+            <div className="stat-label-v3">Total Students</div>
+          </div>
+          <div className="stat-card-v3">
+            <div className="stat-card-header">
+              <div className="stat-icon-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+            </div>
+            <div className="stat-value-v3">98%</div>
+            <div className="stat-label-v3">Attendance Avg</div>
+          </div>
+        </div>
+
+        <div className="charts-container">
+          <div className="chart-wrapper">
+             <h3>My Upcoming Sessions</h3>
+             <p className="helper-text">You have 3 sessions scheduled for this week.</p>
+             {/* Mocking a list for visual fidelity */}
+             <ul style={{listStyle: 'none', padding: 0, marginTop: '15px'}}>
+                <li style={{padding: '12px', background: 'var(--bg-card)', borderRadius: '8px', marginBottom: '10px', border: '1px solid var(--border)'}}>
+                   <strong>Robotics 101</strong> - Tomorrow, 4:00 PM
+                </li>
+                <li style={{padding: '12px', background: 'var(--bg-card)', borderRadius: '8px', marginBottom: '10px', border: '1px solid var(--border)'}}>
+                   <strong>Math Intensive</strong> - Thursday, 3:30 PM
+                </li>
+             </ul>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- ADMIN VIEW ---
   return (
     <div className="page-container transition-fade">
       <div className="dashboard-header" style={{marginBottom: '30px'}}>
         <h2 style={{margin: 0, fontSize: '1.8rem'}}>Admin Dashboard</h2>
-        <p style={{color: 'var(--text-secondary)', margin: '5px 0 0 0'}}>Welcome back, {JSON.parse(localStorage.getItem("user"))?.fullname || "Admin User"}</p>
+        <p style={{color: 'var(--text-secondary)', margin: '5px 0 0 0'}}>Welcome back, {user.fullname || "Admin User"}</p>
       </div>
 
       <div className="section-header" style={{borderLeft: '4px solid var(--teal)', paddingLeft: '15px', marginBottom: '25px'}}>
@@ -51,7 +107,7 @@ function Dashboard() {
         {/* Total Students */}
         <div className="stat-card-v3">
           <div className="stat-card-header">
-            <div className="stat-icon-box" style={{ background: "#065F46" }}>
+            <div className="stat-icon-box">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             </div>
             <div className="stat-growth success">+12%</div>
@@ -63,7 +119,7 @@ function Dashboard() {
         {/* Active Programs */}
         <div className="stat-card-v3">
           <div className="stat-card-header">
-            <div className="stat-icon-box" style={{ background: "#0D9488" }}>
+            <div className="stat-icon-box">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
             </div>
             <div className="stat-growth success">+3</div>
@@ -75,7 +131,7 @@ function Dashboard() {
         {/* Staff Members */}
         <div className="stat-card-v3">
           <div className="stat-card-header">
-            <div className="stat-icon-box" style={{ background: "#4F46E5" }}>
+            <div className="stat-icon-box">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
             </div>
             <div className="stat-growth success">+5</div>
@@ -87,7 +143,7 @@ function Dashboard() {
         {/* Attendance Rate */}
         <div className="stat-card-v3">
           <div className="stat-card-header">
-            <div className="stat-icon-box" style={{ background: "#D97706" }}>
+            <div className="stat-icon-box">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
             </div>
             <div className="stat-growth success">+2.1%</div>

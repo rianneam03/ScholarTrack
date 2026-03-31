@@ -31,7 +31,7 @@ function Navbar() {
         {isCollapsed ? "☰" : "⨉"}
       </button>
       <div className="navbar-brand">
-        <span className="navbar-brand-text">Scholar<span style={{color: 'var(--teal)'}}>Track</span></span>
+        <span className="navbar-brand-text">ScholarTrack</span>
       </div>
 
       {user && (
@@ -90,9 +90,9 @@ function Navbar() {
               </NavLink>
             )}
 
-            {(role === "parent" || role === "admin") && (
+            {role === "parent" && (
               <NavLink to="/parent-dashboard" className={({ isActive }) => (isActive ? "active" : "")}>
-                <div className="nav-icon-wrapper" style={{background: '#F59E0B'}}>
+                <div className="nav-icon-wrapper">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 </div>
                 <span className="nav-text">Parent Portal</span>
@@ -112,7 +112,7 @@ function Navbar() {
       ) : (
         <div className="navbar-links">
           <NavLink to="/login">
-            <div className="nav-icon-wrapper" style={{background: '#0ea5e9'}}>
+            <div className="nav-icon-wrapper">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </div>
             <span className="nav-text">Login</span>
