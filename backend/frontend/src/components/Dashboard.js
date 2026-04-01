@@ -55,7 +55,7 @@ function Dashboard() {
           <p style={{ color: "var(--text-secondary)", margin: "5px 0 0 0" }}>Manage your assigned programs and sessions</p>
         </div>
 
-        <div className="section-header" style={{ borderLeft: "4px solid var(--teal)", paddingLeft: "15px", marginBottom: "25px" }}>
+        <div className="section-header" style={{ marginBottom: "25px" }}>
           <h3 style={{ margin: 0, fontSize: "1.1rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--navy)" }}>My Assigned Programs</h3>
         </div>
 
@@ -76,7 +76,7 @@ function Dashboard() {
           {teacherData?.assigned_programs?.length === 0 && <p>No programs currently assigned to you.</p>}
         </div>
 
-        <div className="section-header" style={{ borderLeft: "4px solid var(--teal)", paddingLeft: "15px", marginTop: "50px", marginBottom: "25px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div className="section-header" style={{ marginTop: "50px", marginBottom: "25px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <h3 style={{ margin: 0, fontSize: "1.1rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--navy)" }}>Recent Sessions</h3>
           <button onClick={() => window.location.href = "/sessions"} style={{ background: "var(--navy)", color: "white", border: "none", padding: "8px 20px", borderRadius: "30px", cursor: "pointer", fontSize: "0.85rem" }}>+ Create New Session</button>
         </div>

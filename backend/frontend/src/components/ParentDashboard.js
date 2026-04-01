@@ -183,8 +183,8 @@ function ParentDashboard() {
                     </div>
                   </div>
 
-                  <div className="section-header" style={{borderLeft: '4px solid var(--teal)', paddingLeft: '15px', marginBottom: '20px'}}>
-                    <h3 style={{margin: 0, fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--navy)'}}>Continue Learning</h3>
+                  <div className="section-header" style={{ marginBottom: "20px" }}>
+                    <h3 style={{ margin: 0, fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--navy)' }}>Continue Learning</h3>
                   </div>
 
                   <div className="continue-learning-grid" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px', marginBottom: '30px'}}>
@@ -203,8 +203,8 @@ function ParentDashboard() {
                     ))}
                   </div>
 
-                  <div className="section-header" style={{borderLeft: '4px solid var(--teal)', paddingLeft: '15px', marginBottom: '20px'}}>
-                    <h3 style={{margin: 0, fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--navy)'}}>Recent Attendance</h3>
+                  <div className="section-header" style={{ marginBottom: "20px" }}>
+                    <h3 style={{ margin: 0, fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--navy)' }}>Recent Attendance</h3>
                   </div>
                   <div className="attendance-list-v5" style={{background: 'white', border: '1px solid var(--border)', borderRadius: '15px', padding: '10px'}}>
                     {studentSummary.attendance.length === 0 ? <p style={{padding: '20px'}}>No records found.</p> : (
