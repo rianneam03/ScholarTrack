@@ -196,36 +196,7 @@ body {
   transform: translateY(-1px);
 }
 
-/* =====================================================
-   SIDEBAR FOOTER & LOGOUT
-===================================================== */
-.navbar-footer {
-  margin-top: auto;
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--border-light);
-}
 
-.navbar-logout {
-  width: 100%;
-  padding: 12px 14px;
-  background: #FEF2F2;
-  color: #EF4444;
-  border: 1px solid #FECACA;
-  border-radius: 14px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 0.95rem;
-}
-
-.navbar-logout:hover {
-  background: #FEE2E2;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
-}
 
 /* =====================================================
    SIDEBAR (NAVBAR) - LIGHT DESIGN
@@ -291,28 +262,7 @@ body {
    SIDEBAR (NAVBAR)
 ===================================================== */
 /* --- Sidebar Branding --- */
-.navbar-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0 14px 20px 14px;
-  margin-bottom: 25px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
 
-.navbar-logo {
-  height: 38px;
-  width: 38px;
-  object-fit: contain;
-  filter: brightness(0) invert(1);
-}
-
-.navbar-brand-text {
-  color: white;
-  font-size: 1.25rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-}
 
 /* Sidebar Profile & Top Info - Subtle Alignment */
 .navbar-user-top {
