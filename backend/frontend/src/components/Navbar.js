@@ -3,6 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import "../App.css";
 import logo from "../assets/logo.png";
 
+
 function Navbar() {
   const [user, setUser] = useState(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -32,7 +33,7 @@ function Navbar() {
         {isCollapsed ? "☰" : "⨉"}
       </button>
       <div className="navbar-brand">
-        <img src={logo} alt="Logo" className="navbar-logo" style={{ width: "32px", height: "32px", filter: "brightness(0) invert(1)" }} />
+        <img src={logo} alt="ScholarTrack Logo" className="navbar-logo" />
         <span className="navbar-brand-text">ScholarTrack</span>
       </div>
 

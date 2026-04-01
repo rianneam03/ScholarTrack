@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import API_BASE from "../apiConfig";
-import logo from "../assets/logo.png";
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -49,8 +48,7 @@ function Login() {
 
   return (
     <div className="login-page">
-      <img src={logo} alt="ScholarTrack Logo" style={{ width: "120px", marginBottom: "20px" }} />
-      <h1 style={{ marginTop: 0 }}>ScholarTrack Login</h1>
+      <h1>ScholarTrack Login</h1>
       <form onSubmit={handleSubmit} className="login-form">
         <input
           type="text"

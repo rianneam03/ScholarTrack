@@ -336,10 +336,20 @@ body {
 }
 
 .navbar-brand {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
   color: white !important;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
   padding: 0 14px;
 }
+
+.navbar-logo {
+  height: 38px;
+  width: 38px;
+  object-fit: contain;
+}
+
 
 .navbar-brand-text {
   font-size: 1.4rem;
