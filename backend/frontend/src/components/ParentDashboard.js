@@ -130,7 +130,7 @@ function ParentDashboard() {
                 <option value="">Select Program to Enroll...</option>
                 {availablePrograms.map(p => (
                    <option key={p.program_year_id} value={p.program_year_id}>
-                     {p.program.name} ({p.year})
+                     {p.program_name} ({p.year})
                    </option>
                 ))}
               </select>
@@ -244,7 +244,7 @@ function ParentDashboard() {
                         <option value="" disabled>Select a Program...</option>
                         {availablePrograms.map(p => (
                            <option key={p.program_year_id} value={p.program_year_id}>
-                             {p.program.name} ({p.year})
+                             {p.program_name} ({p.year})
                            </option>
                         ))}
                      </select>
