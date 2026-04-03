@@ -126,21 +126,33 @@ function ParentDashboard() {
                 <option value="">Select Grade...</option>
                 {[1,2,3,4,5,6,7,8,9,10,11,12].map(g => <option key={g} value={g}>{g}th Grade</option>)}
               </select>
+              <select id="regProgram" style={{padding: '10px', borderRadius: '8px', border: '1px solid var(--border)'}}>
+                <option value="">Select Program to Enroll...</option>
+                {availablePrograms.map(p => (
+                   <option key={p.program_year_id} value={p.program_year_id}>
+                     {p.program.name} ({p.year})
+                   </option>
+                ))}
+              </select>
               <button 
                 onClick={async () => {
                   const first = document.getElementById("regFirst").value;
                   const last = document.getElementById("regLast").value;
                   const grade = document.getElementById("regGrade").value;
-                  if(!first || !last || !grade) return alert("Please fill all fields");
+                  const programId = document.getElementById("regProgram").value;
+                  if(!first || !last || !grade || !programId) return alert("Please fill all fields and select a program");
                   
                   try {
                     const res = await fetchWithAuth("/parents/students/register/", {
                       method: "POST",
-                      body: JSON.stringify({ FirstName: first, LastName: last, Grade: grade })
+                      body: JSON.stringify({ FirstName: first, LastName: last, Grade: grade, program_year_id: programId })
                     });
                     if(res.ok) {
-                      alert("Student registered!");
+                      alert("Student registered and enrolled!");
                       window.location.reload();
+                    } else {
+                      const errData = await res.json();
+                      alert("Error: " + (errData.error || "Could not register"));
                     }
                   } catch(e) { console.error(e); }
                 }}

@@ -968,6 +968,15 @@ def parent_create_child(request):
         guardian = Guardian.objects.create(name=user.fullname, email=user.email)
 
     data = request.data
+    program_year_id = data.get("program_year_id")
+    if not program_year_id:
+        return Response({"error": "Program enrollment is required when registering a child."}, status=400)
+    
+    try:
+        program_year = ProgramYear.objects.get(pk=program_year_id)
+    except ProgramYear.DoesNotExist:
+        return Response({"error": "Invalid program_year_id."}, status=400)
+
     student_id = str(secrets.randbelow(1000000)).zfill(6) # Generate random ID for simplicity
     
     try:
@@ -981,7 +990,12 @@ def parent_create_child(request):
             guardian=guardian,
             enrollmentdate=date.today()
         )
-        return Response({"message": "Child registered successfully!", "StudentID": student.studentid}, status=201)
+        Enrollment.objects.create(
+            student=student,
+            program_year=program_year,
+            status='Active'
+        )
+        return Response({"message": "Child registered and enrolled successfully!", "StudentID": student.studentid}, status=201)
     except Exception as e:
         return Response({"error": str(e)}, status=500)
 
