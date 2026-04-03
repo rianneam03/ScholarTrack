@@ -120,6 +120,7 @@ function ParentDashboard() {
           <div className="register-child-form" style={{marginTop: '30px', padding: '20px', background: 'white', borderRadius: '15px', border: '1px solid var(--border)'}}>
             <h4 style={{margin: '0 0 15px 0', color: 'var(--navy)'}}>Register a New Student</h4>
             <div style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
+              <input id="regStudentId" placeholder="Tulsa Public Schools Student ID" style={{padding: '10px', borderRadius: '8px', border: '1px solid var(--border)'}} />
               <input id="regFirst" placeholder="First Name" style={{padding: '10px', borderRadius: '8px', border: '1px solid var(--border)'}} />
               <input id="regLast" placeholder="Last Name" style={{padding: '10px', borderRadius: '8px', border: '1px solid var(--border)'}} />
               <select id="regGrade" style={{padding: '10px', borderRadius: '8px', border: '1px solid var(--border)'}}>
@@ -136,16 +137,17 @@ function ParentDashboard() {
               </select>
               <button 
                 onClick={async () => {
+                  const studentId = document.getElementById("regStudentId").value;
                   const first = document.getElementById("regFirst").value;
                   const last = document.getElementById("regLast").value;
                   const grade = document.getElementById("regGrade").value;
                   const programId = document.getElementById("regProgram").value;
-                  if(!first || !last || !grade || !programId) return alert("Please fill all fields and select a program");
+                  if(!studentId || !first || !last || !grade || !programId) return alert("Please fill all fields, including the Student ID, and select a program");
                   
                   try {
                     const res = await fetchWithAuth("/parents/students/register/", {
                       method: "POST",
-                      body: JSON.stringify({ FirstName: first, LastName: last, Grade: grade, program_year_id: programId })
+                      body: JSON.stringify({ StudentID: studentId, FirstName: first, LastName: last, Grade: grade, program_year_id: programId })
                     });
                     if(res.ok) {
                       alert("Student registered and enrolled!");

@@ -972,12 +972,17 @@ def parent_create_child(request):
     if not program_year_id:
         return Response({"error": "Program enrollment is required when registering a child."}, status=400)
     
+    student_id = str(data.get("StudentID", "")).strip()
+    if not student_id:
+        return Response({"error": "Student ID is required."}, status=400)
+        
+    if Student.objects.filter(studentid=student_id).exists():
+        return Response({"error": "A student with this ID is already registered."}, status=400)
+    
     try:
         program_year = ProgramYear.objects.get(pk=program_year_id)
     except ProgramYear.DoesNotExist:
         return Response({"error": "Invalid program_year_id."}, status=400)
-
-    student_id = str(secrets.randbelow(1000000)).zfill(6) # Generate random ID for simplicity
     
     try:
         school_obj = School.objects.filter(schoolid=data.get("SchoolID")).first()
