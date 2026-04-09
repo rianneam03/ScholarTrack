@@ -26,7 +26,7 @@
 
 ## Live Demo
 
-You can view the app here: [ScholarTrack Live](https://scholartrack-frontend.onrender.com/)  
+You can view the app here: [ScholarTrack Live](https://scholartrack-frontend-lpnr.onrender.com)  
 
 > The app requires login to access student data. Public users can view the interface, but no real student data is exposed.  
 
