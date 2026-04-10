@@ -221,7 +221,7 @@ function Attendance() {
           onChange={(e) => setSelectedSessionID(e.target.value)}
         >
           <option value="">-- Select Session --</option>
-          {sessions.map((s) => (
+          {sessions.filter(s => s.ProgramYearID).map((s) => (
             <option key={s.SessionID} value={s.SessionID}>
               {s.Title} ({s.SessionDate}) {s.ProgramName ? `— ${s.ProgramName}` : ""}
             </option>

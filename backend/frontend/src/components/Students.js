@@ -57,10 +57,10 @@ function Students({ filterProgramYearId, isCompact }) {
     let source = studentData.results || studentData;
     if (filterProgramYearId && Array.isArray(source)) {
       source = source.map(e => ({
-        ...e.student,
-        StudentID: e.student.studentid,
-        FirstName: e.student.firstname,
-        LastName: e.student.lastname,
+        ...e,
+        StudentID: e.student,
+        FirstName: e.student_firstname,
+        LastName: e.student_lastname,
         SchoolName: e.program_name
       }));
     }
