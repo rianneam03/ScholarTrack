@@ -47,10 +47,24 @@ function Students({ filterProgramYearId, isCompact }) {
     return res.data;
   };
 
-  const { data: studentData, isLoading } = useQuery({
+  const { data: studentData, isLoading, isError, error } = useQuery({
     queryKey: ['students', page, filterProgramYearId],
     queryFn: fetchStudents,
   });
+
+  if (isError) {
+    if (!filterProgramYearId) {
+      return (
+        <div className="page-container" style={{ textAlign: "center", color: "red", padding: "50px" }}>
+          <h3>Error Loading Students</h3>
+          <p>{error?.response?.data?.error || error.message}</p>
+          <pre style={{ textAlign: "left", background: "#f8f9fa", padding: "10px" }}>
+            {error?.response?.data?.traceback || ""}
+          </pre>
+        </div>
+      );
+    }
+  }
 
   const students = React.useMemo(() => {
     if (!studentData) return [];

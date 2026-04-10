@@ -263,16 +263,21 @@ def export_attendance(request):
 @permission_classes([IsAuthenticated])
 def students_list(request):
     if request.method == 'GET':
-        school_id = request.GET.get('school_id')
-        students = Student.objects.select_related('school').all().order_by('-enrollmentdate')
-        if school_id:
-            students = students.filter(school_id=school_id)
-            
-        paginator = PageNumberPagination()
-        paginator.page_size = 50
-        result_page = paginator.paginate_queryset(students, request)
-        serializer = StudentSerializer(result_page, many=True)
-        return paginator.get_paginated_response(serializer.data)
+        try:
+            school_id = request.GET.get('school_id')
+            students = Student.objects.select_related('school').all().order_by('-enrollmentdate')
+            if school_id:
+                students = students.filter(school_id=school_id)
+                
+            paginator = PageNumberPagination()
+            paginator.page_size = 50
+            result_page = paginator.paginate_queryset(students, request)
+            serializer = StudentSerializer(result_page, many=True)
+            return paginator.get_paginated_response(serializer.data)
+        except Exception as e:
+            import traceback
+            tb = traceback.format_exc()
+            return Response({"error": "Backend Crash", "traceback": tb}, status=500)
 
     elif request.method == 'POST':
         serializer = StudentSerializer(data=request.data)
