@@ -2,12 +2,12 @@ from rest_framework import serializers
 from .models import Student, School, Need, Program, ProgramYear, ProgramStaff, Enrollment, Outcome, Survey, SurveyResponse
 
 class StudentSerializer(serializers.ModelSerializer):
-    StudentID = serializers.CharField(source='studentid', required=False) # required=False on updates
-    FirstName = serializers.CharField(source='firstname')
-    LastName = serializers.CharField(source='lastname')
+    StudentID = serializers.CharField(source='studentid', required=False, allow_null=True) # required=False on updates
+    FirstName = serializers.CharField(source='firstname', allow_null=True, allow_blank=True)
+    LastName = serializers.CharField(source='lastname', allow_null=True, allow_blank=True)
     Grade = serializers.CharField(source='grade', required=False, allow_blank=True, allow_null=True)
-    SchoolID = serializers.IntegerField(source='school.schoolid', read_only=True)
-    SchoolName = serializers.CharField(source='school.school', read_only=True)
+    SchoolID = serializers.IntegerField(source='school.schoolid', read_only=True, allow_null=True)
+    SchoolName = serializers.CharField(source='school.school', read_only=True, allow_null=True)
     StudentPhone = serializers.CharField(source='studentphone', required=False, allow_blank=True, allow_null=True)
     GuardianName = serializers.CharField(source='guardianname', required=False, allow_blank=True, allow_null=True)
     GuardianPhone = serializers.CharField(source='guardianphone', required=False, allow_blank=True, allow_null=True)
