@@ -428,15 +428,8 @@ def activate_account(request):
     return Response({"message": "Account activated"})
 
 @csrf_exempt
-@api_view(['GET', 'POST', 'OPTIONS'])
+@api_view(['GET', 'POST'])
 def login_user(request):
-    if request.method == "OPTIONS":
-        response = JsonResponse({})
-        response["Access-Control-Allow-Origin"] = "https://scholartrack-frontend.onrender.com"
-        response["Access-Control-Allow-Methods"] = "POST, OPTIONS"
-        response["Access-Control-Allow-Headers"] = "Content-Type"
-        response["Access-Control-Allow-Credentials"] = "true"
-        return response
     if request.method == "GET":
         return Response({"message": "Login endpoint is live"}, status=200)
     if request.method == "POST":
