@@ -24,7 +24,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
+    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
       // If unauthorized, token is either expired or missing
       console.warn("Session expired or unauthorized. Redirecting to login.");
       localStorage.removeItem('token');
