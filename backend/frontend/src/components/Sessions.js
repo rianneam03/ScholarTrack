@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import API_BASE from "../apiConfig";
+import api from "../apiAgent";
+import { toast } from "react-toastify";
 
 function Sessions({ filterProgramYearId, isCompact }) {
   const [sessions, setSessions] = useState([]);
@@ -19,14 +20,12 @@ function Sessions({ filterProgramYearId, isCompact }) {
   // --- Fetch sessions from backend safely ---
   const fetchSessions = async () => {
     try {
-      let url = `${API_BASE}/sessions/`;
+      let url = "/sessions/";
       if (filterProgramYearId) {
         url += `?program_year_id=${filterProgramYearId}`;
       }
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-      const data = await res.json();
-      setSessions(data);
+      const res = await api.get(url);
+      setSessions(res.data);
     } catch (err) {
       console.error("Error fetching sessions:", err);
       setSessions([]);
@@ -36,12 +35,8 @@ function Sessions({ filterProgramYearId, isCompact }) {
   // --- Fetch schools for dropdown ---
   const fetchSchools = async () => {
     try {
-      const res = await fetch(
-        `${API_BASE}/schools/`
-      );
-      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-      const data = await res.json();
-      setSchools(data);
+      const res = await api.get("/schools/");
+      setSchools(res.data);
     } catch (err) {
       console.error("Error fetching schools:", err);
       setSchools([]);
@@ -50,9 +45,8 @@ function Sessions({ filterProgramYearId, isCompact }) {
 
   const fetchProgramYears = async () => {
     try {
-      const res = await fetch(`${API_BASE}/program_years/`);
-      const data = await res.json();
-      setProgramYears(data);
+      const res = await api.get("/program_years/");
+      setProgramYears(res.data);
     } catch (err) {
       console.error("Error fetching program years:", err);
     }
@@ -74,22 +68,8 @@ function Sessions({ filterProgramYearId, isCompact }) {
     e.preventDefault();
 
     try {
-      const res = await fetch(
-        `${API_BASE}/sessions/`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        }
-      );
-
-      if (!res.ok) {
-        const data = await res.json();
-        alert(data.error || "Failed to add session");
-        return;
-      }
-
-      alert("✅ Session added!");
+      await api.post("/sessions/", formData);
+      toast.success("Session added!");
       setFormData({
         Title: "",
         SessionDate: "",
@@ -99,7 +79,7 @@ function Sessions({ filterProgramYearId, isCompact }) {
       fetchSessions(); // refresh table
     } catch (err) {
       console.error(err);
-      alert("Server error while adding session");
+      toast.error(err.response?.data?.error || "Failed to add session");
     }
   };
 
@@ -108,28 +88,12 @@ function Sessions({ filterProgramYearId, isCompact }) {
     if (!window.confirm("Are you sure you want to delete this session?")) return;
 
     try {
-      const res = await fetch(
-        `${API_BASE}/sessions/${sessionId}/`,
-        {
-          method: "DELETE",
-          headers: {
-            "Username": user.username,   // 🔑 REQUIRED
-          },
-        }
-      );
-      
-      if (!res.ok) {
-        const text = await res.text(); // handle HTML or error text
-        console.error("Failed to delete session:", text);
-        alert("Failed to delete session. Check console for details.");
-        return;
-      }
-
-      alert("🗑️ Session deleted");
+      await api.delete(`/sessions/${sessionId}/`);
+      toast.success("Session deleted");
       fetchSessions(); // refresh table
     } catch (err) {
       console.error(err);
-      alert("Server error while deleting session");
+      toast.error("Failed to delete session. Check console for details.");
     }
   };
 

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import API_BASE from "../apiConfig";
+import React, { useState } from "react";
+import { toast } from "react-toastify";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import api from "../apiAgent";
 
 function Students({ filterProgramYearId, isCompact }) {
-  const [students, setStudents] = useState([]);
-  const [schools, setSchools] = useState([]);
   const [formData, setFormData] = useState({
     StudentID: "",
     FirstName: "",
@@ -26,38 +26,62 @@ function Students({ filterProgramYearId, isCompact }) {
   const user = JSON.parse(localStorage.getItem("user"));
   const isAdmin = user?.role === "admin";
 
-  useEffect(() => {
-    fetchStudents();
-    fetchSchools();
-  }, []);
+  const queryClient = useQueryClient();
+  const [page, setPage] = useState(1);
+
+  const { data: schoolsData } = useQuery({
+    queryKey: ['schools'],
+    queryFn: async () => {
+      const res = await api.get("/schools/");
+      return res.data;
+    }
+  });
+  const schools = schoolsData || [];
 
   const fetchStudents = async () => {
-    let url = `${API_BASE}/students/`;
+    let url = `/students/?page=${page}`;
     if (filterProgramYearId) {
-      // Use enrollments endpoint to get students for this specific program
-      url = `${API_BASE}/enrollments/?program_year_id=${filterProgramYearId}`;
+      url = `/enrollments/?program_year_id=${filterProgramYearId}&page=${page}`;
     }
-    const res = await fetch(url);
-    const data = await res.json();
-    
-    if (filterProgramYearId) {
-      // Map enrollment data to student shape
-      setStudents(data.map(e => ({
-        ...e.student,
-        StudentID: e.student.studentid, // normalize case
-        FirstName: e.student.firstname,
-        LastName: e.student.lastname,
-        SchoolName: e.program_name // or school if preferred
-      })));
-    } else {
-      setStudents(data);
-    }
+    const res = await api.get(url);
+    return res.data;
   };
 
-  const fetchSchools = async () => {
-    const res = await fetch(`${API_BASE}/schools/`);
-    setSchools(await res.json());
-  };
+  const { data: studentData, isLoading } = useQuery({
+    queryKey: ['students', page, filterProgramYearId],
+    queryFn: fetchStudents,
+  });
+
+  const students = React.useMemo(() => {
+    if (!studentData) return [];
+    let source = studentData.results || studentData;
+    if (filterProgramYearId && Array.isArray(source)) {
+      source = source.map(e => ({
+        ...e.student,
+        StudentID: e.student.studentid,
+        FirstName: e.student.firstname,
+        LastName: e.student.lastname,
+        SchoolName: e.program_name
+      }));
+    }
+    if (sortConfig.key) {
+      let direction = sortConfig.direction;
+      let key = sortConfig.key;
+      source = [...source].sort((a, b) => {
+        let aVal = a[key] || "";
+        let bVal = b[key] || "";
+        if (key === "EnrollmentDate") {
+          return direction === "asc" ? new Date(aVal) - new Date(bVal) : new Date(bVal) - new Date(aVal);
+        }
+        if (key === "StudentID") return direction === "asc" ? Number(aVal.toString().replace(/\D/g, '')) - Number(bVal.toString().replace(/\D/g, '')) : Number(bVal.toString().replace(/\D/g, '')) - Number(aVal.toString().replace(/\D/g, ''));
+        return direction === "asc" ? String(aVal).localeCompare(String(bVal)) : String(bVal).localeCompare(String(aVal));
+      });
+    }
+    return Array.isArray(source) ? source : [];
+  }, [studentData, filterProgramYearId, sortConfig]);
+
+  const hasNextPage = studentData?.next !== null && studentData?.next !== undefined;
+  const hasPrevPage = studentData?.previous !== null && studentData?.previous !== undefined;
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -66,42 +90,28 @@ function Students({ filterProgramYearId, isCompact }) {
   // ➕ ADD STUDENT
   // =======================
   const handleAdd = async () => {
-    const res = await fetch(`${API_BASE}/students/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Username: user.username,
-      },
-      body: JSON.stringify(formData),
-    });
-
-    const data = await res.json();
-    if (!res.ok) return alert(data.error || "Add failed");
-
-    alert("✅ Student added");
-    fetchStudents();
+    try {
+      await api.post("/students/", formData);
+      toast.success("Student added");
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Add failed");
+    }
   };
 
   // =======================
   // ✏️ UPDATE (PATCH)
   // =======================
   const handleUpdate = async () => {
-    if (!formData.StudentID) return alert("Student ID required");
+    if (!formData.StudentID) return toast.info("Student ID required");
 
-    const res = await fetch(`${API_BASE}/students/`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Username: user.username,
-      },
-      body: JSON.stringify(formData),
-    });
-
-    const data = await res.json();
-    if (!res.ok) return alert(data.error || "Update failed");
-
-    alert("✅ Student updated successfully!");
-    fetchStudents();
+    try {
+      await api.patch("/students/", formData);
+      toast.success("Student updated successfully!");
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Update failed");
+    }
   };
 
   // =======================
@@ -109,44 +119,21 @@ function Students({ filterProgramYearId, isCompact }) {
   // =======================
   const handleDelete = async () => {
     if (!isAdmin) return;
-    if (!formData.StudentID) return alert("Student ID required");
+    if (!formData.StudentID) return toast.info("Student ID required");
     if (!window.confirm("Delete this student?")) return;
 
-    const res = await fetch(
-      `${API_BASE}/students/?StudentID=${formData.StudentID}`,
-      {
-        method: "DELETE",
-        headers: { Username: user.username },
-      }
-    );
-
-    const data = await res.json();
-    alert(data.message || data.error);
-    fetchStudents();
+    try {
+      const res = await api.delete(`/students/?StudentID=${formData.StudentID}`);
+      toast.success(res.data.message || "Student deleted");
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Delete failed");
+    }
   };
 
   const sortStudents = (key) => {
     let direction = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") direction = "desc";
-
-    const sorted = [...students].sort((a, b) => {
-      let aVal = a[key];
-      let bVal = b[key];
-
-      if (key === "EnrollmentDate") {
-        aVal = new Date(aVal);
-        bVal = new Date(bVal);
-        return direction === "asc" ? aVal - bVal : bVal - aVal;
-      }
-
-      if (key === "StudentID") return direction === "asc" ? Number(aVal) - Number(bVal) : Number(bVal) - Number(aVal);
-
-      return direction === "asc"
-        ? String(aVal).localeCompare(String(bVal))
-        : String(bVal).localeCompare(String(aVal));
-    });
-
-    setStudents(sorted);
     setSortConfig({ key, direction });
   };
 
@@ -155,21 +142,8 @@ function Students({ filterProgramYearId, isCompact }) {
   // =======================
   const handleExport = async () => {
     try {
-      const res = await fetch(
-        `${API_BASE}/students/export/`,
-        {
-          headers: {
-            Username: user.username,
-          },
-        }
-      );
-
-      if (!res.ok) {
-        alert("Export failed");
-        return;
-      }
-
-      const blob = await res.blob();
+      const res = await api.get("/students/export/", { responseType: 'blob' });
+      const blob = res.data;
       const url = window.URL.createObjectURL(blob);
 
       const a = document.createElement("a");
@@ -178,9 +152,10 @@ function Students({ filterProgramYearId, isCompact }) {
       document.body.appendChild(a);
       a.click();
       a.remove();
+      toast.success("Export successful!");
     } catch (err) {
       console.error(err);
-      alert("Error exporting data");
+      toast.error("Error exporting data");
     }
   };
 
@@ -288,6 +263,28 @@ function Students({ filterProgramYearId, isCompact }) {
           ))}
         </tbody>
       </table>
+
+      {!isCompact && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', gap: '15px' }}>
+          <button 
+             className="primary" 
+             style={{ padding: "8px 20px" }}
+             disabled={!hasPrevPage} 
+             onClick={() => setPage(old => Math.max(old - 1, 1))}
+          >
+             &lt; Previous
+          </button>
+          <span style={{ padding: '8px', fontWeight: 'bold' }}>Page {page}</span>
+          <button 
+             className="primary" 
+             style={{ padding: "8px 20px" }}
+             disabled={!hasNextPage} 
+             onClick={() => setPage(old => old + 1)}
+          >
+             Next &gt;
+          </button>
+        </div>
+      )}
     </div>
   );
 }

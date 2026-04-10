@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import API_BASE from "../apiConfig";
+import api from "../apiAgent";
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -13,36 +13,28 @@ function Login() {
     setMessage("Logging in...");
 
     try {
-      const res = await fetch(LOGIN_URL, {
-        method: "POST",
-        credentials: "include",   // VERY IMPORTANT FOR COOKIES
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
+      const res = await api.post("/login/", { username, password }, { withCredentials: true });
+      const data = res.data;
 
-      const data = await res.json();
-      console.log("LOGIN RESPONSE:", data);
-
-      if (res.ok) {
-        localStorage.setItem("user", JSON.stringify(data));
-        setMessage("SUCCESS! Redirecting...");
-        setTimeout(() => {
-          if (data.role === "parent") {
-            window.location.href = "/parent-dashboard";
-          } else if (data.role === "teacher") {
-            window.location.href = "/teacher-dashboard";
-          } else {
-            window.location.href = "/dashboard";
-          }
-        }, 800);
-      } else {
-        setMessage(data.error || "Wrong username/password");
-      }
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data));
+      setMessage("SUCCESS! Redirecting...");
+      setTimeout(() => {
+        if (data.role === "parent") {
+          window.location.href = "/parent-dashboard";
+        } else if (data.role === "teacher") {
+          window.location.href = "/teacher-dashboard";
+        } else {
+          window.location.href = "/dashboard";
+        }
+      }, 800);
     } catch (err) {
       console.error(err);
-      setMessage("Server error, try again.");
+      if (err.response && err.response.data && err.response.data.error) {
+        setMessage(err.response.data.error);
+      } else {
+        setMessage("Server error, try again.");
+      }
     }
   };
 

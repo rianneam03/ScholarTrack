@@ -4,7 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell, LineChart, Line,
 } from "recharts";
-import API_BASE from "../apiConfig";
+import api from "../apiAgent";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8", "#82ca9d"];
 
@@ -23,17 +23,13 @@ function Dashboard() {
       setLoading(true);
       try {
         // Always fetch overview data as everyone sees it
-        const res = await fetch(`${API_BASE}/dashboard_data/`);
-        const json = await res.json();
-        setData(json);
+        const res = await api.get('/dashboard_data/');
+        setData(res.data);
 
         // Fetch teacher specific data if on that tab
         if (isTeacherDash && role === "teacher") {
-          const tRes = await fetch(`${API_BASE}/teacher/dashboard/`, {
-            headers: { "Username": user.username }
-          });
-          const tJson = await tRes.json();
-          setTeacherData(tJson);
+          const tRes = await api.get('/teacher/dashboard/');
+          setTeacherData(tRes.data);
         }
       } catch (err) {
         console.error("Dashboard error:", err);

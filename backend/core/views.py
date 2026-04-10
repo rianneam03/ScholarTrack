@@ -10,10 +10,14 @@ from django.db.models.functions import TruncMonth
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password, check_password
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.decorators import permission_classes
 
 from .models import Student, School, Session, Attendance, User, Need, Program, ProgramYear, ProgramStaff, Enrollment, Outcome, Survey, SurveyResponse, Guardian
-from .serializers import SchoolSerializer, NeedSerializer, ProgramSerializer, ProgramYearSerializer, ProgramStaffSerializer, EnrollmentSerializer, OutcomeSerializer, SurveySerializer, SurveyResponseSerializer
+from .serializers import SchoolSerializer, NeedSerializer, ProgramSerializer, ProgramYearSerializer, ProgramStaffSerializer, EnrollmentSerializer, OutcomeSerializer, SurveySerializer, SurveyResponseSerializer, StudentSerializer
 from .utils import send_activation_email
+from .auth import generate_jwt_for_user
 
 # --- CSRF token endpoint ---
 def csrf(request):
@@ -256,42 +260,31 @@ def export_attendance(request):
 
 # --- Students list API ---
 @api_view(['GET', 'POST', 'DELETE', 'PATCH'])
+@permission_classes([IsAuthenticated])
 def students_list(request):
     if request.method == 'GET':
         school_id = request.GET.get('school_id')
-        students = Student.objects.all()
+        students = Student.objects.select_related('school').all().order_by('-enrollmentdate')
         if school_id:
             students = students.filter(school_id=school_id)
-        data = [{"StudentID": s.studentid,"FirstName": s.firstname,"LastName": s.lastname,"Grade": s.grade,
-                 "SchoolID": s.school.schoolid if s.school else None,"SchoolName": s.school.school if s.school else None,
-                 "StudentPhone": s.studentphone,"GuardianName": s.guardianname,"GuardianPhone": s.guardianphone,
-                 "Email": s.email,"STEMInterest": s.steminterest,"EnrollmentDate": s.enrollmentdate} for s in students]
-        return Response(data)
+            
+        paginator = PageNumberPagination()
+        paginator.page_size = 50
+        result_page = paginator.paginate_queryset(students, request)
+        serializer = StudentSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     elif request.method == 'POST':
-        data = request.data
-        username = request.headers.get("Username")
-        current_user = User.objects.filter(username=username).first()
-        student_id = str(data.get('StudentID')).strip()
-        if not student_id: return Response({"error": "Student ID is required."}, status=400)
-        if not student_id.isdigit(): return Response({"error": "Student ID must contain digits only."}, status=400)
-        max_len = Student._meta.get_field("studentid").max_length
-        if len(student_id) > max_len: return Response({"error": f"Student ID too long. Max {max_len} digits."}, status=400)
-        if Student.objects.filter(studentid=student_id).exists(): return Response({"error": "StudentID exists."}, status=400)
-        enrollment_date = data.get('EnrollmentDate') or date.today()
-        school_obj = School.objects.filter(schoolid=data.get("SchoolID")).first()
-        if not school_obj: return Response({"error": "Invalid SchoolID"}, status=400)
-        student = Student.objects.create(
-            studentid=student_id, firstname=data.get('FirstName'), lastname=data.get('LastName'),
-            grade=data.get('Grade'), school=school_obj, studentphone=data.get('StudentPhone'),
-            guardianname=data.get('GuardianName'), guardianphone=data.get('GuardianPhone'),
-            email=data.get('Email'), steminterest=data.get('STEMInterest'), enrollmentdate=enrollment_date
-        )
-        return Response({"message": "Student added successfully!", "StudentID": student.studentid})
+        serializer = StudentSerializer(data=request.data)
+        if serializer.is_valid():
+            school_id = request.data.get('SchoolID')
+            school_obj = School.objects.filter(schoolid=school_id).first() if school_id else None
+            student = serializer.save(school=school_obj)
+            return Response({"message": "Student added successfully!", "StudentID": student.studentid})
+        return Response({"error": "Validation failed", "details": serializer.errors}, status=400)
 
     elif request.method == 'DELETE':
-        username = request.headers.get("Username")
-        user = User.objects.filter(username=username).first()
+        user = request.user
         if not user or user.role != "admin": return Response({"error": "Unauthorized"}, status=403)
         student_id = request.GET.get("StudentID")
         student = Student.objects.filter(studentid=student_id).first()
@@ -302,27 +295,24 @@ def students_list(request):
     elif request.method == "PATCH":
         data = request.data
         student_id = data.get("StudentID")
-        username = request.headers.get("Username")
-        user = User.objects.filter(username=username).first()
+        user = request.user
         if not student_id: return Response({"error": "StudentID required"}, status=400)
-        if not user: return Response({"error": "Unauthorized"}, status=403)
-        try: student = Student.objects.get(studentid=student_id)
-        except Student.DoesNotExist: return Response({"error": "Student not found"}, status=404)
-        student.firstname = data.get("FirstName", student.firstname)
-        student.lastname = data.get("LastName", student.lastname)
-        student.grade = data.get("Grade", student.grade)
-        student.steminterest = data.get("STEMInterest", student.steminterest)
-        student.enrollmentdate = data.get("EnrollmentDate", student.enrollmentdate)
-        if data.get("SchoolID"):
-            school = School.objects.filter(schoolid=data.get("SchoolID")).first()
-            if school: student.school = school
-        if user.role == "admin":
-            student.studentphone = data.get("StudentPhone", student.studentphone)
-            student.guardianname = data.get("GuardianName", student.guardianname)
-            student.guardianphone = data.get("GuardianPhone", student.guardianphone)
-            student.email = data.get("Email", student.email)
-        student.save()
-        return Response({"message": "Student updated successfully"})
+        try: 
+            student = Student.objects.get(studentid=student_id)
+        except Student.DoesNotExist: 
+            return Response({"error": "Student not found"}, status=404)
+            
+        serializer = StudentSerializer(student, data=data, partial=True)
+        if serializer.is_valid():
+            school_id = data.get('SchoolID')
+            if school_id:
+                school = School.objects.filter(schoolid=school_id).first()
+                if school: serializer.save(school=school)
+                else: serializer.save()
+            else:
+                serializer.save()
+            return Response({"message": "Student updated successfully"})
+        return Response({"error": "Validation failed", "details": serializer.errors}, status=400)
 
 # Export students
 @api_view(["GET"])
@@ -455,7 +445,15 @@ def login_user(request):
         user = User.objects.filter(username=username).first()
         if not user or not check_password(password, user.password):
             return Response({"error": "Invalid username or password"}, status=401)
-        return Response({"username": user.username,"role": user.role,"fullname": user.fullname,"email": user.email})
+            
+        token = generate_jwt_for_user(user)    
+        return Response({
+            "token": token,
+            "username": user.username,
+            "role": user.role,
+            "fullname": user.fullname,
+            "email": user.email
+        })
 
 # --- Needs ---
 @api_view(['GET', 'POST'])

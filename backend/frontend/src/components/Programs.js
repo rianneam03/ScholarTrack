@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import API_BASE from "../apiConfig";
+import api from "../apiAgent";
+import { toast } from "react-toastify";
 
 export default function Programs() {
   const navigate = useNavigate();
@@ -15,29 +15,28 @@ export default function Programs() {
   const [newProgramYear, setNewProgramYear] = useState({ program_id: "", year: new Date().getFullYear(), start_date: "", end_date: "" });
   const [newAssignment, setNewAssignment] = useState({ program_year_id: "", userid: "" });
 
-  const [message, setMessage] = useState({ text: "", type: "" });
   const currentUser = JSON.parse(localStorage.getItem("user"));
   const username = currentUser?.username;
   const role = currentUser?.role;
 
   const fetchData = async () => {
     try {
-      const headers = { Username: username };
       const [progRes, yearRes, staffRes] = await Promise.all([
-        axios.get(`${API_BASE}/programs/`, { headers }),
-        axios.get(`${API_BASE}/program_years/`, { headers }),
-        axios.get(`${API_BASE}/program-staff/`, { headers })
+        api.get('/programs/'),
+        api.get('/program_years/'),
+        api.get('/program-staff/')
       ]);
       setPrograms(progRes.data);
       setProgramYears(yearRes.data);
       setStaffAssignments(staffRes.data);
 
       if (role === "admin") {
-        const userRes = await axios.get(`${API_BASE}/users/`, { headers });
+        const userRes = await api.get('/users/');
         setUsers(userRes.data.filter(u => u.role === "teacher" || u.role === "admin"));
       }
     } catch (err) {
       console.error("Error loading program data", err);
+      toast.error("Error loading programs list");
     }
   };
 
@@ -45,53 +44,49 @@ export default function Programs() {
     fetchData();
   }, []);
 
-  const showMessage = (text, type = "success") => {
-    setMessage({ text, type });
-    setTimeout(() => setMessage({ text: "", type: "" }), 5000);
-  };
-
   const handleCreateProgram = async () => {
-    if (!newProgram.name) return showMessage("Program name required", "error");
+    if (!newProgram.name) return toast.info("Program name required");
     try {
-      await axios.post(`${API_BASE}/programs/`, newProgram, { headers: { Username: username }});
-      showMessage("Program created successfully!");
+      await api.post('/programs/', newProgram);
+      toast.success("Program created successfully!");
       setNewProgram({ name: "", description: "" });
       fetchData();
     } catch (err) {
-      showMessage(err.response?.data?.error || "Error creating Program", "error");
+      toast.error(err.response?.data?.error || "Error creating Program");
     }
   };
 
   const handleCreateProgramYear = async () => {
-    if (!newProgramYear.program_id || !newProgramYear.year) return showMessage("Program and Year required", "error");
+    if (!newProgramYear.program_id || !newProgramYear.year) return toast.info("Program and Year required");
     try {
-      await axios.post(`${API_BASE}/program_years/`, newProgramYear, { headers: { Username: username }});
-      showMessage("Program Year created successfully!");
+      await api.post('/program_years/', newProgramYear);
+      toast.success("Program Year created successfully!");
       setNewProgramYear({ ...newProgramYear, start_date: "", end_date: "" });
       fetchData();
     } catch (err) {
-      showMessage(err.response?.data?.error || "Error creating Program Year", "error");
+      toast.error(err.response?.data?.error || "Error creating Program Year");
     }
   };
 
   const handleAssignStaff = async () => {
-    if (!newAssignment.program_year_id || !newAssignment.userid) return showMessage("Program Year and User required", "error");
+    if (!newAssignment.program_year_id || !newAssignment.userid) return toast.info("Program Year and User required");
     try {
-      await axios.post(`${API_BASE}/program-staff/`, newAssignment, { headers: { Username: username }});
-      showMessage("Staff assigned successfully!");
+      await api.post('/program-staff/', newAssignment);
+      toast.success("Staff assigned successfully!");
       setNewAssignment({ program_year_id: "", userid: "" });
       fetchData();
     } catch (err) {
-      showMessage(err.response?.data?.error || "Error assigning staff", "error");
+      toast.error(err.response?.data?.error || "Error assigning staff");
     }
   };
 
   const handleDeleteStaff = async (id) => {
     try {
-      await axios.delete(`${API_BASE}/program-staff/${id}/`, { headers: { Username: username }});
+      await api.delete(`/program-staff/${id}/`);
+      toast.success("Access revoked");
       fetchData();
     } catch (err) {
-      showMessage("Error removing staff", "error");
+      toast.error("Error removing staff");
     }
   };
 
@@ -124,11 +119,6 @@ export default function Programs() {
   return (
     <div className="page-container">
       <h2>Program Management</h2>
-      {message.text && (
-        <div className={`helper-text`} style={{ color: message.type === 'error' ? 'var(--danger)' : 'var(--success)', marginBottom: '1rem', fontWeight: 'bold' }}>
-          {message.text}
-        </div>
-      )}
 
       {/* PROGRAMS */}
       <div className="card">

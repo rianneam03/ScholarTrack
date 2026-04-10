@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
-import API_BASE from "../apiConfig";
+import api from "../apiAgent";
+import { toast } from "react-toastify";
 
 function Attendance() {
   const [sessions, setSessions] = useState([]);
@@ -21,12 +22,9 @@ function Attendance() {
   // Load sessions
   // ======================
   useEffect(() => {
-    fetch(`${API_BASE}/sessions/`, {
-      headers: { Username: user?.username }
-    })
-      .then((r) => r.json())
-      .then((data) => {
-        setSessions(data);
+    api.get('/sessions/')
+      .then((r) => {
+        setSessions(r.data);
         if (urlSessionId) setSelectedSessionID(urlSessionId);
       })
       .catch((e) => console.error("Sessions load error:", e));
@@ -78,17 +76,13 @@ function Attendance() {
 
     setLoading(true);
 
-    const pStudents = fetch(
-      `${API_BASE}/enrollments/?program_year_id=${encodeURIComponent(
-        programYearId
-      )}`, { headers: { Username: user?.username } }
-    ).then((r) => r.json());
+    const pStudents = api.get(
+      `/enrollments/?program_year_id=${encodeURIComponent(programYearId)}`
+    ).then((r) => r.data);
 
-    const pAttendance = fetch(
-      `${API_BASE}/attendance/?session_id=${encodeURIComponent(
-        selectedSessionID
-      )}`, { headers: { Username: user?.username } }
-    ).then((r) => r.json());
+    const pAttendance = api.get(
+      `/attendance/?session_id=${encodeURIComponent(selectedSessionID)}`
+    ).then((r) => r.data);
 
     Promise.all([pStudents, pAttendance])
       .then(([stuData, attData]) => {
@@ -133,12 +127,12 @@ function Attendance() {
   // ======================
   const saveChanges = async () => {
     if (!selectedSessionID) {
-      alert("Please select a session first.");
+      toast.info("Please select a session first.");
       return;
     }
 
     if (isLocked) {
-      alert("Attendance for this session is locked.");
+      toast.warn("Attendance for this session is locked.");
       return;
     }
 
@@ -147,37 +141,23 @@ function Attendance() {
     );
 
     if (diffs.length === 0) {
-      alert("No changes to save.");
+      toast.info("No changes to save.");
       return;
     }
 
     setSaving(true);
     try {
       for (const row of diffs) {
-        const res = await fetch(
-          `${API_BASE}/attendance/`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json", Username: user?.username },
-            body: JSON.stringify({
-              StudentID: row.StudentID,
-              SessionID: selectedSessionID,
-              Status: row.Status,
-            }),
-          }
-        );
-
-        const data = await res.json();
-        if (!res.ok || data.error) {
-          throw new Error(data.error || "Failed to save attendance");
-        }
+        await api.post(`/attendance/`, {
+          StudentID: row.StudentID,
+          SessionID: selectedSessionID,
+          Status: row.Status,
+        });
       }
 
-      const fresh = await fetch(
-        `${API_BASE}/attendance/?session_id=${encodeURIComponent(
-          selectedSessionID
-        )}`, { headers: { Username: user?.username } }
-      ).then((r) => r.json());
+      const fresh = await api.get(
+        `/attendance/?session_id=${encodeURIComponent(selectedSessionID)}`
+      ).then((r) => r.data);
 
       const newMap = {};
       (fresh || []).forEach((row) => {
@@ -186,10 +166,10 @@ function Attendance() {
       });
       setOrigMap(newMap);
 
-      alert("✅ Attendance saved.");
+      toast.success("Attendance saved.");
     } catch (err) {
       console.error(err);
-      alert("❌ Error while saving attendance.");
+      toast.error("Error while saving attendance.");
     } finally {
       setSaving(false);
     }
@@ -200,25 +180,17 @@ function Attendance() {
   // ======================
   const handleExportAttendance = async () => {
     if (!selectedSessionID) {
-      alert("Please select a session first.");
+      toast.info("Please select a session first.");
       return;
     }
 
     try {
-      const res = await fetch(
-        `${API_BASE}/attendance/export/?session_id=${selectedSessionID}`,
-        {
-          headers: {
-            Username: user.username,
-          },
-        }
+      const res = await api.get(
+        `/attendance/export/?session_id=${selectedSessionID}`, 
+        { responseType: 'blob' }
       );
 
-      if (!res.ok) {
-        throw new Error("Export failed");
-      }
-
-      const blob = await res.blob();
+      const blob = res.data;
       const url = window.URL.createObjectURL(blob);
 
       const a = document.createElement("a");
@@ -227,9 +199,10 @@ function Attendance() {
       document.body.appendChild(a);
       a.click();
       a.remove();
+      toast.success("Export successful!");
     } catch (err) {
       console.error(err);
-      alert("Error exporting attendance");
+      toast.error("Error exporting attendance");
     }
   };
 

@@ -1,5 +1,23 @@
 from rest_framework import serializers
-from .models import School, Need, Program, ProgramYear, ProgramStaff, Enrollment, Outcome, Survey, SurveyResponse
+from .models import Student, School, Need, Program, ProgramYear, ProgramStaff, Enrollment, Outcome, Survey, SurveyResponse
+
+class StudentSerializer(serializers.ModelSerializer):
+    StudentID = serializers.CharField(source='studentid', required=False) # required=False on updates
+    FirstName = serializers.CharField(source='firstname')
+    LastName = serializers.CharField(source='lastname')
+    Grade = serializers.CharField(source='grade', required=False, allow_blank=True)
+    SchoolID = serializers.IntegerField(source='school.schoolid', read_only=True)
+    SchoolName = serializers.CharField(source='school.school', read_only=True)
+    StudentPhone = serializers.CharField(source='studentphone', required=False, allow_blank=True, allow_null=True)
+    GuardianName = serializers.CharField(source='guardianname', required=False, allow_blank=True, allow_null=True)
+    GuardianPhone = serializers.CharField(source='guardianphone', required=False, allow_blank=True, allow_null=True)
+    Email = serializers.CharField(source='email', required=False, allow_blank=True, allow_null=True)
+    STEMInterest = serializers.CharField(source='steminterest', required=False, allow_blank=True)
+    EnrollmentDate = serializers.DateField(source='enrollmentdate', required=False)
+
+    class Meta:
+        model = Student
+        fields = ['StudentID', 'FirstName', 'LastName', 'Grade', 'SchoolID', 'SchoolName', 'StudentPhone', 'GuardianName', 'GuardianPhone', 'Email', 'STEMInterest', 'EnrollmentDate']
 
 class SchoolSerializer(serializers.ModelSerializer):
     class Meta:
