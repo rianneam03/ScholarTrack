@@ -257,6 +257,14 @@ function Students({ filterProgramYearId, isCompact }) {
         </thead>
 
         <tbody>
+          {students.length === 0 && (
+            <tr>
+              <td colSpan="10" style={{background: '#ffebee', color: '#c62828', padding: '15px' }}>
+                <strong>No students matched or data malformed:</strong>
+                <pre style={{textAlign: 'left', marginTop: '10px'}}>{JSON.stringify(studentData, null, 2)}</pre>
+              </td>
+            </tr>
+          )}
           {students.map((s) => (
             <tr key={s.StudentID}>
               <td>{s.StudentID}</td>

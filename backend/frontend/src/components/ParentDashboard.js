@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API_BASE from "../apiConfig";
+import api from "../apiAgent";
 import "./ParentDashboard.css"; // We'll create minimal styling
 
 function ParentDashboard() {
@@ -16,13 +17,16 @@ function ParentDashboard() {
   const [enrollmentStatus, setEnrollmentStatus] = useState(null);
 
   const fetchWithAuth = async (url, options = {}) => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const headers = {
-      "Content-Type": "application/json",
-      "Username": user?.username || "",
-      ...(options.headers || {})
-    };
-    return fetch(`${API_BASE}${url}`, { ...options, headers });
+    try {
+      const res = await api({
+        url,
+        method: options.method || 'GET',
+        data: options.body ? JSON.parse(options.body) : undefined,
+      });
+      return { ok: true, json: async () => res.data };
+    } catch (err) {
+      return { ok: false, json: async () => err.response?.data || { error: err.message } };
+    }
   };
 
   useEffect(() => {
