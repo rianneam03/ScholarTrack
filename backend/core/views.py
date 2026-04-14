@@ -111,8 +111,7 @@ def dashboard_data(request):
 @api_view(['GET', 'POST'])
 def sessions_list(request):
     if request.method == 'GET':
-        username = request.headers.get("Username")
-        user = User.objects.filter(username=username).first()
+        user = request.user
         sessions = Session.objects.select_related('program_year__program').all()
         
         if user and user.role == "teacher":
@@ -153,8 +152,7 @@ def sessions_list(request):
 
 @api_view(['DELETE'])
 def session_detail(request, session_id):
-    username = request.headers.get("Username")
-    user = User.objects.filter(username=username).first()
+    user = request.user
     if not user or user.role != "admin":
         return Response({"error": "Unauthorized"}, status=403)
     try:
@@ -201,8 +199,7 @@ def attendance_list(request):
         attendance = Attendance.objects.filter(enrollment=enrollment, session=session_obj).first()
         
         # --- Role Check for Editing ---
-        username = request.headers.get("Username")
-        user = User.objects.filter(username=username).first()
+        user = request.user
         
         if attendance:
             # Creation vs Update logic: 
@@ -375,9 +372,9 @@ def students_by_school(request, school_id):
 
 # --- Users ---
 @api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def list_users(request):
-    username = request.headers.get("Username")
-    admin = User.objects.filter(username=username).first()
+    admin = request.user
     if not admin or admin.role != "admin":
         return Response({"error": "Forbidden"}, status=403)
     users = User.objects.all()
@@ -385,9 +382,9 @@ def list_users(request):
     return Response(data)
 
 @api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def admin_create_user(request):
-    username = request.headers.get("Username")
-    admin = User.objects.filter(username=username).first()
+    admin = request.user
     if not admin or admin.role != "admin":
         return Response({"error": "Forbidden"}, status=403)
     data = request.data
@@ -469,8 +466,7 @@ def needs_list(request):
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        username = request.headers.get("Username")
-        user = User.objects.filter(username=username).first()
+        user = request.user
         if not user or user.role not in ["admin", "teacher"]:
             return Response({"error": "Unauthorized"}, status=403)
         serializer = NeedSerializer(data=request.data)
@@ -491,8 +487,7 @@ def need_detail(request, need_id):
         return Response(serializer.data)
 
     # Check permissions for edit/delete
-    username = request.headers.get("Username")
-    user = User.objects.filter(username=username).first()
+    user = request.user
     if not user or user.role not in ["admin", "teacher"]:
         return Response({"error": "Unauthorized"}, status=403)
 
@@ -515,8 +510,7 @@ def programs_list(request):
         serializer = ProgramSerializer(programs, many=True)
         return Response(serializer.data)
     elif request.method == 'POST':
-        username = request.headers.get("Username")
-        user = User.objects.filter(username=username).first()
+        user = request.user
         if not user or user.role != "admin":
             return Response({"error": "Admin access required"}, status=403)
         serializer = ProgramSerializer(data=request.data)
@@ -535,8 +529,7 @@ def program_detail(request, program_id):
         serializer = ProgramSerializer(program)
         return Response(serializer.data)
     
-    username = request.headers.get("Username")
-    user = User.objects.filter(username=username).first()
+    user = request.user
     if not user or user.role != "admin":
         return Response({"error": "Admin access required"}, status=403)
         
@@ -558,8 +551,7 @@ def program_years_list(request):
         serializer = ProgramYearSerializer(years, many=True)
         return Response(serializer.data)
     elif request.method == 'POST':
-        username = request.headers.get("Username")
-        user = User.objects.filter(username=username).first()
+        user = request.user
         if not user or user.role != "admin":
             return Response({"error": "Admin access required"}, status=403)
         
@@ -587,8 +579,7 @@ def program_year_detail(request, year_id):
     if request.method == 'GET':
         return Response(ProgramYearSerializer(year).data)
         
-    username = request.headers.get("Username")
-    user = User.objects.filter(username=username).first()
+    user = request.user
     if not user or user.role != "admin":
         return Response({"error": "Admin access required"}, status=403)
         
@@ -617,8 +608,7 @@ def program_staff_list(request):
         serializer = ProgramStaffSerializer(staff, many=True)
         return Response(serializer.data)
     elif request.method == 'POST':
-        username = request.headers.get("Username")
-        user = User.objects.filter(username=username).first()
+        user = request.user
         if not user or user.role != "admin":
             return Response({"error": "Admin access required"}, status=403)
         
@@ -641,8 +631,7 @@ def program_staff_list(request):
 
 @api_view(['DELETE'])
 def program_staff_detail(request, assignment_id):
-    username = request.headers.get("Username")
-    user = User.objects.filter(username=username).first()
+    user = request.user
     if not user or user.role != "admin":
         return Response({"error": "Admin access required"}, status=403)
         
@@ -664,8 +653,7 @@ def enrollments_list(request):
         serializer = EnrollmentSerializer(enrollments, many=True)
         return Response(serializer.data)
     elif request.method == 'POST':
-        username = request.headers.get("Username")
-        user = User.objects.filter(username=username).first()
+        user = request.user
         if not user or user.role not in ["admin", "staff"]:
             return Response({"error": "Unauthorized"}, status=403)
             
@@ -698,8 +686,7 @@ def enrollment_detail(request, enrollment_id):
     if request.method == 'GET':
         return Response(EnrollmentSerializer(enrollment).data)
         
-    username = request.headers.get("Username")
-    user = User.objects.filter(username=username).first()
+    user = request.user
     if not user or user.role not in ["admin", "staff"]:
         return Response({"error": "Unauthorized"}, status=403)
         
@@ -720,7 +707,7 @@ def outcomes_list(request):
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        user = User.objects.filter(username=request.headers.get("Username")).first()
+        user = request.user
         if not user or user.role not in ["admin", "staff"]:
             return Response({"error": "Unauthorized"}, status=403)
         
@@ -740,7 +727,7 @@ def outcome_detail(request, pk):
     if request.method == 'GET':
         return Response(OutcomeSerializer(outcome).data)
 
-    user = User.objects.filter(username=request.headers.get("Username")).first()
+    user = request.user
     if not user or user.role not in ["admin", "staff"]:
         return Response({"error": "Unauthorized"}, status=403)
 
@@ -768,7 +755,7 @@ def surveys_list(request):
         return Response(serializer.data)
         
     elif request.method == 'POST':
-        user = User.objects.filter(username=request.headers.get("Username")).first()
+        user = request.user
         if not user or user.role not in ["admin", "staff"]:
             return Response({"error": "Unauthorized"}, status=403)
             
@@ -791,7 +778,7 @@ def survey_responses_list(request, survey_id):
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        user = User.objects.filter(username=request.headers.get("Username")).first()
+        user = request.user
         
         serializer = SurveyResponseSerializer(data=request.data)
         if serializer.is_valid():
@@ -816,7 +803,7 @@ def students_by_guardian(request, guardian_id):
 @api_view(['GET'])
 def parent_my_students(request):
     """List students associated with the logged-in parent."""
-    user = User.objects.filter(username=request.headers.get("Username")).first()
+    user = request.user
     if not user or user.role not in ["parent", "admin"]:
         return Response({"error": "Unauthorized"}, status=403)
         
@@ -879,7 +866,7 @@ def link_student_guardian(request):
 @api_view(['POST'])
 def parent_enroll_student(request, student_id):
     """Parent enrolls their child in a program year."""
-    user = User.objects.filter(username=request.headers.get("Username")).first()
+    user = request.user
     if not user or user.role not in ["parent", "admin"]:
         return Response({"error": "Unauthorized"}, status=403)
         
@@ -911,7 +898,7 @@ def parent_enroll_student(request, student_id):
 @api_view(['GET'])
 def student_academic_summary(request, student_id):
     """Show student academic summary (outcomes, attendance, enrollments) for the parent."""
-    user = User.objects.filter(username=request.headers.get("Username")).first()
+    user = request.user
     if user and user.role == "parent":
         guardian = Guardian.objects.filter(email=user.email).first()
         student = Student.objects.filter(studentid=student_id, guardian=guardian).first()
@@ -961,7 +948,7 @@ def student_academic_summary(request, student_id):
 @api_view(['POST'])
 def parent_create_child(request):
     """Allow a parent to register a new child and link them immediately."""
-    user = User.objects.filter(username=request.headers.get("Username")).first()
+    user = request.user
     if not user or user.role != "parent":
         return Response({"error": "Only parents can register children here."}, status=403)
     
@@ -1010,7 +997,7 @@ def parent_create_child(request):
 @api_view(['GET'])
 def teacher_dashboard_data(request):
     """Fetch assigned programs and sessions for the teacher."""
-    user = User.objects.filter(username=request.headers.get("Username")).first()
+    user = request.user
     if not user or user.role != "teacher":
         return Response({"error": "Unauthorized"}, status=403)
     

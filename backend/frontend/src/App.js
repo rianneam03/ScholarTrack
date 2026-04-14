@@ -30,7 +30,7 @@ function PrivateRoute({ children, allowedRoles }) {
   const location = useLocation();
 
   // User must exist, be active, and have allowed role
-  if (!user || !allowedRoles.includes(user.role)) {
+  if (!user || !allowedRoles.includes(String(user.role).trim().toLowerCase())) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
